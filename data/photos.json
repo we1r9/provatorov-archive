@@ -1,0 +1,162 @@
+[
+  {
+    "id": "solonovka",
+    "title": null,
+    "date": "2013-07",
+    "location": {
+      "country": "Россия",
+      "place": "Алтай, Солоновка"
+    },
+    "tags": [],
+    "files": {
+      "thumb": "/media/thumb/solonovka-thumb.webp",
+      "web": "/media/web/solonovka-web.webp",
+      "hq": null
+    },
+    "description": "Съемка с дельтаплана",
+    "camera": {
+      "model": "Canon EOS 5D Mark II",
+      "lens": null
+    }
+  },
+  {
+    "id": "ust-uba",
+    "title": null,
+    "date": "2008-08",
+    "location": {
+      "country": "Россия",
+      "place": "Алтай, Усть-Уба"
+    },
+    "tags": [],
+    "files": {
+      "thumb": "/media/thumb/ust-uba-thumb.webp",
+      "web": "/media/web/ust-uba-web.webp",
+      "hq": null
+    },
+    "description": null,
+    "camera": {
+      "model": "Canon EOS 5D",
+      "lens": null
+    }
+  },
+    {
+    "id": "kirlyk",
+    "title": null,
+    "date": "2007",
+    "location": {
+      "country": "Россия",
+      "place": "Алтай, Кырлык"
+    },
+    "tags": [],
+    "files": {
+      "thumb": "/media/thumb/kirlyk-thumb.webp",
+      "web": "/media/web/kirlyk-web.webp",
+      "hq": null
+    },
+    "description": null,
+    "camera": {
+      "model": null,
+      "lens": null
+    }
+  },
+    {
+    "id": "mongolia",
+    "title": null,
+    "date": "2009-09",
+    "location": {
+      "country": "Монголия",
+      "place": null
+    },
+    "tags": [],
+    "files": {
+      "thumb": "/media/thumb/mongolia-thumb.webp",
+      "web": "/media/web/mongolia-web.webp",
+      "hq": null
+    },
+    "description": null,
+    "camera": {
+      "model": null,
+      "lens": null
+    }
+  },
+  {
+    "id": "zanzibar",
+    "title": null,
+    "date": "2010",
+    "location": {
+      "country": "Танзания",
+      "place": "Занзибар"
+    },
+    "tags": [],
+    "files": {
+      "thumb": "/media/thumb/zanzibar-thumb.webp",
+      "web": "/media/web/zanzibar-web.webp",
+      "hq": null
+    },
+    "description": null,
+    "camera": {
+      "model": null,
+      "lens": null
+    }
+  },
+  {
+    "id": "kilimanjaro-peak",
+    "title": null,
+    "date": "2010",
+    "location": {
+      "country": "Танзания",
+      "place": "Вершина Килиманджаро"
+    },
+    "tags": [],
+    "files": {
+      "thumb": "/media/thumb/kilimanjaro-peak-thumb.webp",
+      "web": "/media/web/kilimanjaro-peak-web.webp",
+      "hq": null
+    },
+    "description": null,
+    "camera": {
+      "model": null,
+      "lens": null
+    }
+  },
+  {
+    "id": "charysh",
+    "title": null,
+    "date": "2006",
+    "location": {
+      "country": "Россия",
+      "place": "Алтай, верховья реки Чарыш"
+    },
+    "tags": [],
+    "files": {
+      "thumb": "/media/thumb/charysh-thumb.webp",
+      "web": "/media/web/charysh-web.webp",
+      "hq": null
+    },
+    "description": null,
+    "camera": {
+      "model": null,
+      "lens": null
+    }
+  },
+  {
+    "id": "cappadocia",
+    "title": null,
+    "date": "2008-09",
+    "location": {
+      "country": "Турция",
+      "place": "Каппадокия"
+    },
+    "tags": [],
+    "files": {
+      "thumb": "/media/thumb/cappadocia-thumb.webp",
+      "web": "/media/web/cappadocia-web.webp",
+      "hq": null
+    },
+    "description": null,
+    "camera": {
+      "model": "Canon EOS 5D",
+      "lens": null
+    }
+  }
+]
