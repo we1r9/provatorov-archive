@@ -1,0 +1,157 @@
+/* Fonts */
+@font-face {
+  font-family: "SF Pro Rounded";
+  src: url("../../fonts/SF-Pro-Rounded-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "SF Pro Rounded";
+  src: url("../../fonts/SF-Pro-Rounded-Medium.otf") format("opentype");
+  font-weight: 500;
+  font-display: swap;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "SF Pro Rounded", "Segoe UI", Helvetica, Arial;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  flex-wrap: wrap;
+}
+
+.header-middle {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+}
+
+.logo-text {
+  font-weight: 400;
+  font-size: 1.2rem;
+}
+
+.search-bar {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  max-width: 520px;
+}
+
+.input-section {
+  flex: 1;
+  min-width: 180px;
+  height: 40px;
+  padding: 0 14px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 50px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.search-button {
+  height: 40px;
+  padding: 0 16px;
+  font-size: 1rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 50px;
+  background-color: #ffffff;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.favourites-button {
+  all: unset;
+  cursor: pointer;
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+/* Grid */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  padding: 1rem 0 2rem;
+}
+
+/* Card */
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  padding-bottom: 0px;
+  border-radius: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  background-color: #ffffff;
+}
+
+.card-photo {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 20px;
+  display: block;
+}
+
+.card-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-photo-title {
+  flex: 1;
+  font-size: 0.98rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.card-photo-year {
+  opacity: 0.75;
+}
+
+.card-like-button {
+  all: unset;
+  padding: 1 rem 0 2rem;
+  opacity: 0.7;
+  font-size: 0.9rem;
+  text-align: center;
+  cursor: pointer;
+}
+
+/* Footer */
+.footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem 0 2rem;
+  font-size: 0.9rem;
+  color: #666666;
+}

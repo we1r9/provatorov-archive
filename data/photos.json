@@ -11,7 +11,7 @@
     "files": {
       "thumb": "/media/thumb/solonovka-thumb.webp",
       "web": "/media/web/solonovka-web.webp",
-      "hq": null
+      "hq": "https://cdn.provatorov.ru/hq/solonovka-hq.JPG"
     },
     "description": "Съемка с дельтаплана",
     "camera": {
@@ -31,7 +31,7 @@
     "files": {
       "thumb": "/media/thumb/ust-uba-thumb.webp",
       "web": "/media/web/ust-uba-web.webp",
-      "hq": null
+      "hq": "https://cdn.provatorov.ru/hq/ust-uba-hq.JPG"
     },
     "description": null,
     "camera": {
@@ -51,7 +51,7 @@
     "files": {
       "thumb": "/media/thumb/kirlyk-thumb.webp",
       "web": "/media/web/kirlyk-web.webp",
-      "hq": null
+      "hq": "https://cdn.provatorov.ru/hq/kirlyk-hq.JPG"
     },
     "description": null,
     "camera": {
@@ -71,7 +71,7 @@
     "files": {
       "thumb": "/media/thumb/mongolia-thumb.webp",
       "web": "/media/web/mongolia-web.webp",
-      "hq": null
+      "hq": "https://cdn.provatorov.ru/hq/mongolia-hq.JPG"
     },
     "description": null,
     "camera": {
@@ -91,7 +91,7 @@
     "files": {
       "thumb": "/media/thumb/zanzibar-thumb.webp",
       "web": "/media/web/zanzibar-web.webp",
-      "hq": null
+      "hq": "https://cdn.provatorov.ru/hq/zanzibar-hq.JPG"
     },
     "description": null,
     "camera": {
@@ -111,7 +111,7 @@
     "files": {
       "thumb": "/media/thumb/kilimanjaro-peak-thumb.webp",
       "web": "/media/web/kilimanjaro-peak-web.webp",
-      "hq": null
+      "hq": "https://cdn.provatorov.ru/hq/kilimanjaro-peak-hq.JPG"
     },
     "description": null,
     "camera": {
@@ -131,7 +131,7 @@
     "files": {
       "thumb": "/media/thumb/charysh-thumb.webp",
       "web": "/media/web/charysh-web.webp",
-      "hq": null
+      "hq": "https://cdn.provatorov.ru/hq/charysh-hq.JPG"
     },
     "description": null,
     "camera": {
@@ -151,7 +151,7 @@
     "files": {
       "thumb": "/media/thumb/cappadocia-thumb.webp",
       "web": "/media/web/cappadocia-web.webp",
-      "hq": null
+      "hq": "https://cdn.provatorov.ru/hq/cappadocia-hq.JPG"
     },
     "description": null,
     "camera": {
