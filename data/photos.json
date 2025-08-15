@@ -1,11 +1,10 @@
 [
   {
     "id": "solonovka",
-    "title": null,
     "date": "2013-07",
     "location": {
       "country": "Россия",
-      "place": "Алтай, Солоновка"
+      "region": "Алтай, Солоновка"
     },
     "tags": [],
     "files": {
@@ -21,11 +20,10 @@
   },
   {
     "id": "ust-uba",
-    "title": null,
     "date": "2008-08",
     "location": {
       "country": "Россия",
-      "place": "Алтай, Усть-Уба"
+      "region": "Алтай, Усть-Уба"
     },
     "tags": [],
     "files": {
@@ -41,11 +39,10 @@
   },
     {
     "id": "kirlyk",
-    "title": null,
     "date": "2007",
     "location": {
       "country": "Россия",
-      "place": "Алтай, Кырлык"
+      "region": "Алтай, Кырлык"
     },
     "tags": [],
     "files": {
@@ -61,11 +58,10 @@
   },
     {
     "id": "mongolia",
-    "title": null,
     "date": "2009-09",
     "location": {
       "country": "Монголия",
-      "place": null
+      "region": null
     },
     "tags": [],
     "files": {
@@ -81,11 +77,10 @@
   },
   {
     "id": "zanzibar",
-    "title": null,
     "date": "2010",
     "location": {
       "country": "Танзания",
-      "place": "Занзибар"
+      "region": "Занзибар"
     },
     "tags": [],
     "files": {
@@ -101,11 +96,10 @@
   },
   {
     "id": "kilimanjaro-peak",
-    "title": null,
     "date": "2010",
     "location": {
       "country": "Танзания",
-      "place": "Вершина Килиманджаро"
+      "region": "Килиманджаро"
     },
     "tags": [],
     "files": {
@@ -121,11 +115,10 @@
   },
   {
     "id": "charysh",
-    "title": null,
     "date": "2006",
     "location": {
       "country": "Россия",
-      "place": "Алтай, верховья реки Чарыш"
+      "region": "Алтай, река Чарыш"
     },
     "tags": [],
     "files": {
@@ -141,11 +134,10 @@
   },
   {
     "id": "cappadocia",
-    "title": null,
     "date": "2008-09",
     "location": {
       "country": "Турция",
-      "place": "Каппадокия"
+      "region": "Каппадокия"
     },
     "tags": [],
     "files": {
