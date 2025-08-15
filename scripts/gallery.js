@@ -1,7 +1,8 @@
 import photos from '../data/photos.json' with { type: 'json' };
+import { initSearch } from './utils/initSearch.js';
 
-// Готовим данные для фотографий
-const photosData = photos.map(item => {
+// // ========== ПОДГОТОВКА ДАННЫХ ==========
+export const photosData = photos.map(item => {
   const hasRegion = item.location && item.location.region;
   const hasCountry = item.location && item.location.country;
 
@@ -31,19 +32,26 @@ const photosData = photos.map(item => {
   };
 });
 
-const grid = document.querySelector('.grid');
+// ========== РЕНЕДЕР ГАЛЕРЕИ ==========
+function renderGallery(photosData) {
+  const grid = document.querySelector('.grid');
+  if (!grid) return;
 
-// Генерируем HTML для всех карточек
-const cardsHTML = photosData.map(card => `
-  <article class="card" data-id="${card.id}">
-    <img class="card-photo" src="${card.thumb}">
-    <div class="card-content">
-      <p class="card-photo-title">${card.location}</p>
-      <button class="card-like-button">❤</button>
-    </div>
-    <p class="card-photo-year">${card.year}</p>
-  </article>
-`).join('');
+  // Генерируем HTML для всех карточек
+  const cardsHTML = photosData.map(card => `
+    <article class="card" data-id="${card.id}">
+      <img class="card-photo" src="${card.thumb}">
+      <div class="card-content">
+        <p class="card-photo-title">${card.location}</p>
+        <button class="card-like-button">❤</button>
+      </div>
+      <p class="card-photo-year">${card.year}</p>
+    </article>
+  `).join('');
 
-// Вставляем карточки в контейнер
-grid.innerHTML = cardsHTML;
+  grid.innerHTML = cardsHTML;
+}
+renderGallery(photosData);
+
+// ========== ПОИСК ==========
+initSearch(photosData, renderGallery);
