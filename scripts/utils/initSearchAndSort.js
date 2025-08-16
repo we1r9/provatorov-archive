@@ -1,6 +1,52 @@
-// Инициализирует функционал поиска по галерее
-export function initSearch(photosData, renderGallery) {
-  // Вытаскиваем год из даты и проверяем, что он стостоит из 4 цифр
+// Инициализирует функционал поиска по галерее и сортировки
+export function initSearchAndSort(photosData, renderGallery) {
+  // ========== СОРТИРОВКА ==========
+  // Инициализирует функционал сортировки
+  function initSort(list, sortKey) {
+    const copy = [...list];
+    switch (sortKey) {
+      case 'year_desc':
+        return copy.sort((a, b) => 
+          Number(b.year || 0) - Number(a.year || 0) ||
+          String(a.location || '').localeCompare(String(b.location || ''), 'ru')
+        );
+      case 'year_asc':
+        return copy.sort((a, b) => 
+          Number(a.year || 0) - Number(b.year || 0) ||
+          String(a.location || '').localeCompare(String(b.location || ''), 'ru')
+        );
+      case 'location_asc':
+        return copy.sort((a, b) => 
+          String(a.location || '').localeCompare(
+            String(b.location || ''), 
+            ['ru', 'en'],
+            { sensitivity: 'base', numeric: true, ignorePunctuation: true }
+        ));
+      case 'location_desc':
+        return copy.sort((a, b) => 
+          String(b.location || '').localeCompare(
+            String(a.location || ''), 
+            ['ru', 'en'],
+            { sensitivity: 'base', numeric: true, ignorePunctuation: true }
+        ));
+      default:
+        console.warn(`Unknown sortKey: ${sortKey}`);
+        return copy;
+    }
+  }
+
+  // Обработчик выбранной сортировки
+  const sortSelect = document.querySelector('#sortSelect');
+  let currentSort = sortSelect ? sortSelect.value : 'year_desc';
+  if (sortSelect) {
+    sortSelect.addEventListener('change', () => {
+      currentSort = sortSelect.value;
+      runSearch();
+    });
+  }
+
+  // ========== ПОИСК ==========
+  // Вытаскиваем год из даты и проверяем, что он состоит из 4 цифр
   function extractYear(date) {
     if (!date) return '';
     const string = String(date);
@@ -48,13 +94,14 @@ export function initSearch(photosData, renderGallery) {
   const searchButton = document.querySelector('.search-button');
   if (!searchButton || !searchInput) return;
 
+  // Запускаем поиск и сортировку
   function runSearch() {
     const query = searchInput.value;
-    const results = filterByQuery(indexedPhotos, query);
-    renderGallery(results);
-    showEmptyState(results, query);
+    const filtered = filterByQuery(indexedPhotos, query);
+    const sorted = initSort(filtered, currentSort);
+    renderGallery(sorted);
+    showEmptyState(sorted, query);
   }
-  runSearch();
 
   // Запускаем поиск по кнопке поиска или "Enter"
   searchButton.addEventListener('click', runSearch);
@@ -105,4 +152,6 @@ export function initSearch(photosData, renderGallery) {
       grid.style.display = '';
     }
   }
+  
+  runSearch();
 }

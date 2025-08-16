@@ -166,3 +166,34 @@ body {
   text-align: center;
   padding: 1rem;
 }
+
+/* Sort */
+#sortSelect {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  margin: 1rem;
+
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 15px;
+  padding: 0.5rem 2rem 0.5rem 0.8rem;
+  font-size: 0.95rem;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  background-size: 1rem;
+}
+
+#sortSelect:hover {
+  border-color: #888;
+}
+
+#sortSelect:focus {
+  outline: none;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}

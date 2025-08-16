@@ -1,5 +1,5 @@
 import photos from '../data/photos.json' with { type: 'json' };
-import { initSearch } from './utils/initSearch.js';
+import { initSearchAndSort } from './utils/initSearchAndSort.js';
 
 // // ========== ПОДГОТОВКА ДАННЫХ ==========
 export const photosData = photos.map(item => {
@@ -53,5 +53,5 @@ function renderGallery(photosData) {
 }
 renderGallery(photosData);
 
-// ========== ПОИСК ==========
-initSearch(photosData, renderGallery);
+// ========== ПОИСК И СОРТИРОВКА ==========
+initSearchAndSort(photosData, renderGallery);
