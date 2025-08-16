@@ -148,6 +148,11 @@ body {
   opacity: 0.75;
 }
 
+.card-link {
+  all: unset;
+  cursor: pointer;
+}
+
 /* Footer */
 .footer {
   display: flex;

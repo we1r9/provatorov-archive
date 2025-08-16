@@ -12,10 +12,14 @@
       "web": "/media/web/solonovka-web.webp",
       "hq": "https://cdn.provatorov.ru/hq/solonovka-hq.JPG"
     },
-    "description": "Съемка с дельтаплана",
+    "description": "Съемка с дельтаплана.",
     "camera": {
       "model": "Canon EOS 5D Mark II",
-      "lens": null
+      "lens": "EF70-300mm f/4-5.6L IS USM",
+      "focal_length_mm": 116,
+      "aperture_f": 6.3,
+      "shutter": "1/1250",
+      "iso": 2000
     }
   },
   {
@@ -34,7 +38,11 @@
     "description": null,
     "camera": {
       "model": "Canon EOS 5D",
-      "lens": null
+      "lens": null,
+      "focal_length_mm": null,
+      "aperture_f": null,
+      "shutter": null,
+      "iso": null
     }
   },
     {
@@ -53,7 +61,11 @@
     "description": null,
     "camera": {
       "model": null,
-      "lens": null
+      "lens": null,
+      "focal_length_mm": null,
+      "aperture_f": null,
+      "shutter": null,
+      "iso": null
     }
   },
     {
@@ -72,7 +84,11 @@
     "description": null,
     "camera": {
       "model": null,
-      "lens": null
+      "lens": null,
+      "focal_length_mm": null,
+      "aperture_f": null,
+      "shutter": null,
+      "iso": null
     }
   },
   {
@@ -91,7 +107,11 @@
     "description": null,
     "camera": {
       "model": null,
-      "lens": null
+      "lens": null,
+      "focal_length_mm": null,
+      "aperture_f": null,
+      "shutter": null,
+      "iso": null
     }
   },
   {
@@ -110,7 +130,11 @@
     "description": null,
     "camera": {
       "model": null,
-      "lens": null
+      "lens": null,
+      "focal_length_mm": null,
+      "aperture_f": null,
+      "shutter": null,
+      "iso": null
     }
   },
   {
@@ -129,7 +153,11 @@
     "description": null,
     "camera": {
       "model": null,
-      "lens": null
+      "lens": null,
+      "focal_length_mm": null,
+      "aperture_f": null,
+      "shutter": null,
+      "iso": null
     }
   },
   {
@@ -148,7 +176,34 @@
     "description": null,
     "camera": {
       "model": "Canon EOS 5D",
-      "lens": null
+      "lens": null,
+      "focal_length_mm": null,
+      "aperture_f": null,
+      "shutter": null,
+      "iso": null
+    }
+  },
+  {
+    "id": "dubrovnik",
+    "date": "2011-09",
+    "location": {
+      "country": "Хорватия",
+      "region": "Дубровник"
+    },
+    "tags": [],
+    "files": {
+      "thumb": "/media/thumb/dubrovnik-thumb.webp",
+      "web": "/media/web/dubrovnik-web.webp",
+      "hq": null
+    },
+    "description": null,
+    "camera": {
+      "model":null,
+      "lens": null,
+      "focal_length_mm": null,
+      "aperture_f": null,
+      "shutter": null,
+      "iso": null
     }
   }
 ]

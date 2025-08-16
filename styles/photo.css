@@ -1,0 +1,92 @@
+/* ========== MAIN CONTAINER ========== */
+.view-container{
+  display:grid;
+  grid-template-columns: minmax(0,1fr) minmax(280px,320px);
+  grid-template-areas: "photo aside";
+  gap:4rem;
+  max-width:1200px;
+  margin:0 auto;
+  padding: 1rem 1rem 3rem;
+}
+
+/* Header */
+.aside-header {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* ========== PHOTO ========== */
+.photo-wrap{
+  grid-area: photo;
+  display: grid;
+  place-items: center;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.photo-img{
+  display:block;
+  max-width:100%;
+  max-height:75vh;
+  width:auto;
+  height:auto;
+  object-fit:contain;
+  border-radius: 20px;
+}
+
+.view-container.is-portrait{
+  grid-template-columns: minmax(0,680px) minmax(280px,360px);
+}
+
+.photo-wrap.is-landscape .photo-img { max-height: 65vh; }
+.photo-wrap.is-portrait  .photo-img { max-height: 80vh; }
+.photo-wrap.is-panorama  .photo-img { max-height: 55vh; }
+
+@media (max-width:900px){
+  .view-container,
+  .view-container.is-portrait{
+    grid-template-columns:1fr;
+    grid-template-areas:
+      "photo"
+      "aside";
+    max-width:720px;
+  }
+}
+
+/* ========== CAMERA BLOCK ========== */
+.aside-block-camera {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem 2rem;
+  font-size: 0.9rem;
+}
+
+.aside-block-camera .row {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 2rem;
+  row-gap: .25rem;
+  align-items: start;
+}
+
+.aside-block-camera .row p:nth-child(1) { grid-column: 1; grid-row: 1; }
+.aside-block-camera .row p:nth-child(2) { grid-column: 1; grid-row: 2; }
+.aside-block-camera .row p:nth-child(3) { grid-column: 2; grid-row: 1; }
+.aside-block-camera .row p:nth-child(4) { grid-column: 2; grid-row: 2; }
+
+.aside-block-camera .row p { margin: 0; }
+.aside-block-camera .row p:nth-child(1),
+.aside-block-camera .row p:nth-child(3) { font-weight: 600; color: #444; }
+
+@media (max-width: 700px) {
+  .view-container {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "photo"
+      "aside";
+    gap: 1rem;
+  }
+}
