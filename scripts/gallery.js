@@ -5,10 +5,13 @@ import { mapPhotos } from './utils/mapPhotos.js';
 
 // ========== ПОДГОТОВКА ДАННЫХ ==========
 const photosData = mapPhotos(photos);
+let currentPhotos = [...photosData];
+
+// Находим сетку галереи на странице
+const grid = document.querySelector('.grid');
 
 // ========== РЕНЕДЕР ГАЛЕРЕИ ==========
 function renderGallery(photosData) {
-  const grid = document.querySelector('.grid');
   if (!grid) return;
 
   // Генерируем HTML для всех карточек
@@ -38,23 +41,18 @@ function renderGallery(photosData) {
 
   grid.innerHTML = cardsHTML;
 }
-renderGallery(photosData);
+renderGallery(currentPhotos);
 
 // ========== ПОИСК И СОРТИРОВКА ==========
 initSearchAndSort(photosData, renderGallery);
 
-// Проверка работы избранного
-window.favorites = { getFavorites, toggleFavorite, isFavorite, clearFavorites };
-
 // Обработчик добавления в избранное
-const grid = document.querySelector('.grid');
-
 grid.addEventListener('click', (event) => {
   const btn = event.target.closest('[data-fav-id]');
   if (!btn) return;
 
   event.preventDefault();
-
+  
   const id = btn.dataset.favId;
   toggleFavorite(id);
   btn.classList.toggle('is-fav', isFavorite(id));

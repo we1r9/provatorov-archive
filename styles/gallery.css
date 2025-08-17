@@ -176,13 +176,19 @@ body {
   padding: 1rem;
 }
 
+/* ========== SORT BAR ========== */
+.sort-bar {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
 /* Sort */
 #sortSelect {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  margin: 1rem;
-
+  margin: 1rem 0;
   background-color: #fff;
   border: 1px solid #ccc;
   border-radius: 15px;
@@ -205,4 +211,12 @@ body {
 #sortSelect:focus {
   outline: none;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Shuffle button */
+.shuffle-button {
+  all: unset;
+  margin: 1rem 0;
+  font-size: 2rem;
+  cursor: pointer;
 }

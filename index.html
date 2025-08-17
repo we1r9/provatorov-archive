@@ -24,12 +24,19 @@
       </div>
     </header>
 
-    <select id="sortSelect">
-      <option value="year_desc">Сначала новые</option>
-      <option value="year_asc">Сначала старые</option>
-      <option value="location_asc">Название A→Я</option>
-      <option value="location_desc">Название Я→A</option>
-    </select>
+    <section class="sort-bar container">
+      <select id="sortSelect">
+        <option value="" disabled selected hidden>Сортировать</option>
+        <option value="year_desc">Сначала новые</option>
+        <option value="year_asc">Сначала старые</option>
+        <option value="location_asc">Название A→Я</option>
+        <option value="location_desc">Название Я→A</option>
+      </select>
+
+      <div>
+        <button class="shuffle-button">🔄</button>
+      </div>
+    </section>
 
     <main class="container">
       <section class="grid"></section>

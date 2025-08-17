@@ -1,46 +1,70 @@
 // Инициализирует функционал поиска по галерее и сортировки
 export function initSearchAndSort(photosData, renderGallery) {
   // ========== СОРТИРОВКА ==========
-  // Инициализирует функционал сортировки
+  // Компаратор
+  const collator = new Intl.Collator(['ru', 'en'], {
+    sensitivity: 'base',
+    numeric: true,
+    ignorePunctuation: true
+  });
+  
+  // Правила сортировки
   function initSort(list, sortKey) {
     const copy = [...list];
     switch (sortKey) {
       case 'year_desc':
         return copy.sort((a, b) => 
-          Number(b.year || 0) - Number(a.year || 0) ||
-          String(a.location || '').localeCompare(String(b.location || ''), 'ru')
+          (Number(b.year || 0) - Number(a.year || 0)) ||
+          collator.compare(String(a.location || ''), String(b.location || ''))
         );
       case 'year_asc':
         return copy.sort((a, b) => 
-          Number(a.year || 0) - Number(b.year || 0) ||
-          String(a.location || '').localeCompare(String(b.location || ''), 'ru')
+          (Number(a.year || 0) - Number(b.year || 0)) ||
+          collator.compare(String(a.location || ''), String(b.location || ''))
         );
       case 'location_asc':
         return copy.sort((a, b) => 
-          String(a.location || '').localeCompare(
-            String(b.location || ''), 
-            ['ru', 'en'],
-            { sensitivity: 'base', numeric: true, ignorePunctuation: true }
-        ));
+          collator.compare(String(a.location || ''), String(b.location || '')));
       case 'location_desc':
         return copy.sort((a, b) => 
-          String(b.location || '').localeCompare(
-            String(a.location || ''), 
-            ['ru', 'en'],
-            { sensitivity: 'base', numeric: true, ignorePunctuation: true }
-        ));
+          collator.compare(String(b.location || ''), String(a.location || '')));
       default:
-        console.warn(`Unknown sortKey: ${sortKey}`);
         return copy;
     }
   }
 
+  // Текущий список и состояние
+  let currentPhotos = [...photosData];
+  let currentSort = '';
+  let isShuffleMode = false;
+
   // Обработчик выбранной сортировки
   const sortSelect = document.querySelector('#sortSelect');
-  let currentSort = sortSelect ? sortSelect.value : 'year_desc';
   if (sortSelect) {
     sortSelect.addEventListener('change', () => {
       currentSort = sortSelect.value;
+      isShuffleMode = false;
+      runSearch();
+    });
+  }
+
+  // ========== ПЕРЕМЕШИВАНИЕ ==========
+  function shuffle(array) {
+    let shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  }
+
+  // Обработчик перемешивания
+  const shuffleBtn = document.querySelector('.shuffle-button');
+  if (shuffleBtn) {
+    shuffleBtn.addEventListener('click', () => {
+      isShuffleMode = true;
+      currentSort = '';
+      if (sortSelect) sortSelect.value = '';
       runSearch();
     });
   }
@@ -59,6 +83,18 @@ export function initSearchAndSort(photosData, renderGallery) {
     }
   }
 
+  // Нормализация поиска
+  function norm(search='') {
+    return String(search)
+      .toLowerCase()
+      .replaceAll('ё', 'е')
+      .normalize('NFKD')
+      .replace(/\p{M}/gu, '')
+      .replace(/[-–—]+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
   // Готовим индекс
   const indexedPhotos = photosData.map(photo => {
     const country = photo.country || '';
@@ -67,16 +103,16 @@ export function initSearchAndSort(photosData, renderGallery) {
     const tags = (photo.tags || []).join(' ');
     const description = photo.description || '';
 
-    const search = [
+    const search = norm([
       country, region, year, tags, description
-    ].join(' ').toLowerCase();
+    ].join(' '));
 
     return { ...photo, search }; // ...photo раскрывает все свойства объекта photo в новый объект, к которому добавляется search
   });
 
   // Токенезируем запрос, чтобы получить одну большую строку
   function tokenizeQuery(query) {
-    return String(query || '').trim().toLowerCase().split(/\s+/).filter(Boolean);
+    return norm(query).trim().split(/\s+/).filter(Boolean);
   }
 
   // Фильтруем результат поиска
@@ -98,15 +134,24 @@ export function initSearchAndSort(photosData, renderGallery) {
   function runSearch() {
     const query = searchInput.value;
     const filtered = filterByQuery(indexedPhotos, query);
-    const sorted = initSort(filtered, currentSort);
-    renderGallery(sorted);
-    showEmptyState(sorted, query);
+
+    let result = filtered;
+    if (isShuffleMode) {
+      result = shuffle(filtered);
+    } else if (currentSort) {
+      result = initSort(filtered, currentSort);
+    }
+
+    currentPhotos = result;
+    renderGallery(result);
+    showEmptyState(result, query);
   }
 
   // Запускаем поиск по кнопке поиска или "Enter"
   searchButton.addEventListener('click', runSearch);
   searchInput.addEventListener('keydown', event => {
     if (event.key === 'Enter') {
+      event.preventDefault();
       runSearch();
     }
   });
