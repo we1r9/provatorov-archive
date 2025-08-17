@@ -54,6 +54,11 @@
   }
 }
 
+.photo-aside {
+  display: flex;
+  flex-direction: column;
+}
+
 /* ========== CAMERA BLOCK ========== */
 .aside-block-camera {
   display: grid;
@@ -89,4 +94,23 @@
       "aside";
     gap: 1rem;
   }
+}
+
+/* Download HQ button */
+.download-hq-btn {
+  font-family: SF Pro rounded;
+  margin-top: auto;
+  align-self: flex-end;
+  border: none;
+  padding: 0.7rem 1.5rem;
+  font-size: 1.05rem;
+  color: white;
+  background-color: rgb(31, 31, 31);
+  border-radius: 10px;
+}
+
+.download-hq-btn:hover {
+  cursor: pointer;
+  transform: scale(1.03);
+  transition: transform 0.1s ease;
 }

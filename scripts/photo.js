@@ -32,13 +32,13 @@ function renderPhoto() {
           <div class="row">
             <p>Камера</p>
             <p>${photo.cameraModel || '—'}</p>
-            <p>Объектив</p>
-            <p>${photo.cameraLens || '—'}</p>
+            <p>Фокусное расстояние</p>
+            <p>${photo.cameraFocalLength || '—'} мм</p>
           </div>
 
           <div class="row">
-            <p>Фокусное расстояние</p>
-            <p>${photo.cameraFocalLength || '—'} мм</p>
+            <p>Объектив</p>
+            <p>${photo.cameraLens || '—'}</p>
             <p>Выдержка</p>
             <p>${photo.cameraShutter || '—'} с.</p>
           </div>
@@ -50,6 +50,8 @@ function renderPhoto() {
             <p>${photo.cameraIso || '—'}</p>
           </div>
         </section>
+
+        <button class="download-hq-btn">Скачать HQ</button>
       </div>
     </section>
   `;
@@ -74,3 +76,25 @@ img.onload = () => {
     viewPhoto.classList.add('is-landscape');
   }
 };
+
+// Обработчик скачивания HQ
+const btn = document.querySelector('.download-hq-btn');
+
+btn.addEventListener('click', async () => {
+  if (!photo.hq) {
+    alert('HQ-версия недоступна');
+    return;
+  }
+  try {
+    const response = await fetch(photo.hq, { method: 'HEAD' });
+    if (!response.ok) throw new Error (`Ошибка ${response.status}`);
+    const link = document.createElement('a');
+    link.href = photo.hq;
+    link.download = `${photo.id}-hq.jpg`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } catch (error) {
+    alert('Не удалось скачать HQ: ' + error.message);
+  }
+});
