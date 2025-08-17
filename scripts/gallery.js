@@ -1,4 +1,5 @@
 import photos from '../data/photos.json' with { type: 'json' };
+import { clearFavorites, getFavorites, isFavorite, toggleFavorite } from './favorites.js';
 import { initSearchAndSort } from './utils/initSearchAndSort.js';
 import { mapPhotos } from './utils/mapPhotos.js';
 
@@ -30,3 +31,6 @@ renderGallery(photosData);
 
 // ========== ПОИСК И СОРТИРОВКА ==========
 initSearchAndSort(photosData, renderGallery);
+
+// Проверка работы избранного
+window.favorites = { getFavorites, toggleFavorite, isFavorite, clearFavorites };
