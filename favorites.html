@@ -3,29 +3,28 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Photo</title>
+    <title>Избранное</title>
     <link rel="stylesheet" href="styles/gallery.css">
-    <link rel="stylesheet" href="styles/photo.css">
   </head>
   <body>
     <header class="header container">
       <div class="header-left">
         <p class="logo-text">provatorov</p>
       </div>
-
       <div class="header-right">
-        <a class="favorites-link" href="favorites.html">❤</a>
+        <a class="favorites-link">❤</a>
       </div>
     </header>
 
     <main class="container">
-      <section class="view"></section>
+      <div class="grid"></div>
+      <div class="empty-state" style="display:none;"></div>
     </main>
 
     <footer class="footer container">
       <small>© 2025 provatorov + тг канал</small>
     </footer>
     
-    <script type="module" src="scripts/photo.js"></script>
+    <script type="module" src="scripts/favorites.js"></script>
   </body>
 </html>

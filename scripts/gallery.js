@@ -1,5 +1,5 @@
 import photos from '../data/photos.json' with { type: 'json' };
-import { clearFavorites, getFavorites, isFavorite, toggleFavorite } from './favorites.js';
+import { clearFavorites, getFavorites, isFavorite, toggleFavorite } from './favoritesStore.js';
 import { initSearchAndSort } from './utils/initSearchAndSort.js';
 import { mapPhotos } from './utils/mapPhotos.js';
 

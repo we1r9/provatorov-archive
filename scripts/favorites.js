@@ -1,49 +1,84 @@
-// Имя ключа в localStorage
-const STORAGE_KEY = 'provatorov:favorites';
+import photos from '../data/photos.json' with { type: 'json' };
+import { mapPhotos } from "./utils/mapPhotos.js";
+import { getFavorites, isFavorite, toggleFavorite } from './favoritesStore.js';
+import { STORAGE_KEY } from './favoritesStore.js';
 
-// Читает данные из localStorage
-function load() {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || []);
-  } catch {
-    return [];
-  }
+// Готовим данные
+const photosData = mapPhotos(photos);
+
+// Находим элементы для вставки на странице
+const grid = document.querySelector('.grid');
+const empty = document.querySelector('.empty-state');
+
+// Создаем сет из массива для быстрых проверок
+// Оставляем только те фото, чей id есть в сете
+function buildFavoritesList() {
+  const ids = new Set(getFavorites());
+  return photosData.filter(photo => ids.has(String(photo.id)));
 }
 
-// Текущее состояние в памяти
-let set = new Set(load());
-
-// Сохраняем массив избранных в localStorage
-function save() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify([...set]));
+// Элемент пустого состояния
+function renderEmpty() {
+  if (!empty) return;
+  empty.textContent = 'Здесь пока что пусто.';
+  empty.style.display = 'block';
+  if (grid) grid.innerHTML = '';
 }
 
-// Возвращает массив всех id в избранном
-export function getFavorites() {
-  return [...set];
+// Рендерим галерею только для избранных
+function renderGallery(list) {
+  if (!grid) return;
+  const html = list.map(card => {
+    const fav = isFavorite(card.id);
+    return `
+      <a class="card-link" href="photo.html?id=${card.id}">
+        <article class="card" data-id="${card.id}">
+          <img class="card-photo" src="${card.thumb}">
+          <div class="card-content">
+            <p class="card-photo-title">${card.location}</p>
+            <button
+              class="card-like-button ${fav ? 'is-fav' : ''}" 
+              data-fav-id="${card.id}">
+              ❤
+            </button>
+          </div>
+          <p class="card-photo-year">${card.year}</p>
+        </article>
+      </a>
+    `;
+  }).join('');
+  grid.innerHTML = html;
+
+  // Показываем элемент пустого состояния
+  if (empty) empty.style.display = 'none';
 }
 
-// Проверяет, есть ли фото в избранном
-export function isFavorite(id) {
-  return set.has(String(id));
+// Если избранные есть — отображаем галерею
+// Если нет — отображаем элемеент пустого состояния
+function render() {
+  const list = buildFavoritesList();
+  if (list.length === 0) renderEmpty();
+  else renderGallery(list);
 }
+render();
 
-// Добавление/удаление избранного и сохранение в localStorage
-export function toggleFavorite(id) {
-  const key = String(id);
-  if (set.has(key)) set.delete(key);
-  else set.add(key);
-  save();
-}
+// Удаляем карточку при удалении из избранного
+grid?.addEventListener('click', (event) => {
+  const btn = event.target.closest('[data-fav-id]');
+  if (!btn) return;
+  event.preventDefault();
+  const id = btn.dataset.favId;
+  toggleFavorite(id);
 
-// Очищает список избранного
-export function clearFavorites() {
-  set.clear();
-  save();
-}
+  // Убираем карточку из DOM
+  const cardLink = btn.closest('.card-link');
+  cardLink?.remove();
 
-// Синхронизация между вкладками
+  // Если карточек нет — показываем пустое состояние
+  if (grid.children.length === 0) render();
+});
+
+// Если избранное изменили на другой вкладке
 window.addEventListener('storage', (event) => {
-  if (event.key !== STORAGE_KEY) return;
-  set = new Set(load());
+  if (event.key === STORAGE_KEY) render();
 });
