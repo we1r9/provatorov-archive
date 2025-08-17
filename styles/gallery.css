@@ -17,9 +17,21 @@
   box-sizing: border-box;
 }
 
-body {
+html, body {
+  height: 100%;
   margin: 0;
+
   font-family: "SF Pro Rounded", "Segoe UI", Helvetica, Arial;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1 0 auto;
 }
 
 .container {
@@ -35,6 +47,7 @@ body {
   align-items: center;
   padding: 1rem 0;
   flex-wrap: wrap;
+  box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1);
 }
 
 .header-middle {
@@ -157,16 +170,6 @@ body {
   cursor: pointer;
 }
 
-/* Footer */
-.footer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 1rem 0 2rem;
-  font-size: 0.9rem;
-  color: #666666;
-}
-
 /* Empty state */
 .empty-state {
   display: flex;
@@ -180,7 +183,10 @@ body {
 .sort-bar {
   display: flex;
   flex-direction: row;
+  align-items: center;
   justify-content: space-between;
+  width: 100%;
+  margin-top: 1rem;
 }
 
 /* Sort */
@@ -219,4 +225,53 @@ body {
   margin: 1rem 0;
   font-size: 2rem;
   cursor: pointer;
+}
+
+/* ========== FOOTER ========== */
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+  color: #282828;
+  gap: 1rem;
+  padding: .8rem 0;
+}
+
+.footer-left,
+.footer-right {
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.telegram-text {
+  text-decoration: none;
+  color: inherit;
+}
+
+.telegram-logo-img {
+  width: 1.5rem;
+  height: auto;
+}
+
+.rights-text {
+  color: #666666;
+}
+
+.rights-year-text {
+  font-size: 0.81rem;
+}
+
+.site-footer {
+  margin-top: auto;
+  width: 100%;
+  box-shadow: 0 -1px 1px rgba(0,0,0,.1);
+} 
+
+.footer { 
+  width: 100%; 
 }
