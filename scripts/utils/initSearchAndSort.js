@@ -1,3 +1,5 @@
+import { setCurrentPhotos } from "../gallery.js";
+
 // Инициализирует функционал поиска по галерее и сортировки
 export function initSearchAndSort(photosData, renderGallery) {
   // ========== СОРТИРОВКА ==========
@@ -142,8 +144,7 @@ export function initSearchAndSort(photosData, renderGallery) {
       result = initSort(filtered, currentSort);
     }
 
-    currentPhotos = result;
-    renderGallery(result);
+    setCurrentPhotos(result);
     showEmptyState(result, query);
   }
 

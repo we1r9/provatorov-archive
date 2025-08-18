@@ -275,3 +275,19 @@ main {
 .footer { 
   width: 100%; 
 }
+
+/* Load more button */
+.load-more-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 0 0 2rem;
+}
+
+.load-more-btn {
+  padding: 0.6rem 1.2rem;
+  border-radius: 999px;
+  border: 1px solid #ddd;
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
