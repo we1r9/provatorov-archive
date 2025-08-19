@@ -1,22 +1,37 @@
 import photos from '../data/photos.json' with { type: 'json' };
-import { clearFavorites, getFavorites, isFavorite, toggleFavorite } from './favoritesStore.js';
-import { initSearchAndSort } from './utils/initSearchAndSort.js';
+import { isFavorite, toggleFavorite } from './favoritesStore.js';
+import { initSearchAndSort, applySearchState, getSearchState } from './utils/initSearchAndSort.js';
 import { mapPhotos } from './utils/mapPhotos.js';
 
 // ========== ПОДГОТОВКА ДАННЫХ ==========
 const photosData = mapPhotos(photos);
 export let currentPhotos = [...photosData];
 
-// Параметры ленивой загрузки
+// Ленивый рендер (paging) — разбиваем контент на страницы по PAGE_SIZE картчоек
 export const paging = {
   PAGE_SIZE: 6,
   visibleCount: Math.min(6, photosData.length),
 };
 
 // Публичный сеттер (обновляем список + сбрасываем пагинацию)
-export function setCurrentPhotos(list) {
+// list — новый массив карточек
+// options — объект с настройками
+export function setCurrentPhotos(list, options = {}) {
+  // Достаем флаг preserveVisible из объекта опций (решает, сбрасывать ли количество видимых карточек или нет)
+  const { preserveVisible = false } = options;
+
   currentPhotos = Array.isArray(list) ? list : [];
-  paging.visibleCount = Math.min(paging.PAGE_SIZE, currentPhotos.length);
+  
+  // Считаем, сколько карточек показывать
+  paging.visibleCount = preserveVisible
+
+    // Если preserveVisible = true — оставляем столько, сколько было
+    ? Math.min(paging.visibleCount, currentPhotos.length)
+
+    // Если false → показываем PAGE_SIZE
+    : Math.min(paging.PAGE_SIZE, currentPhotos.length);
+
+    // Перерисовываем галерею
   updateView();
 }
 
@@ -38,7 +53,7 @@ function renderGallery(photosData) {
           <img class="card-photo" src="${card.thumb}">
 
           <div class="card-content">
-            <p class="card-photo-title">${card.location}</p>
+            <p class="card-photo-title">${card.location || ''}</p>
 
             <button
               class="card-like-button ${isFav ? 'is-fav' : ''}" 
@@ -47,7 +62,7 @@ function renderGallery(photosData) {
             </button>
           </div>
           
-          <p class="card-photo-year">${card.year}</p>
+          <p class="card-photo-year">${card.year || ''}</p>
         </article>
       </a>
     `;
@@ -80,10 +95,23 @@ if (loadMoreBtn) {
 updateView();
 
 // ========== ПОИСК И СОРТИРОВКА ==========
-initSearchAndSort(photosData, renderGallery);
+// Вызываем основную логику с опицей авто-ренедра
+initSearchAndSort(photosData, { autoRender: false });
 
-// После инициализации — восстанавливаем видимую часть и скролл
-restoreState();
+// Возвращаем галерею в то состояние, в котором пользователь ее оставил
+// Если restoreState ничего не восстановило
+if (!restoreState()) {
+  // Флаг: включать ли перемешивание при первой загрузке
+  const AUTO_SHUFFLE_ON_LOAD = true;
+
+  // Если флаг перемешивания = true
+  if (AUTO_SHUFFLE_ON_LOAD) {
+    //  Вызываем applySearchState в флагом перемешивания = true
+    applySearchState({ isShuffle: true });
+  } else {
+    applySearchState({});
+  }
+}
 
 // Обработчик добавления в избранное
 if (grid) {
@@ -98,7 +126,7 @@ if (grid) {
 }
 
 // ========== СОСТОЯНИЕ СТРАНИЦЫ ==========
-// Изменяем режим пролистыания страницы на ручной
+// Меняем режим пролистыания страницы на ручной
 if ('scrollRestoration' in history) {
   history.scrollRestoration = 'manual';
 }
@@ -115,12 +143,19 @@ function readSavedState() {
 
 // Сохраняем состояние и положение страницы
 function saveState() {
+  const { query, sort, isShuffle, shuffleOrder } = getSearchState();
+
   // Собираем состояние и положение страницы
   const state = {
     pageKey: location.pathname,
     visibleCount: paging.visibleCount,
-    scrollY: window.scrollY
+    scrollY: window.scrollY,
+    query,
+    sort,
+    isShuffle,
+    shuffleOrder,
   };
+
   // Сохраняем в sessionStorage
   sessionStorage.setItem('galleryState', JSON.stringify(state));
   // Записываем состояние в историю браузера
@@ -129,17 +164,26 @@ function saveState() {
 
 // Восстанавливаем состояние страницы
 function restoreState() {
-  // Достаем сохраненное состояние
+  // Достаем сохраненное состояние из localStorage
   const state = readSavedState();
-  if (!state || state.pageKey !== location.pathname) return;
+  if (!state || state.pageKey !== location.pathname) return false;
+
+  // Если в state нет фильтров query/sort/shuffle
+  const emptyFilters = !state.query && !state.sort && !state.isShuffle;
+  if (emptyFilters) return false;
 
   // Если в состоянии есть число visibleCount, обновляем paging.visibleCount
   if (typeof state.visibleCount === 'number') {
     paging.visibleCount = Math.min(state.visibleCount, currentPhotos.length);
   }
 
-  // Перерисовываем сетку с учетом нового visibleCount
-  updateView();
+  // Применяем сохраненные фильтры
+  applySearchState({
+    query: state.query || '',
+    sort: state.sort || '',
+    isShuffle: !!state.isShuffle,
+    shuffleOrder: Array.isArray(state.shuffleOrder) ? state.shuffleOrder : []
+  });
 
   // Переносим пользователя туда, где он был
   requestAnimationFrame(() => {
@@ -147,6 +191,9 @@ function restoreState() {
     const y = Math.min(state.scrollY || 0, maxScroll);
     window.scrollTo(0, y);
   });
+
+  // Если все удалось восстановить — возвращаем true, чтобы использовать это значение на главной
+  return true;
 }
 
 // Слушатель на весь документ
@@ -171,9 +218,9 @@ document.addEventListener('click', (event) => {
 // Страхуем состояние, когда пользователь переходит любым другим способом
 window.addEventListener('beforeunload', saveState);
 
-// Гарантируем восстановление страницы, если оан пришла из кеша
+// Гарантируем восстановление страницы, если она пришла из кеша
 window.addEventListener('pageshow', (event) => {
   if (event.persisted) {
     restoreState();
   }
-})
+});
