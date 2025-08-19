@@ -72,7 +72,152 @@ function renderPhoto() {
   // Возвращаем контейнер для использования извне
   return view;
 }
-renderPhoto(photosData);
+
+// ========== ХЭЛПЕРЫ ДЛЯ ПОИСКА ПОХОЖИХ ==========
+// Нормализация поиска
+function norm(v) {
+  return (v || '').toString().trim().toLowerCase();
+}
+
+// Ищем похожие фото
+function getSimilarPhotos(current, list) {
+  // Вытаскиваем регион/страну/локацию и прогоняем через norm, чтобы позднее сравнивать в одном формате
+  const region = norm(current.region);
+  const country = norm(current.country);
+  const location = norm(current.location);
+
+  // Создаем список всех фото, кроме текущего
+  const pool = list.filter(photo => photo.id !== current.id);
+
+  // Поиск по региону
+  // Если у текущего фото указан region, ищем все фото с таким же region
+  let result = region ? pool.filter(photo => norm(photo.region) === region) : [];
+  // Если что-то нашли, возвращаем первые 20
+  if (result.length) return result.slice(0, 20);
+
+  // Поиск по стране
+  result = country ? pool.filter(photo => norm(photo.country) === country) : [];
+  if (result.length) return result.slice(0, 20);
+
+  // Поиск по цельной локации
+  result = location ? pool.filter(photo => norm(photo.location) === location) : [];
+  return result.slice(0, 20);
+}
+
+// Рендер похожих фото
+function renderSimilar(similar, mount) {
+  if (!similar || !similar.length) return;
+
+  const html = `
+    <section class="similar">
+      <p class="similar-title">Похожие фото</p>
+      <div class="similar-strip" role="list">
+        ${similar.map(photo => `
+          <a class="similar-card" role="listitem" href="photo.html?id=${photo.id}" title="${photo.location || ''}">
+            <img class="similar-img" src="${photo.thumb || photo.web}">
+            <div class="similar-caption">
+              <span class="cap-loc">${photo.location || ''}</span>
+              <span class="cap-date">${photo.year || ''}</span>
+            </div>
+          </a>
+          `).join('')}
+      </div>
+    </section>
+  `;
+
+  mount.insertAdjacentHTML('beforeend', html);
+}
+
+// ========== РЕНДЕР + ОБРАБОТЧИКИ ==========
+const viewRoot = renderPhoto();
+if (viewRoot) {
+  // Обработчик добавления в избранное
+  viewRoot.addEventListener('click', (event) => {
+    const btn = event.target.closest('.card-like-button');
+    if (!btn) return;
+    event.preventDefault();
+    const id = btn.dataset.favId;
+    toggleFavorite(id);
+    btn.classList.toggle('is-fav', isFavorite(id));
+  });
+
+  // Обработчик скачивания HQ
+  const downloadButton = viewRoot.querySelector('.download-hq-btn');
+  if (downloadButton) {
+    downloadButton.addEventListener('click', async () => {
+      if (!photo.hq) {
+        alert('HQ-версия недоступна');
+        return;
+      }
+      
+      try {
+        const response = await fetch(photo.hq, { method: 'HEAD' });
+        if (!response.ok) throw new Error (`Ошибка ${response.status}`);
+        const link = document.createElement('a');
+        link.href = photo.hq;
+        link.download = `${photo.id}-hq.jpg`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } catch (error) {
+        alert('Не удалось скачать HQ: ' + error.message);
+      }
+    });
+  }
+
+  const similar = getSimilarPhotos(photo, photosData);
+  const container = viewRoot.querySelector('.view-container');
+  renderSimilar(similar, container || viewRoot);
+}
+
+// Сохранение горизонтального скролла карусели
+(function initSimilarScrollPersistence() {
+  const strip = document.querySelector('.similar-strip');
+  if (!strip) return;
+
+  // Уникальный ключ для sessionStorage
+  const key = `similarScroll:${photo.id}`;
+
+  // Допустимые пределы горизонтальной прокрутки
+  const clamp = (val, el) => Math.max(0, Math.min(val, el.scrollWidth - el.clientWidth));
+
+  // Восстанавливаем сохраненную горизонтальную позицию прокрутки
+  const saved = parseInt(sessionStorage.getItem(key) || '0', 10);
+  if (!Number.isNaN(saved)) {
+    strip.scrollLeft = clamp(saved, strip);
+  }
+
+  // Сохраняем горизонтальную позицию прокрутки
+  let timeout;
+  // Вызывается каждый раз при скролле
+  const save = () => {
+    //Очищаем предыдыщий таймер
+    clearTimeout(timeout);
+
+    // Оптимизация памяти
+    timeout = setTimeout(() => {
+      // Сохраняем текущую горизонатльную позицию
+      sessionStorage.setItem(key, String(strip.scrollLeft));
+    }, 80);
+  }
+  strip.addEventListener('scroll', save, { passive: true });
+
+  // Сохраняем перед уходом по клику
+  strip.addEventListener('click', (event) => {
+    if (event.target.closest('a.similar-card')) save();
+  });
+
+  // Восстанавливаем, если страница вернулась из кеша
+  window.addEventListener('pageshow', (event) => {
+    if (event.persisted) {
+      const el = document.querySelector('.similar-strip');
+      if (el) {
+        const s = parseInt(sessionStorage.getItem(key) || '0', 10);
+        if (!Number.isNaN(s)) el.scrollLeft = clamp(s, el);
+      }
+    }
+  });
+})();
 
 // Авто-определение ориентации кадра
 const img = new Image();
@@ -90,41 +235,6 @@ img.onload = () => {
     viewPhoto.classList.add('is-landscape');
   }
 };
-
-// Обработчик скачивания HQ
-const btn = document.querySelector('.download-hq-btn');
-
-btn.addEventListener('click', async () => {
-  if (!photo.hq) {
-    alert('HQ-версия недоступна');
-    return;
-  }
-  try {
-    const response = await fetch(photo.hq, { method: 'HEAD' });
-    if (!response.ok) throw new Error (`Ошибка ${response.status}`);
-    const link = document.createElement('a');
-    link.href = photo.hq;
-    link.download = `${photo.id}-hq.jpg`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  } catch (error) {
-    alert('Не удалось скачать HQ: ' + error.message);
-  }
-});
-
-// Обработчик добавления в избранное
-const view = renderPhoto();
-if (view) {
-  view.addEventListener('click', (event) => {
-    const btn = event.target.closest('.card-like-button');
-    if (!btn) return;
-    event.preventDefault();
-    const id = btn.dataset.favId;
-    toggleFavorite(id);
-    btn.classList.toggle('is-fav', isFavorite(id));
-  });
-}
 
 // Переход на главную с параметром q
 const searchInput = document.querySelector('.input-section');
