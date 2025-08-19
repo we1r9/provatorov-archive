@@ -254,12 +254,17 @@ export function initSearchAndSort(photosData, { autoRender = true } = {}) {
 // sort — выбранная сортировка
 // isShuffle — флаг режима перемешивания (false по умолч.)
 // savedOrder — сохраненный порядок карточек при shuffle
-export function applySearchState({ 
-  query = '', 
-  sort = '', 
-  isShuffle = false,
-  shuffleOrder: savedOrder = [] 
-} = {}) {
+export function applySearchState(
+  { 
+    query = '', 
+    sort = '', 
+    isShuffle = false,
+    shuffleOrder: savedOrder = [] 
+  } = {},
+  {
+    preserveVisible = true
+  } = {}
+) {
 
   if (!searchInput) searchInput = document.querySelector('.input-section');
   if (!sortSelect) sortSelect = document.querySelector('#sortSelect');
@@ -277,7 +282,7 @@ export function applySearchState({
   // Ставим атрибут data-shuffle на <html>
   document.documentElement.dataset.shuffle = isShuffleMode ? '1' : '0';
 
-  runSearch(true);
+  runSearch(preserveVisible);
 }
 
 // Собирает текущее состояние поиска/сортировки/перемешивания и возвращает в виде объекта

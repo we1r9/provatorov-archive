@@ -1,5 +1,6 @@
 import photos from '../data/photos.json' with { type: 'json' };
 import { mapPhotos } from './utils/mapPhotos.js';
+import { isFavorite, toggleFavorite } from './favoritesStore.js';
 
 // Готовим данные для вставки по ID
 const photosData = mapPhotos(photos);
@@ -9,9 +10,11 @@ const photo = photosData.find(photo => photo.id === id);
 
 // Инициализирует отображение фото
 function renderPhoto() {
+  const isFav = isFavorite(photo.id);
   const view = document.querySelector('.view');
   if (!view) return;
 
+  // Создаем HTML для секции с отображением
   const viewHTML = `
     <section class="view-container">
       <div class="photo-wrap">
@@ -51,12 +54,23 @@ function renderPhoto() {
           </div>
         </section>
 
-        <button class="download-hq-btn">Скачать HQ</button>
+        <div class="photo-actions">
+          <button
+          class="card-like-button ${isFav ? 'is-fav' : ''}" 
+          data-fav-id="${photo.id}">
+          ❤
+          </button>
+          <button class="download-hq-btn">Скачать HQ</button>
+        </div>
       </div>
     </section>
   `;
 
+  // Вставляем HTML в секцию
   view.innerHTML = viewHTML;
+
+  // Возвращаем контейнер для использования извне
+  return view;
 }
 renderPhoto(photosData);
 
@@ -98,3 +112,47 @@ btn.addEventListener('click', async () => {
     alert('Не удалось скачать HQ: ' + error.message);
   }
 });
+
+// Обработчик добавления в избранное
+const view = renderPhoto();
+if (view) {
+  view.addEventListener('click', (event) => {
+    const btn = event.target.closest('.card-like-button');
+    if (!btn) return;
+    event.preventDefault();
+    const id = btn.dataset.favId;
+    toggleFavorite(id);
+    btn.classList.toggle('is-fav', isFavorite(id));
+  });
+}
+
+// Переход на главную с параметром q
+const searchInput = document.querySelector('.input-section');
+const searchButton = document.querySelector('.search-button');
+
+if (searchButton && searchInput) {
+  // Будет вызываться при кнлике на кнопку или "Enter"
+  const goToGalleryWithQuery = () => {
+
+    // Берем текст из инпута
+    const q = (searchInput.value || '').trim();
+
+    // Создаем объект URL
+    const url = new URL('index.html', location.origin);
+
+    // Добавляем текст инпута в параметр
+    if (q) url.searchParams.set('q', q);
+
+    // Перенаправляем браузер на собранный URL
+    location.href = url.toString();
+  };
+
+  // Обработчики поиска
+  searchButton.addEventListener('click', goToGalleryWithQuery);
+  searchInput.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      goToGalleryWithQuery();
+    }
+  });
+}

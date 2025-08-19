@@ -97,10 +97,22 @@ updateView();
 // ========== ПОИСК И СОРТИРОВКА ==========
 // Вызываем основную логику с опицей авто-ренедра
 initSearchAndSort(photosData, { autoRender: false });
+// Вытаскиваем q из URL
+const urlQ = (new URLSearchParams(location.search).get('q') || '').trim();
 
+// Если поступил запрос с другой страницы, он — приоритетный
+if (urlQ) {
+  applySearchState({
+    query: urlQ, isShuffle:false
+  },
+  {
+    preserveVisible: false
+  });
+
+// Иначе — обычныя логика
 // Возвращаем галерею в то состояние, в котором пользователь ее оставил
 // Если restoreState ничего не восстановило
-if (!restoreState()) {
+} else if (!restoreState()) {
   // Флаг: включать ли перемешивание при первой загрузке
   const AUTO_SHUFFLE_ON_LOAD = true;
 
