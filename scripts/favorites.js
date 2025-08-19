@@ -20,9 +20,9 @@ function buildFavoritesList() {
 // Элемент пустого состояния
 function renderEmpty() {
   if (!empty) return;
-  empty.textContent = 'Здесь пока что пусто.';
-  empty.style.display = 'block';
-  if (grid) grid.innerHTML = '';
+  const hasCards = !!grid.children.length;
+  empty.hidden = hasCards;
+  grid.style.display = hasCards ? '' : 'none';
 }
 
 // Рендерим галерею только для избранных
@@ -81,4 +81,11 @@ grid?.addEventListener('click', (event) => {
 // Если избранное изменили на другой вкладке
 window.addEventListener('storage', (event) => {
   if (event.key === STORAGE_KEY) render();
+});
+
+// Обработчик возврата назад
+const back = document.querySelector('.go-back-arrow');
+back.addEventListener('click', () => {
+  if (history.length > 1) history.back();
+  else location.href = 'index.html';
 });

@@ -5,24 +5,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Избранное</title>
     <link rel="stylesheet" href="styles/gallery.css">
+    <link rel="stylesheet" href="styles/favorites.css">
   </head>
   <body>
-    <header class="header container">
-      <div class="header-left">
-        <p class="logo-text">provatorov</p>
-      </div>
-      <div class="header-right">
-        <a class="favorites-link">❤</a>
+    <header class="site-header">
+      <div class="container header">
+        <div class="header-left">
+          <a class="go-back-arrow">←</a>
+        </div>
+
+        <div class="header-middle">
+          <a class="logo-text" href="index.html">provatorov</a>
+        </div>
+
+        <div class="header-right">
+          <a class="favorites-link is-current">❤</a>
+        </div>
       </div>
     </header>
 
     <main class="container">
       <div class="grid"></div>
-      <div class="empty-state" style="display:none;"></div>
+      <section class="empty-state" hidden>
+        <p class="empty-state-text">Здесь пока что пусто.</p>
+        <a class="show-gallery-btn" href="index.html">Смотреть галерею</a>
+      </section>
     </main>
 
-    <footer class="footer container">
-      <small>© 2025 provatorov + тг канал</small>
+    <footer class="site-footer">
+      <div class="container footer">
+        <a class="footer-left" href="https://t.me/provalexphoto" target="_parent">
+        <img class="telegram-logo-img" src="images/telegram-logo.png">
+        <p class="telegram-text">Telegram</p>
+        </a>
+
+        <div class="rights">
+          <span class="rights-year-text">© 2025</span> <span class="rights-text">provatorov</span>
+        </div>
+
+        <a class="footer-right" href="about.html">
+          <p class="about-text">Об авторе</p>
+        </a>
+      </div>
     </footer>
     
     <script type="module" src="scripts/favorites.js"></script>

@@ -18,6 +18,19 @@
   gap: 1rem;
 }
 
+.header-left {
+  display: flex;
+  gap: 0.7rem;
+}
+
+.go-back-arrow {
+  text-decoration: none;
+  background-color: rgb(240, 240, 240);
+  padding: 0.3rem 0.45rem;
+  border-radius: 50px;
+  color: black;
+}
+
 /* ========== PHOTO ========== */
 .photo-wrap{
   grid-area: photo;

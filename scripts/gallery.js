@@ -236,3 +236,25 @@ window.addEventListener('pageshow', (event) => {
     restoreState();
   }
 });
+
+// Очистка поиска
+const input = document.querySelector('.input-section');
+const clearBtn = document.querySelector('.clear-btn');
+
+function sync() {
+  const wrap = input.closest('.input-wrap');
+  if (wrap) wrap.classList.toggle('has-value', !!input.value);
+}
+
+clearBtn.addEventListener('click', () => {
+  input.value = '',
+  input.dispatchEvent(new Event('input', { bubbles: true }));
+  input.focus();
+  sync();
+  const url = new URL(location.href);
+  url.searchParams.delete('q');
+  history.replaceState(history.state, '', url);
+});
+
+input.addEventListener('input', sync);
+sync();

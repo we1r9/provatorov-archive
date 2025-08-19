@@ -8,17 +8,21 @@
     <link rel="stylesheet" href="styles/photo.css">
   </head>
   <body>
-        <header class="site-header">
+    <header class="site-header">
       <div class="container header">
         <div class="header-left">
+          <a class="go-back-arrow">←</a>
           <a class="logo-text" href="index.html">provatorov</a>
         </div>
 
         <div class="header-middle">
-          <form class="search-bar" action="index.html" method="get">
-            <input class="input-section" type="search" name="q" placeholder="Искать...">
-            <button class="search-button" type="submit">Искать</button>
-          </form>
+            <form class="search-bar" action="index.html" method="get">
+              <div class="input-wrap">
+                <input class="input-section" type="search" name="q" placeholder="Искать...">
+                <button class="clear-btn" type="button" aria-label="Очистить">✕</button>
+              </div>
+            </form>
+          <button class="search-button" type="submit">Искать</button>
         </div>
         
         <div class="header-right">
