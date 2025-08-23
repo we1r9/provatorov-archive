@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="styles/gallery.css">
   </head>
   <body>
-    <header class="site-header">
+    <header class="site-header" id="siteHeader">
       <div class="container header">
         <div class="header-left">
           <a class="logo-text" href="index.html" data-role="logo">provatorov</a>
@@ -19,7 +19,6 @@
               <input class="input-section" type="search" placeholder="Искать..." aria-label="Поиск">
               <button class="clear-btn" type="button" aria-label="Очистить">✕</button>
             </div>
-            <button class="search-button" type="submit">Искать</button>
           </div>
         </div>
         
@@ -29,7 +28,7 @@
       </div>
     </header>
 
-    <section class="sort-bar container">
+    <section class="sort-bar container" id="sortBar">
       <select id="sortSelect">
         <option value="" disabled selected hidden>Сортировать</option>
         <option value="year_desc">Сначала новые</option>
@@ -38,7 +37,7 @@
         <option value="location_desc">Название Я→A</option>
       </select>
 
-      <div>
+      <div class="sort-actions">
         <button class="shuffle-button">🔄</button>
       </div>
     </section>

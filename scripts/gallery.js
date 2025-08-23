@@ -343,3 +343,68 @@ scrollBtn.addEventListener('click', () => {
     location.replace(new URL('index.html', location.origin).toString());
   });
 }());
+
+// Выезд сортбара (тест)
+const header  = document.getElementById('siteHeader');
+const sortBar = document.getElementById('sortBar');
+
+const docEl = document.documentElement;
+const setCss = (k,v)=>docEl.style.setProperty(k, v+"px");
+const h = ()=> header?.offsetHeight || 72;
+const s = ()=> sortBar?.offsetHeight || 48;
+
+function measureAll(){ setCss('--header-h', h()); setCss('--sort-h', s()); }
+addEventListener('load',  measureAll);
+addEventListener('resize', measureAll);
+if (header)  new ResizeObserver(measureAll).observe(header);
+if (sortBar) new ResizeObserver(measureAll).observe(sortBar);
+
+let lastY = scrollY;
+let rafId = null;
+let visible = null;
+
+const SHOW_DELAY = 90;
+const HIDE_DELAY = 140;
+const COOLDOWN   = 220;
+const DELTA_PX   = 8;
+let tShow = 0, tHide = 0, until = 0;
+
+function setSortVisible(v){
+  if (visible === v) return;
+  sortBar.classList.toggle('is-visible', v);
+  visible = v;
+}
+
+function setVisibleDebounced(v){
+  const now = performance.now();
+  if (now < until) return;
+
+  clearTimeout(v ? tHide : tShow);
+  const id = setTimeout(() => {
+    setSortVisible(v);
+    until = performance.now() + COOLDOWN;
+  }, v ? SHOW_DELAY : HIDE_DELAY);
+
+  v ? (tShow = id) : (tHide = id);
+}
+
+function onScroll(){
+  const y  = scrollY;
+  const dy = y - lastY;
+
+  if (y < 40) {
+    setVisibleDebounced(true);
+  } else if (Math.abs(dy) > DELTA_PX) {
+    setVisibleDebounced(dy < 0);
+  }
+
+  lastY = y;
+  rafId = null;
+}
+
+addEventListener('scroll', () => {
+  if (!rafId) rafId = requestAnimationFrame(onScroll);
+}, { passive: true });
+
+setSortVisible(scrollY < 40);
+measureAll();

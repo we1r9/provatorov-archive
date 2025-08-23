@@ -128,18 +128,6 @@ function renderSimilar(similar, mount) {
   mount.insertAdjacentHTML('beforeend', html);
 }
 
-(function prefillSearchOnPhoto() {
-  const input = document.querySelector('.input-section');
-  if (!input) return;
-  try {
-    const saved = JSON.parse(sessionStorage.getItem('galleryState') || 'null');
-    if (saved && typeof saved.query === 'string') {
-      input.value = saved.query;
-      input.dispatchEvent(new Event('input', { bubbles: true }));
-    }
-  } catch {}
-})();
-
 // ========== РЕНДЕР + ОБРАБОТЧИКИ ==========
 const viewRoot = renderPhoto();
 if (viewRoot) {
@@ -247,59 +235,6 @@ img.onload = () => {
     viewPhoto.classList.add('is-landscape');
   }
 };
-
-// Переход на главную с параметром q
-const searchInput = document.querySelector('.input-section');
-const searchButton = document.querySelector('.search-button');
-
-if (searchButton && searchInput) {
-  // Будет вызываться при кнлике на кнопку или "Enter"
-  const goToGalleryWithQuery = () => {
-
-    // Берем текст из инпута
-    const q = (searchInput.value || '').trim();
-
-    // Создаем объект URL
-    const url = new URL('index.html', location.origin);
-
-    // Добавляем текст инпута в параметр
-    if (q) url.searchParams.set('q', q);
-
-    // Перенаправляем браузер на собранный URL
-    location.replace(url.toString());
-  };
-
-  // Обработчики поиска
-  searchButton.addEventListener('click', goToGalleryWithQuery);
-  searchInput.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      goToGalleryWithQuery();
-    }
-  });
-}
-
-// Очистка поиска
-const input = document.querySelector('.input-section');
-const clearBtn = document.querySelector('.clear-btn');
-
-function sync() {
-  const wrap = input.closest('.input-wrap');
-  if (wrap) wrap.classList.toggle('has-value', !!input.value);
-}
-
-clearBtn.addEventListener('click', () => {
-  input.value = '',
-  input.dispatchEvent(new Event('input', { bubbles: true }));
-  input.focus();
-  sync();
-  const url = new URL(location.href);
-  url.searchParams.delete('q');
-  history.replaceState(history.state, '', url);
-});
-
-input.addEventListener('input', sync);
-sync();
 
 // Обработчик возврата назад
 const back = document.querySelector('.go-back-arrow');

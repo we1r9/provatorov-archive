@@ -3,7 +3,6 @@ import { paging, setCurrentPhotos } from "../gallery.js";
 // ========== СОСТОЯНИЕ МОДУЛЯ ==========
 let indexedPhotos = [];
 let searchInput = null;
-let searchButton = null;
 let isShuffleMode = false;
 let lastQuery = '';
 let shuffleOrder = [];
@@ -231,7 +230,6 @@ export function initSearchAndSort(photosData, { autoRender = true } = {}) {
 
   // DOM
   searchInput = document.querySelector('.input-section');
-  searchButton = document.querySelector('.search-button');
   sortSelect = document.querySelector('#sortSelect');
   const shuffleBtn = document.querySelector('.shuffle-button');
   metaWrap = document.querySelector('.search-meta');
@@ -282,11 +280,6 @@ export function initSearchAndSort(photosData, { autoRender = true } = {}) {
       const q = (searchInput?.value || '').trim();
       updateUrlState({ q, sort: '', shuffle: true});
     });
-  }
-
-  // Запускаем поиск по кнопке поиска или "Enter"
-  if (searchButton) {
-    searchButton.addEventListener('click', () => submitSearch());
   }
 
   // Скрыаем счетчик немедленно
