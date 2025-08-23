@@ -128,6 +128,18 @@ function renderSimilar(similar, mount) {
   mount.insertAdjacentHTML('beforeend', html);
 }
 
+(function prefillSearchOnPhoto() {
+  const input = document.querySelector('.input-section');
+  if (!input) return;
+  try {
+    const saved = JSON.parse(sessionStorage.getItem('galleryState') || 'null');
+    if (saved && typeof saved.query === 'string') {
+      input.value = saved.query;
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+  } catch {}
+})();
+
 // ========== РЕНДЕР + ОБРАБОТЧИКИ ==========
 const viewRoot = renderPhoto();
 if (viewRoot) {
@@ -254,7 +266,7 @@ if (searchButton && searchInput) {
     if (q) url.searchParams.set('q', q);
 
     // Перенаправляем браузер на собранный URL
-    location.href = url.toString();
+    location.replace(url.toString());
   };
 
   // Обработчики поиска

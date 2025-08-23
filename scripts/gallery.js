@@ -89,6 +89,12 @@ if (loadMoreBtn) {
       currentPhotos.length
     );
     updateView();
+
+    try {
+      const { query } = getSearchState();
+      const key = query ? 'visibleSearch' : 'visibleAll';
+      sessionStorage.setItem(key, String(paging.visibleCount));
+    } catch {}
   });
 }
 
@@ -97,22 +103,35 @@ updateView();
 // ========== ПОИСК И СОРТИРОВКА ==========
 // Вызываем основную логику с опицей авто-ренедра
 initSearchAndSort(photosData, { autoRender: false });
-// Вытаскиваем q из URL
-const urlQ = (new URLSearchParams(location.search).get('q') || '').trim();
+
+// Читаем параметры из URL
+const params = new URLSearchParams(location.search);
+const urlQ = (params.get('q') || '').trim();
+const urlSort = (params.get('sort') || '').trim();
+const urlShuffle = params.has('shuffle') || '';
+
+// Флаг для полного сброса всех состояний
+const forceReset = sessionStorage.getItem('forceReset') === '1';
+if (forceReset) {
+  sessionStorage.removeItem('forceReset');
+}
 
 // Если поступил запрос с другой страницы, он — приоритетный
-if (urlQ) {
-  applySearchState({
-    query: urlQ, isShuffle:false
-  },
-  {
-    preserveVisible: false
-  });
-
-// Иначе — обычныя логика
-// Возвращаем галерею в то состояние, в котором пользователь ее оставил
-// Если restoreState ничего не восстановило
-} else if (!restoreState()) {
+if (!forceReset && restoreState()) {
+  // Все восставновили — выходим
+} else if (urlQ || urlSort || urlShuffle) {
+  // Иначе — применяем фильтры из URL
+    applySearchState(
+    {
+      query: urlQ,
+      sort: urlShuffle ? '' : urlSort,
+      isShuffle: urlShuffle,
+      shuffleOrder: []
+    },
+    { preserveVisible: false }
+  );
+// Иначе — пытаемся восстановить состояние из sessionStorage/history
+} else {
   // Флаг: включать ли перемешивание при первой загрузке
   const AUTO_SHUFFLE_ON_LOAD = true;
 
@@ -174,6 +193,23 @@ function saveState() {
   history.replaceState(state, '', location.href);
 }
 
+function waitGridImagesLoaded(container, timeout = 1500) {
+  return new Promise(resolve => {
+    const imgs = Array.from(container?.querySelectorAll('img') || []);
+    if (imgs.length === 0) return resolve();
+
+    let left = imgs.length;
+    const done = () => { if (--left <= 0) resolve(); };
+
+    const t = setTimeout(resolve, timeout);
+    imgs.forEach(img => {
+      if (img.complete) return done();
+      img.addEventListener('load', done, { once: true });
+      img.addEventListener('error', done, { once: true });
+    });
+  });
+}
+
 // Восстанавливаем состояние страницы
 function restoreState() {
   // Достаем сохраненное состояние из localStorage
@@ -197,11 +233,18 @@ function restoreState() {
     shuffleOrder: Array.isArray(state.shuffleOrder) ? state.shuffleOrder : []
   });
 
+  const ySaved = state.scrollY || 0;
+
   // Переносим пользователя туда, где он был
   requestAnimationFrame(() => {
-    const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
-    const y = Math.min(state.scrollY || 0, maxScroll);
-    window.scrollTo(0, y);
+    const max1 = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+    window.scrollTo(0, Math.min(ySaved, max1));
+  });
+
+  const gridEl = document.querySelector('.grid');
+  waitGridImagesLoaded(gridEl).then(() => {
+    const max2 = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+    window.scrollTo(0, Math.min(ySaved, max2));
   });
 
   // Если все удалось восстановить — возвращаем true, чтобы использовать это значение на главной
@@ -251,9 +294,11 @@ clearBtn.addEventListener('click', () => {
   input.dispatchEvent(new Event('input', { bubbles: true }));
   input.focus();
   sync();
+
   const url = new URL(location.href);
   url.searchParams.delete('q');
   history.replaceState(history.state, '', url);
+
 });
 
 input.addEventListener('input', sync);
@@ -277,3 +322,24 @@ scrollBtn.addEventListener('click', () => {
     behavior: 'smooth'
   });
 });
+
+// Полный сброс всех параметров по логотипу
+(function initLogoReset() {
+  const logo = document.querySelector('[data-role="logo"]');
+  if (!logo) return;
+
+  logo.addEventListener('click', (e) => {
+    // Позволяем открыть в новой вкладке
+    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+
+    e.preventDefault();
+    try {
+      sessionStorage.removeItem('galleryState');
+      sessionStorage.removeItem('visibleAll');
+      sessionStorage.removeItem('visibleSearch');
+      sessionStorage.setItem('forceReset', '1');
+    } catch {}
+
+    location.replace(new URL('index.html', location.origin).toString());
+  });
+}());

@@ -1,10 +1,11 @@
-import { setCurrentPhotos } from "../gallery.js";
+import { paging, setCurrentPhotos } from "../gallery.js";
 
 // ========== СОСТОЯНИЕ МОДУЛЯ ==========
 let indexedPhotos = [];
 let searchInput = null;
 let searchButton = null;
 let isShuffleMode = false;
+let lastQuery = '';
 let shuffleOrder = [];
 let sortSelect  = null;
 let currentSort = '';
@@ -13,7 +14,33 @@ let metaCount = null;
 
 const grid = document.querySelector('.grid');
 
-// ========== УТИЛИТЫ ==========
+// ========== УТИЛИТЫ ПРОКРУТКИ И URL ==========
+function scrollToTopSmooth() {
+  try {
+    window.scrollTo({ top: 0, behavior: 'smooth'});
+  } catch {
+    window.scrollTo(0, 0);
+  }
+}
+
+function revealGrid() {
+  if (!grid) return;
+  requestAnimationFrame(() => grid.classList.remove('is-fading'));
+}
+
+function updateUrlState({ q, sort, shuffle }, { push = false} = {}) {
+  const url = new URL(location.href);
+  q ? url.searchParams.set('q', q) : url.searchParams.delete('q');
+  sort ? url.searchParams.set('sort', sort) : url.searchParams.delete('sort');
+  shuffle ? url.searchParams.set('shuffle', shuffle) : url.searchParams.delete('shuffle');
+
+  const state = history.state || {};
+  if (push) history.pushState(state, '', url);
+  else history.replaceState(state, '', url);
+
+}
+
+// ========== ОБЩИЕ УТИЛИТЫ ==========
 // Компаратор
 const collator = new Intl.Collator(['ru', 'en'], {
   sensitivity: 'base',
@@ -230,8 +257,12 @@ export function initSearchAndSort(photosData, { autoRender = true } = {}) {
       isShuffleMode = false; // Выключаем shuffleMode
       document.documentElement.dataset.shuffle = '0';
 
-      // Перезапускаем рендер
+      // Схлопываем и скроллим вверх
       runSearch(false);
+      scrollToTopSmooth();
+
+      const q = (searchInput?.value || '').trim();
+      updateUrlState({ q, sort: currentSort, shuffle: false});
     });
   }
 
@@ -243,7 +274,13 @@ export function initSearchAndSort(photosData, { autoRender = true } = {}) {
       shuffleOrder = []; // Очищаем старый порядок
       if (sortSelect) sortSelect.value = '';
       document.documentElement.dataset.shuffle = '1';
-      runSearch(true);
+
+      // Схлопываем и скроллим вверх  
+      runSearch(false);
+      scrollToTopSmooth();
+
+      const q = (searchInput?.value || '').trim();
+      updateUrlState({ q, sort: '', shuffle: true});
     });
   }
 
@@ -290,11 +327,28 @@ export function initSearchAndSort(photosData, { autoRender = true } = {}) {
 
   // Финальная отправка поиска
   function submitSearch() {
+    const q = searchInput ? searchInput.value.trim() : '';
+    const isClearing = !!lastQuery&& !q;
+
+    if (isClearing) {
+      let savedAll = parseInt(sessionStorage.getItem('visibleAll') || '0', 10);
+      if (!Number.isFinite(savedAll) || savedAll <= 0) savedAll = paging.PAGE_SIZE;
+
+      paging.visibleCount = Math.min(savedAll, indexedPhotos.length);
+
+      const res = runSearch(true);
+      showCount(false);
+      updateUrlState({ q: '', sort: currentSort, shuffle: isShuffleMode }, { push: false });
+
+      revealGrid();
+      lastQuery = '';
+      return;
+    }
+
     const res = runSearch(false);
-    const query = searchInput ? searchInput.value.trim() : '';
 
     // Если строка поиска не пустая и есть результаты
-    if (query && res.length > 0) {
+    if (q && res.length > 0) {
       // Показываем счетчик с количеством
       showCount(res.length > 0, `Найдено ${res.length} фото`);
     } else {
@@ -306,6 +360,11 @@ export function initSearchAndSort(photosData, { autoRender = true } = {}) {
     if (grid) requestAnimationFrame(() => {
       grid.classList.remove('is-fading');
     });
+
+    revealGrid();
+    updateUrlState({ q, sort: currentSort, shuffle: isShuffleMode }, {push: false});
+    scrollToTopSmooth();
+    lastQuery = q;
   }
 
   // Если включен автозапуск, сразу показываем результат
