@@ -258,3 +258,22 @@ clearBtn.addEventListener('click', () => {
 
 input.addEventListener('input', sync);
 sync();
+
+// Кнопка возврата наверх страницы
+const scrollBtn = document.querySelector('.scroll-top-btn');
+
+window.addEventListener('scroll', () => {
+  // Показываем после 400px прокрутки
+  if (window.scrollY > 400) {
+    scrollBtn.classList.add('show');
+  } else {
+    scrollBtn.classList.remove('show');
+  }
+});
+
+scrollBtn.addEventListener('click', () => {
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  });
+});

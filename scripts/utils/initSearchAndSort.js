@@ -8,6 +8,10 @@ let isShuffleMode = false;
 let shuffleOrder = [];
 let sortSelect  = null;
 let currentSort = '';
+let metaWrap = null;
+let metaCount = null;
+
+const grid = document.querySelector('.grid');
 
 // ========== УТИЛИТЫ ==========
 // Компаратор
@@ -98,7 +102,6 @@ function emptyStateElement() {
     element = document.createElement('div');
     element.className = 'empty-state';
     element.style.display = 'none';
-    const grid = document.querySelector('.grid');
     if (grid) grid.insertAdjacentElement('afterend', element);
   }
   return element;
@@ -106,7 +109,6 @@ function emptyStateElement() {
 
 // Показываем элемент пустого состояния, если поиск не дал результатов
 function showEmptyState(list, query) {
-  const grid = document.querySelector('.grid');
   if (!grid) return;
 
   const emptyElement = emptyStateElement();
@@ -163,6 +165,9 @@ function runSearch(preserveVisible = false) {
 
   // Показываем блок пустого состояния, если результата нет
   showEmptyState(result, query);
+
+  // Возвращаем отфильтрованный результат поиска для использования извне
+  return result;
 }
 
 // Хэлпер
@@ -202,6 +207,21 @@ export function initSearchAndSort(photosData, { autoRender = true } = {}) {
   searchButton = document.querySelector('.search-button');
   sortSelect = document.querySelector('#sortSelect');
   const shuffleBtn = document.querySelector('.shuffle-button');
+  metaWrap = document.querySelector('.search-meta');
+  metaCount = metaWrap ? metaWrap.querySelector('.count.search-counter') : null;
+
+  // Переключатель для отображения найденных
+  function showCount(show, text = '') {
+    if (!metaCount) return;
+    // Управляем отображением в зависимости от show (булево)
+    if (show) {
+      metaCount.textContent = text;
+      metaCount.removeAttribute('hidden');
+    } else {
+      metaCount.textContent = '';
+      metaCount.setAttribute('hidden', '');
+    }
+  }
 
   // Обработчик выбранной сортировки
   if (sortSelect) {
@@ -228,22 +248,65 @@ export function initSearchAndSort(photosData, { autoRender = true } = {}) {
   }
 
   // Запускаем поиск по кнопке поиска или "Enter"
-  if (searchButton) searchButton.addEventListener('click', () => runSearch(false));
-  
-  // Лайв-поиск с задержкой 100 мс
-  let timeout;
-  if (searchInput) searchInput.addEventListener('input', () => {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => runSearch(false), 100);
-  });
+  if (searchButton) {
+    searchButton.addEventListener('click', () => submitSearch());
+  }
 
-  // Поиск по "Enter"
-  searchInput.addEventListener('keydown', event => {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      runSearch(false);
+  // Скрыаем счетчик немедленно
+  function hideCounterNow() {
+    if (!metaCount) return;
+    metaCount.textContent = '';
+    metaCount.setAttribute('hidden', '');
+  }
+
+  let t;
+  // Обработчик инпута
+  if (searchInput) {
+    // Срабатывает каждый раз, когда пользователь печатает
+    searchInput.addEventListener('input', () => {
+      clearTimeout(t);
+      // Скрываем счетчик, чтобы он не висел пока пользователь меняет запрос
+      hideCounterNow();
+
+      // Плавно скрываем сетку, пока пользователь печатает
+      if (grid) grid.classList.add('is-fading');
+
+      // Через 800 мс после того, как пользователь перестал печатать, вызываем обработчик поиска
+      t = setTimeout(() => {
+        submitSearch();
+      }, 800);
+    });
+
+    // Поиск по "Enter"
+    searchInput.addEventListener('keydown', event => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        clearTimeout(t);
+        hideCounterNow();
+        submitSearch();
+      }
+    });
+  }
+
+  // Финальная отправка поиска
+  function submitSearch() {
+    const res = runSearch(false);
+    const query = searchInput ? searchInput.value.trim() : '';
+
+    // Если строка поиска не пустая и есть результаты
+    if (query && res.length > 0) {
+      // Показываем счетчик с количеством
+      showCount(res.length > 0, `Найдено ${res.length} фото`);
+    } else {
+      // Иначе скрываем счетчик
+      showCount(false);
     }
-  });
+
+    // Плавная анимация сетки
+    if (grid) requestAnimationFrame(() => {
+      grid.classList.remove('is-fading');
+    });
+  }
 
   // Если включен автозапуск, сразу показываем результат
   if (autoRender) runSearch(false);
