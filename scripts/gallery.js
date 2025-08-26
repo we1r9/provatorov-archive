@@ -1,6 +1,6 @@
 import photos from '../data/photos.json' with { type: 'json' };
 import { isFavorite, toggleFavorite } from './favoritesStore.js';
-import { initSearchAndSort, applySearchState, getSearchState } from './utils/initSearchAndSort.js';
+import { initSearchAndSort, applySearchState, getSearchState, scrollToTopSmooth } from './utils/initSearchAndSort.js';
 import { mapPhotos } from './utils/mapPhotos.js';
 
 // ========== ПОДГОТОВКА ДАННЫХ ==========
@@ -33,6 +33,143 @@ export function setCurrentPhotos(list, options = {}) {
 
     // Перерисовываем галерею
   updateView();
+}
+
+// Выезд сортбара (тест)
+const header  = document.getElementById('siteHeader');
+const sortBar = document.getElementById('sortBar');
+
+const docEl = document.documentElement;
+const setCss = (k,v)=>docEl.style.setProperty(k, v+"px");
+const h = ()=> header?.offsetHeight || 72;
+const s = ()=> sortBar?.offsetHeight || 48;
+
+function measureAll() { 
+  setCss('--header-h', h()); 
+  setCss('--sort-h', s()); 
+}
+
+addEventListener('load',  measureAll);
+
+addEventListener('resize', measureAll);
+
+if (header) new ResizeObserver(measureAll).observe(header);
+
+if (sortBar) new ResizeObserver(measureAll).observe(sortBar);
+
+let lastY = scrollY;
+let rafId = null;
+let visible = null;
+let initialLock = true;
+let isRestoring = false;
+let savedInitialVisible = null;
+let skipNextSave = false;
+let restoredVisibility = null;
+
+const SHOW_DELAY = 90;
+const HIDE_DELAY = 140;
+const COOLDOWN = 220;
+const DELTA_PX = 8;
+let tShow = 0, tHide = 0, until = 0;
+
+function setSortVisible(v){
+  if (visible === v) return;
+  sortBar.classList.toggle('is-visible', v);
+  visible = v;
+}
+
+function setVisibleDebounced(v){
+  if (initialLock) {
+    setSortVisible(v);
+    return;
+  }
+
+  const now = performance.now();
+  if (now < until) return;
+
+  clearTimeout(v ? tHide : tShow);
+  const id = setTimeout(() => {
+    setSortVisible(v);
+    until = performance.now() + COOLDOWN;
+  }, v ? SHOW_DELAY : HIDE_DELAY);
+
+  v ? (tShow = id) : (tHide = id);
+}
+
+function onScroll(){
+  if (initialLock) return;
+  const y  = scrollY;
+  const dy = y - lastY;
+
+  if (y < 40) {
+    setVisibleDebounced(true);
+  } else if (Math.abs(dy) > DELTA_PX) {
+    setVisibleDebounced(dy < 0);
+  }
+
+  lastY = y;
+  rafId = null;
+}
+
+addEventListener('scroll', () => {
+  if (!rafId) rafId = requestAnimationFrame(onScroll);
+}, { passive: true });
+
+if (sortBar) {
+  sortBar.classList.add('boot');
+
+  clearTimeout(tShow);
+  clearTimeout(tHide);
+  tShow = tHide = 0;
+  until = performance.now() + COOLDOWN;
+}
+
+const forceShowOnBoot = sessionStorage.getItem('forceSortVisible') === '1';
+
+// Изначально отображаем сортбар всегда
+(function applyInitialSortBarVisibility(){
+  const state = readSavedState();
+  if (!sortBar) return;
+
+  const hasResults = currentPhotos.length > 0;
+
+  let initial;
+  if (forceShowOnBoot) {
+    initial = true;
+    try {
+      sessionStorage.removeItem('forceSortVisible');
+    } catch {}
+  } else {
+    initial = (state && typeof state.sortBarVisibility === 'boolean')
+      ? state.sortBarVisibility
+      : (scrollY < 40);
+  }
+  
+  savedInitialVisible = initial && hasResults;
+  setSortVisible(savedInitialVisible);
+})();
+
+measureAll();
+
+// Видимость сортбара в зависимости от наличия результатов
+function updateSortBarVisibility() {
+  if (!sortBar) return;
+  const hasResults = currentPhotos.length > 0;
+
+  sortBar.classList.toggle('is-hidden', !hasResults);
+
+  if (!hasResults) {
+    setSortVisible(false);
+  } else if (restoredVisibility !== null) {
+    setSortVisible(restoredVisibility);
+  } else {
+    const should = initialLock 
+      ? savedInitialVisible
+      : ((scrollY < 40) || (visible === true))
+    setSortVisible(!!should);
+  }
+
+  measureAll();
 }
 
 // DOM
@@ -79,6 +216,14 @@ export function updateView() {
   if (loadMoreBtn) {
     loadMoreBtn.hidden = (paging.visibleCount >= currentPhotos.length);
   }
+
+  if (sortBar && sortBar.classList.contains('boot') && !isRestoring) {
+    releaseInitialLock();
+    requestAnimationFrame(updateSortBarVisibility);
+    return;
+  }
+
+  updateSortBarVisibility();
 }
 
 // Обработчик "Показать еще"
@@ -174,6 +319,8 @@ function readSavedState() {
 
 // Сохраняем состояние и положение страницы
 function saveState() {
+  if (skipNextSave || sessionStorage.getItem('forceReset') === '1') return;
+
   const { query, sort, isShuffle, shuffleOrder } = getSearchState();
 
   // Собираем состояние и положение страницы
@@ -185,6 +332,7 @@ function saveState() {
     sort,
     isShuffle,
     shuffleOrder,
+    sortBarVisibility: !!visible,
   };
 
   // Сохраняем в sessionStorage
@@ -210,15 +358,31 @@ function waitGridImagesLoaded(container, timeout = 1500) {
   });
 }
 
+function releaseInitialLock() {
+  if (sortBar) sortBar.classList.remove('boot');
+  initialLock = false;
+  savedInitialVisible = null;
+  restoredVisibility = null;
+}
+
 // Восстанавливаем состояние страницы
 function restoreState() {
   // Достаем сохраненное состояние из localStorage
   const state = readSavedState();
   if (!state || state.pageKey !== location.pathname) return false;
 
+  restoredVisibility = (typeof state.sortBarVisibility === 'boolean')
+    ? state.sortBarVisibility
+    : null;
+
   // Если в state нет фильтров query/sort/shuffle
   const emptyFilters = !state.query && !state.sort && !state.isShuffle;
-  if (emptyFilters) return false;
+  if (emptyFilters) {
+    isRestoring = false;
+    return false;
+  }
+
+  isRestoring = true;
 
   // Если в состоянии есть число visibleCount, обновляем paging.visibleCount
   if (typeof state.visibleCount === 'number') {
@@ -245,6 +409,9 @@ function restoreState() {
   waitGridImagesLoaded(gridEl).then(() => {
     const max2 = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
     window.scrollTo(0, Math.min(ySaved, max2));
+
+    isRestoring = false;
+    releaseInitialLock();
   });
 
   // Если все удалось восстановить — возвращаем true, чтобы использовать это значение на главной
@@ -299,6 +466,7 @@ clearBtn.addEventListener('click', () => {
   url.searchParams.delete('q');
   history.replaceState(history.state, '', url);
 
+  scrollToTopSmooth();
 });
 
 input.addEventListener('input', sync);
@@ -338,73 +506,10 @@ scrollBtn.addEventListener('click', () => {
       sessionStorage.removeItem('visibleAll');
       sessionStorage.removeItem('visibleSearch');
       sessionStorage.setItem('forceReset', '1');
+      sessionStorage.setItem('forceSortVisible', '1');
+      skipNextSave = true;
     } catch {}
 
     location.replace(new URL('index.html', location.origin).toString());
   });
 }());
-
-// Выезд сортбара (тест)
-const header  = document.getElementById('siteHeader');
-const sortBar = document.getElementById('sortBar');
-
-const docEl = document.documentElement;
-const setCss = (k,v)=>docEl.style.setProperty(k, v+"px");
-const h = ()=> header?.offsetHeight || 72;
-const s = ()=> sortBar?.offsetHeight || 48;
-
-function measureAll(){ setCss('--header-h', h()); setCss('--sort-h', s()); }
-addEventListener('load',  measureAll);
-addEventListener('resize', measureAll);
-if (header)  new ResizeObserver(measureAll).observe(header);
-if (sortBar) new ResizeObserver(measureAll).observe(sortBar);
-
-let lastY = scrollY;
-let rafId = null;
-let visible = null;
-
-const SHOW_DELAY = 90;
-const HIDE_DELAY = 140;
-const COOLDOWN   = 220;
-const DELTA_PX   = 8;
-let tShow = 0, tHide = 0, until = 0;
-
-function setSortVisible(v){
-  if (visible === v) return;
-  sortBar.classList.toggle('is-visible', v);
-  visible = v;
-}
-
-function setVisibleDebounced(v){
-  const now = performance.now();
-  if (now < until) return;
-
-  clearTimeout(v ? tHide : tShow);
-  const id = setTimeout(() => {
-    setSortVisible(v);
-    until = performance.now() + COOLDOWN;
-  }, v ? SHOW_DELAY : HIDE_DELAY);
-
-  v ? (tShow = id) : (tHide = id);
-}
-
-function onScroll(){
-  const y  = scrollY;
-  const dy = y - lastY;
-
-  if (y < 40) {
-    setVisibleDebounced(true);
-  } else if (Math.abs(dy) > DELTA_PX) {
-    setVisibleDebounced(dy < 0);
-  }
-
-  lastY = y;
-  rafId = null;
-}
-
-addEventListener('scroll', () => {
-  if (!rafId) rafId = requestAnimationFrame(onScroll);
-}, { passive: true });
-
-setSortVisible(scrollY < 40);
-measureAll();

@@ -13,8 +13,36 @@ let metaCount = null;
 
 const grid = document.querySelector('.grid');
 
+// Переключатель для отображения найденных
+function showCount(show, text = '') {
+  if (!metaCount) return;
+  // Управляем отображением в зависимости от show (булево)
+  if (show) {
+    metaCount.textContent = text;
+    metaCount.removeAttribute('hidden');
+  } else {
+    metaCount.textContent = '';
+    metaCount.setAttribute('hidden', '');
+  }
+}
+
+// Скрыаем счетчик немедленно
+function hideCounterNow() {
+  if (!metaCount) return;
+  metaCount.textContent = '';
+  metaCount.setAttribute('hidden', '');
+}
+
+// Обновляем каунтер по результатам поиска
+function updateCounterFromCurrentQuery() {
+  const q = (searchInput?.value || '').trim();
+  if (!q) { showCount(false); return; }
+  const cnt = filterByQuery(indexedPhotos, q).length;
+  showCount(cnt > 0,  `Найдено ${cnt} фото`);
+}
+
 // ========== УТИЛИТЫ ПРОКРУТКИ И URL ==========
-function scrollToTopSmooth() {
+export function scrollToTopSmooth() {
   try {
     window.scrollTo({ top: 0, behavior: 'smooth'});
   } catch {
@@ -235,19 +263,6 @@ export function initSearchAndSort(photosData, { autoRender = true } = {}) {
   metaWrap = document.querySelector('.search-meta');
   metaCount = metaWrap ? metaWrap.querySelector('.count.search-counter') : null;
 
-  // Переключатель для отображения найденных
-  function showCount(show, text = '') {
-    if (!metaCount) return;
-    // Управляем отображением в зависимости от show (булево)
-    if (show) {
-      metaCount.textContent = text;
-      metaCount.removeAttribute('hidden');
-    } else {
-      metaCount.textContent = '';
-      metaCount.setAttribute('hidden', '');
-    }
-  }
-
   // Обработчик выбранной сортировки
   if (sortSelect) {
     sortSelect.addEventListener('change', () => {
@@ -261,6 +276,8 @@ export function initSearchAndSort(photosData, { autoRender = true } = {}) {
 
       const q = (searchInput?.value || '').trim();
       updateUrlState({ q, sort: currentSort, shuffle: false});
+
+      updateCounterFromCurrentQuery();
     });
   }
 
@@ -279,14 +296,9 @@ export function initSearchAndSort(photosData, { autoRender = true } = {}) {
 
       const q = (searchInput?.value || '').trim();
       updateUrlState({ q, sort: '', shuffle: true});
-    });
-  }
 
-  // Скрыаем счетчик немедленно
-  function hideCounterNow() {
-    if (!metaCount) return;
-    metaCount.textContent = '';
-    metaCount.setAttribute('hidden', '');
+      updateCounterFromCurrentQuery();
+    });
   }
 
   let t;
@@ -340,14 +352,7 @@ export function initSearchAndSort(photosData, { autoRender = true } = {}) {
 
     const res = runSearch(false);
 
-    // Если строка поиска не пустая и есть результаты
-    if (q && res.length > 0) {
-      // Показываем счетчик с количеством
-      showCount(res.length > 0, `Найдено ${res.length} фото`);
-    } else {
-      // Иначе скрываем счетчик
-      showCount(false);
-    }
+    updateCounterFromCurrentQuery();
 
     // Плавная анимация сетки
     if (grid) requestAnimationFrame(() => {
@@ -398,6 +403,9 @@ export function applySearchState(
   document.documentElement.dataset.shuffle = isShuffleMode ? '1' : '0';
 
   runSearch(preserveVisible);
+
+  const res = runSearch(preserveVisible);
+  updateCounterFromCurrentQuery();
 }
 
 // Собирает текущее состояние поиска/сортировки/перемешивания и возвращает в виде объекта
