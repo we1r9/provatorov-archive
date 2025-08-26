@@ -496,20 +496,28 @@ scrollBtn.addEventListener('click', () => {
   const logo = document.querySelector('[data-role="logo"]');
   if (!logo) return;
 
+  const isHome = () => {
+    const p = location.pathname.replace(/\/+$/, '/');
+    return p === '/' || /\/index\.html$/.test(p);
+  }
+
   logo.addEventListener('click', (e) => {
     // Позволяем открыть в новой вкладке
     if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
 
-    e.preventDefault();
-    try {
-      sessionStorage.removeItem('galleryState');
-      sessionStorage.removeItem('visibleAll');
-      sessionStorage.removeItem('visibleSearch');
-      sessionStorage.setItem('forceReset', '1');
-      sessionStorage.setItem('forceSortVisible', '1');
-      skipNextSave = true;
-    } catch {}
-
     location.replace(new URL('index.html', location.origin).toString());
+
+    if (isHome()) {
+      e.preventDefault();
+      try {
+        sessionStorage.clear();
+        skipNextSave = true;
+      } catch {}
+
+      try {
+        history.replaceState(null, '', location.pathname);
+      } catch {}
+      location.replace(location.pathname);
+    }
   });
 }());

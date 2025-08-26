@@ -19,10 +19,10 @@ function buildFavoritesList() {
 
 // Элемент пустого состояния
 function renderEmpty() {
-  if (!empty) return;
-  const hasCards = !!grid.children.length;
-  empty.hidden = hasCards;
-  grid.style.display = hasCards ? '' : 'none';
+  if (!empty || !grid) return;
+  grid.hidden = true;
+  empty.hidden = false;
+  empty.style.removeProperty('display');
 }
 
 // Рендерим галерею только для избранных
@@ -50,7 +50,8 @@ function renderGallery(list) {
   grid.innerHTML = html;
 
   // Показываем элемент пустого состояния
-  if (empty) empty.style.display = 'none';
+  grid.hidden = false;
+  if (empty) empty.hidden = true;
 }
 
 // Если избранные есть — отображаем галерею
@@ -67,6 +68,7 @@ grid?.addEventListener('click', (event) => {
   const btn = event.target.closest('[data-fav-id]');
   if (!btn) return;
   event.preventDefault();
+
   const id = btn.dataset.favId;
   toggleFavorite(id);
 
@@ -75,7 +77,7 @@ grid?.addEventListener('click', (event) => {
   cardLink?.remove();
 
   // Если карточек нет — показываем пустое состояние
-  if (grid.children.length === 0) render();
+  if (grid.children.length === 0) renderEmpty();
 });
 
 // Если избранное изменили на другой вкладке

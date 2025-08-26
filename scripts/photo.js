@@ -73,6 +73,64 @@ function renderPhoto() {
   return view;
 }
 
+// Сохраняем вертикальный скролл карточки
+(function initPhotoScrollY() {
+  const KEY = `photoScrollY:${photo.id}`;
+
+  // Пределы
+  const clampY = (y) => 
+    Math.max(0, Math.min(y, document.documentElement.scrollHeight - window.innerHeight));
+
+  // Восстановление позиции
+  const restore = () => {
+    const raw = sessionStorage.getItem(KEY);
+    if (!raw) return;
+    const y = clampY(parseInt(raw, 10) || 0);
+    if (y > 0) window.scrollTo({ top: y, behavior: 'auto' });
+  };
+
+  // Сохранение позиции
+  const save = () => sessionStorage.setItem(KEY, String(window.scrollY || 0));
+
+  // Ставим ручное управление скролом
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+
+  // Сохраняем с дебаунсом во время скролла
+  let t;
+  window.addEventListener('scroll', () => {
+    clearTimeout(t);
+    t = setTimeout(save, 80);
+  }, { passive: true });
+
+  // Сохраняем перед уходом со страницы
+  window.addEventListener('pagehide', save);
+
+  // Сохраняем при клике по любым ссылкам
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest('a, button.go-back-arrow, .go-back-arrow');
+    if (a) save();
+  });
+
+  // Восстанавливаем после полной загрузки
+  window.addEventListener('load', restore);
+
+  // При возврате из кэша
+  window.addEventListener('pageshow', (e) => { 
+    if (e.persisted) restore();
+  });
+
+  // Сохраняем позицию перед навигацией по кнопке назад
+  const backBtn = document.querySelector('.go-back-arrow');
+  if (backBtn) {
+    backBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      save();
+      if (history.length > 1) history.back();
+      else location.href = 'index.html';
+    });
+  }
+})();
+
 // ========== ХЭЛПЕРЫ ДЛЯ ПОИСКА ПОХОЖИХ ==========
 // Нормализация поиска
 function norm(v) {
@@ -113,7 +171,7 @@ function renderSimilar(similar, mount) {
       <p class="similar-title">Похожие фото</p>
       <div class="similar-strip" role="list">
         ${similar.map(photo => `
-          <a class="similar-card" role="listitem" href="photo.html?id=${photo.id}" title="${photo.location || ''}">
+          <a class="similar-card" data-id="${photo.id}" href="photo.html?id=${photo.id}" title="${photo.location || ''}">
             <img class="similar-img" src="${photo.thumb || photo.web}">
             <div class="similar-caption">
               <span class="cap-loc">${photo.location || ''}</span>
@@ -235,10 +293,3 @@ img.onload = () => {
     viewPhoto.classList.add('is-landscape');
   }
 };
-
-// Обработчик возврата назад
-const back = document.querySelector('.go-back-arrow');
-back.addEventListener('click', () => {
-  if (history.length > 1) history.back();
-  else location.href = 'index.html';
-});

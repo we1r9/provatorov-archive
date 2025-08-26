@@ -35,3 +35,7 @@
   border: 1px solid #ddd;
   text-decoration: none;
 }
+
+[hidden] {
+  display: none !important;
+}
