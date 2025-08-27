@@ -186,6 +186,40 @@ function renderSimilar(similar, mount) {
   mount.insertAdjacentHTML('beforeend', html);
 }
 
+// Хелперы для скачивания HQ
+function markHqUnavailable(btn, msg = 'HQ недоступна') {
+  if (!btn) return;
+  btn.classList.add('is-unavailable');
+  btn.setAttribute('aria-disabled', 'true');
+  btn.disabled = true;
+  btn.textContent = msg;
+}
+
+function setBtnLoading(btn, on) {
+  if (!btn) return;
+  btn.classList.toggle('is-loading', !!on);
+  btn.disabled = !!on;
+}
+
+async function probeUrl(url, { timeout = 8000 } = {}) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), timeout);
+
+  try {
+    const res = await fetch(url, { method: 'HEAD', signal: ctrl.signal, cache: 'no-store' });
+    clearTimeout(timer);
+
+    if (res.ok) return { ok: true, canDownload: true };
+    if (res.status === 403 || res.status === 405) return { ok: false, canDownload: true };
+
+    return { ok: false, canDownload: false, status: res.status };
+  } catch (e) {
+    clearTimeout(timer);
+
+    return { ok: false, canDownload: false, error: e?.message || 'network error' };
+  }
+}
+
 // ========== РЕНДЕР + ОБРАБОТЧИКИ ==========
 const viewRoot = renderPhoto();
 if (viewRoot) {
@@ -199,28 +233,97 @@ if (viewRoot) {
     btn.classList.toggle('is-fav', isFavorite(id));
   });
 
+  // Создаем универсальный тост
+  function getToastEl() {
+    let el = document.getElementById('toast');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'toast';
+      el.className = 'toast';
+      el.setAttribute('role', 'status');
+      el.setAttribute('aria-live', 'polite');
+      document.body.appendChild(el);
+    }
+    return el;
+  }
+
+  // Показываем тост
+  function showToast(msg) {
+    const el = getToastEl();
+    el.textContent = msg;
+    el.classList.add('is-show');
+    clearTimeout(el._t);
+    el._t = setTimeout(() => el.classList.remove('is-show'), 3000);
+  }
+
   // Обработчик скачивания HQ
   const downloadButton = viewRoot.querySelector('.download-hq-btn');
+
   if (downloadButton) {
-    downloadButton.addEventListener('click', async () => {
-      if (!photo.hq) {
-        alert('HQ-версия недоступна');
-        return;
-      }
-      
-      try {
-        const response = await fetch(photo.hq, { method: 'HEAD' });
-        if (!response.ok) throw new Error (`Ошибка ${response.status}`);
-        const link = document.createElement('a');
-        link.href = photo.hq;
-        link.download = `${photo.id}-hq.jpg`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      } catch (error) {
-        alert('Не удалось скачать HQ: ' + error.message);
-      }
-    });
+    if (!photo.hq) {
+      markHqUnavailable(downloadButton);
+    } else {
+      downloadButton.addEventListener('click',  async () => {
+        if (downloadButton.disabled) return;
+
+        if (!navigator.onLine) {
+          showToast('⚠️ Нет подключения к интернету :(');
+          return;
+        }
+
+        setBtnLoading(downloadButton, true);
+        try {
+          const probe = await probeUrl(photo.hq, { timeout: 4000 });
+
+          if (probe.status === 404 || probe.status === 410) {
+            markHqUnavailable(downloadButton, 'HQ недоступна');
+            showToast('⚠️ Файл не найден');
+            return;
+          }
+
+          if (probe.ok || probe.canDownload) {
+            const a = document.createElement('a');
+            a.href = photo.hq;
+            a.download = `${photo.id}-hq.jpg`;
+            a.rel = 'noopener';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            return;
+          }
+
+          if (probe.error) {
+            showToast('⚠️ Проблема с подключением');
+            return;
+          }
+
+          showToast('⚠️ Сервер временно недоступен');
+        } finally {
+          if (!downloadButton.classList.contains('is-unavailable')) {
+            setBtnLoading(downloadButton, false);
+          }
+        }
+      });
+
+      window.addEventListener('offline', () => {
+        downloadButton.classList.add('is-offline');
+      });
+
+      window.addEventListener('online', () => {
+        downloadButton.classList.remove('is-offline');
+        showToast('Подключение к интернету восстановлено!')
+      });
+
+      const syncNetworkState = () => {
+        if (!navigator.onLine) {
+          downloadButton.classList.add('is-offline');
+        } else {
+          downloadButton.classList.remove('is-offline');
+        }
+      };
+      window.addEventListener('load', syncNetworkState);
+      window.addEventListener('pageshow', syncNetworkState);
+    }
   }
 
   const similar = getSimilarPhotos(photo, photosData);

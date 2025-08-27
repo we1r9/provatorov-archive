@@ -140,6 +140,56 @@
   transition: transform 0.1s ease;
 }
 
+.download-hq-btn.is-loading {
+  pointer-events: none;
+  opacity: .6;
+  position: relative;
+}
+
+.download-hq-btn.is-loading::after {
+  content: '…';
+  margin-left: .4rem;
+}
+
+.download-hq-btn.is-unavailable {
+  background: #fff;
+  color: #d00;
+  border: 1px solid #000000;
+  cursor: not-allowed;
+  pointer-events: none;
+  opacity: 1;
+}
+
+.download-hq-btn.is-offline {
+  opacity: 0.6;
+}
+
+.download-hq-btn.is-offline:hover { 
+  transform: none;
+  pointer-events: none;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  top: 12px;
+  left: 50%;
+  transform: translate(-50%, -140%);
+  background: rgba(20,20,20,.92);
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 10px;
+  box-shadow: 0 10px 28px rgba(0,0,0,.25);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 9999;
+  transition: transform .25s ease, opacity .25s ease;
+}
+.toast.is-show {
+  transform: translate(-50%, 0);
+  opacity: 1;
+}
+
 /* Add to favorites button */
 .card-like-button {
   font-size: 2rem;
