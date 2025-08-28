@@ -138,7 +138,7 @@ function norm(v) {
 }
 
 // Ищем похожие фото
-function getSimilarPhotos(current, list) {
+function getSimilarPhotos(current, list, limit = Infinity) {
   // Вытаскиваем регион/страну/локацию и прогоняем через norm, чтобы позднее сравнивать в одном формате
   const region = norm(current.region);
   const country = norm(current.country);
@@ -150,40 +150,175 @@ function getSimilarPhotos(current, list) {
   // Поиск по региону
   // Если у текущего фото указан region, ищем все фото с таким же region
   let result = region ? pool.filter(photo => norm(photo.region) === region) : [];
-  // Если что-то нашли, возвращаем первые 20
-  if (result.length) return result.slice(0, 20);
+  if (result.length) return result.slice(0, limit);
 
   // Поиск по стране
   result = country ? pool.filter(photo => norm(photo.country) === country) : [];
-  if (result.length) return result.slice(0, 20);
+  if (result.length) return result.slice(0, limit);
 
   // Поиск по цельной локации
   result = location ? pool.filter(photo => norm(photo.location) === location) : [];
-  return result.slice(0, 20);
+  return result.slice(0, limit);
 }
 
 // Рендер похожих фото
-function renderSimilar(similar, mount) {
+function renderSimilar(similar, mount, { pageSize = 10 } = {}) {
   if (!similar || !similar.length) return;
 
-  const html = `
-    <section class="similar">
-      <p class="similar-title">Похожие фото</p>
-      <div class="similar-strip" role="list">
-        ${similar.map(photo => `
-          <a class="similar-card" data-id="${photo.id}" href="photo.html?id=${photo.id}" title="${photo.location || ''}">
-            <img class="similar-img" src="${photo.thumb || photo.web}">
-            <div class="similar-caption">
-              <span class="cap-loc">${photo.location || ''}</span>
-              <span class="cap-date">${photo.year || ''}</span>
-            </div>
-          </a>
-          `).join('')}
-      </div>
-    </section>
-  `;
+  // Корневой блок секции
+  const section = document.createElement('section');
+  section.className = 'similar';
 
-  mount.insertAdjacentHTML('beforeend', html);
+  // Заголовок
+  const title = document.createElement('p');
+  title.className = 'similar-title';
+  title.textContent = 'Похожие фото';
+
+  // Лента
+  const strip = document.createElement('div');
+  strip.className = 'similar-strip';
+  strip.setAttribute('role', 'list');
+
+  // Скрытая точка конца
+  const sentinel = document.createElement('div');
+  sentinel.className = 'similar-sentinel';
+  sentinel.setAttribute('aria-hidden', 'true');
+
+  // Ленивая загрузка
+  const imgObserver = new IntersectionObserver((entries,  obs) => {
+    for (const entry of entries) {
+      if (!entry.isIntersecting) continue;
+      const img = entry.target;
+      const src = img.getAttribute('data-src');
+      if (src) {
+        img.src = src;
+        img.removeAttribute('data-src');
+      }
+      obs.unobserve(img);
+    }
+  }, {
+    root: strip,
+    rootMargin: '0px 600px 0px 600px',
+    threshold: 0.01
+  });
+
+  // Фабрика карточки
+  function createCard(p) {
+    const a = document.createElement('a');
+    a.className = 'similar-card';
+    a.href = `photo.html?id=${p.id}`;
+    a.title = p.location || '';
+    a.setAttribute('role', 'listitem');
+
+    const img = document.createElement('img');
+    img.className = 'similar-img';
+    img.alt = p.location || '';
+    img.decoding = 'async';
+    img.loading = 'lazy';
+    img.setAttribute('data-src', p.thumb || p.web);
+    imgObserver.observe(img);
+
+    const cap = document.createElement('div');
+    cap.className = 'similar-caption';
+    const loc = document.createElement('span');
+    loc.className = 'cap-loc';
+    loc.textContent = p.location || '';
+    const year = document.createElement('span');
+    year.className = 'cap-date';
+    year.textContent = p.year || '';
+    cap.appendChild(loc);
+    cap.appendChild(year);
+
+    a.appendChild(img);
+    a.appendChild(cap);
+    return a;
+  }
+
+  // Пагинация и догрузка
+  const total = similar.length;
+  let nextIndex = 0;
+
+  function appendChunk() {
+    if (nextIndex >= total) return false;
+    const end = Math.min(nextIndex + pageSize, total);
+    const frag = document.createDocumentFragment();
+    for (let i = nextIndex; i < end; i++) {
+      frag.appendChild(createCard(similar[i]));
+    }
+
+    strip.insertBefore(frag, sentinel);
+    nextIndex = end;
+
+    if (nextIndex >= total) {
+      endObserver.unobserve(sentinel);
+      sentinel.remove();
+    }
+
+    return true;
+  }
+
+  // Наблюдатель за концом ленты
+  const endObserver = new IntersectionObserver((entries) => {
+    for (const entry of entries) {
+      if (!entry.isIntersecting) continue;
+      appendChunk();
+    }
+  }, {
+    root: strip,
+    rootMargin: '0px 1200px 0px 0px',
+    threshold: 0.01
+  });
+
+  // Сборка секции
+  strip.appendChild(sentinel);
+  section.appendChild(title);
+  section.appendChild(strip);
+
+  // Вставка
+  mount.insertAdjacentElement('beforeend', section);
+
+  // Первичная загрузка (10 шт)
+  appendChunk();
+
+  // Вкл. наблюдение за концом
+  endObserver.observe(sentinel);
+
+  // Состояние скролла
+  const key = `similarScroll:${photo.id}`;
+
+  const save = (() => {
+    let t;
+    return () => {
+      clearTimeout(t);
+      t = setTimeout(() => sessionStorage.setItem(key, String(strip.scrollLeft)), 80);
+    };
+  })();
+
+  strip.addEventListener('scroll', save, { passive: true });
+
+  // Сохраняем перед кликом по карточке
+  strip.addEventListener('click', (e) => {
+    if (e.target.closest('a.similar-card')) save();
+  });
+
+  // Восстановление
+  function restore() {
+    const s  = parseInt(sessionStorage.getItem(key) || '0', 10);
+    if (!Number.isNaN(s) && s > 0) {
+      let guard = 0;
+      while ((strip.scrollWidth - strip.clientWidth) < s && nextIndex < total && guard < 100) {
+        if (!appendChunk()) break;
+        guard++;
+      }
+      strip.scrollLeft = Math.min(s, strip.scrollWidth - strip.clientWidth);
+    }
+  }
+  requestAnimationFrame(restore);
+
+  // При возврате из кэша
+  window.addEventListener('pageshow', (e) => {
+    if (e.persisted) restore();
+  });
 }
 
 // Хелперы для скачивания HQ
@@ -330,55 +465,6 @@ if (viewRoot) {
   const container = viewRoot.querySelector('.view-container');
   renderSimilar(similar, container || viewRoot);
 }
-
-// Сохранение горизонтального скролла карусели
-(function initSimilarScrollPersistence() {
-  const strip = document.querySelector('.similar-strip');
-  if (!strip) return;
-
-  // Уникальный ключ для sessionStorage
-  const key = `similarScroll:${photo.id}`;
-
-  // Допустимые пределы горизонтальной прокрутки
-  const clamp = (val, el) => Math.max(0, Math.min(val, el.scrollWidth - el.clientWidth));
-
-  // Восстанавливаем сохраненную горизонтальную позицию прокрутки
-  const saved = parseInt(sessionStorage.getItem(key) || '0', 10);
-  if (!Number.isNaN(saved)) {
-    strip.scrollLeft = clamp(saved, strip);
-  }
-
-  // Сохраняем горизонтальную позицию прокрутки
-  let timeout;
-  // Вызывается каждый раз при скролле
-  const save = () => {
-    //Очищаем предыдыщий таймер
-    clearTimeout(timeout);
-
-    // Оптимизация памяти
-    timeout = setTimeout(() => {
-      // Сохраняем текущую горизонатльную позицию
-      sessionStorage.setItem(key, String(strip.scrollLeft));
-    }, 80);
-  }
-  strip.addEventListener('scroll', save, { passive: true });
-
-  // Сохраняем перед уходом по клику
-  strip.addEventListener('click', (event) => {
-    if (event.target.closest('a.similar-card')) save();
-  });
-
-  // Восстанавливаем, если страница вернулась из кеша
-  window.addEventListener('pageshow', (event) => {
-    if (event.persisted) {
-      const el = document.querySelector('.similar-strip');
-      if (el) {
-        const s = parseInt(sessionStorage.getItem(key) || '0', 10);
-        if (!Number.isNaN(s)) el.scrollLeft = clamp(s, el);
-      }
-    }
-  });
-})();
 
 // Авто-определение ориентации кадра
 const img = new Image();

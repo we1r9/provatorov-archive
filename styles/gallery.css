@@ -471,4 +471,5 @@ body.sort-gap-collapsed main.container{
 .scroll-top-btn.show {
   display: flex;
   opacity: 1;
+  margin-bottom: 3rem;
 }

@@ -196,31 +196,40 @@
 }
 
 /* Similar photos section */
-.similar {
+:root{
+  --card-w: 260px;
+}
+
+.similar{
   margin-top: 2rem;
   grid-column: 1 / -1;
   min-width: 0;
+  position: relative;
 }
 
-.similar-title {
+.similar-title{
   margin: 0 0 .75rem;
   font-size: 1.3rem;
 }
 
-.similar-strip {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: clamp(180px, 26vw, 260px);
+.similar-strip{
+  display: flex;
+  flex-wrap: nowrap;
   gap: 12px;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   padding-bottom: 10px;
   scroll-snap-type: x proximity;
   width: 100%;
   min-width: 0;
-  overflow-x: auto;
+  overflow-anchor: none;
 }
 
-.similar-card {
+.similar-card{
+  flex: 0 0 var(--card-w);
+  width: var(--card-w);
+  min-width: var(--card-w);
+  max-width: var(--card-w);
   display: grid;
   grid-template-rows: 1fr auto;
   text-decoration: none;
@@ -231,14 +240,15 @@
   background-color: rgb(245, 245, 245);
 }
 
-.similar-img {
+.similar-img{
   width: 100%;
   height: 150px;
   object-fit: cover;
   display: block;
+  background: #eee;
 }
 
-.similar-caption {
+.similar-caption{
   display: flex;
   justify-content: space-between;
   gap: 8px;
@@ -247,8 +257,15 @@
   opacity: 0.85;
 }
 
-.similar-strip::-webkit-scrollbar { height: 6px; }
-.similar-strip::-webkit-scrollbar-thumb {
+.similar-strip::-webkit-scrollbar{ height: 6px; }
+.similar-strip::-webkit-scrollbar-thumb{
   border-radius: 999px;
   background: #cfcfcf;
+}
+
+.similar-sentinel{
+  flex: 0 0 1px;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
 }
