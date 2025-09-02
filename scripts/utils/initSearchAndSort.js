@@ -301,6 +301,29 @@ export function initSearchAndSort(photosData, { autoRender = true } = {}) {
     });
   }
 
+  /*
+  const btn = document.getElementById('shuffleBtn');
+
+  btn.addEventListener('pointerdown', () => {
+    btn.classList.add('pressed');
+  });
+  ['pointerup','pointercancel','mouseleave'].forEach(ev =>
+    btn.addEventListener(ev, () => {
+      btn.classList.remove('pressed');
+      btn.classList.add('no-hover');
+      setTimeout(() => btn.classList.remove('no-hover'), 200);
+    })
+  );
+  */
+
+  const btn = document.getElementById('shuffleBtn');
+  let angle = 0;
+
+  btn.addEventListener('click', () => {
+    angle -= 180;
+    btn.style.transform = `rotate(${angle}deg)`;
+  });
+
   let t;
   // Обработчик инпута
   if (searchInput) {
