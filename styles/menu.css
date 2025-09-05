@@ -1,0 +1,236 @@
+
+
+
+
+/* ========= SORT (Liquid Glass) ========= */
+#sortSelect{
+  position: absolute !important;
+  width: 0 !important;
+  height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+}
+
+.sort-select{
+  position: relative;
+  z-index: 2;             /* выше кромки сортбара */
+  isolation: auto; 
+  --r: 18px;                      /* радиус */
+  --blur: 12px;
+  --milk: .22;                    /* базовая «молочность» */
+}
+
+/* --- Trigger --------------------------------------------------- */
+.sort-trigger{
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 176px; height: 38px;
+  padding: .55rem .9rem;
+  border: none;
+  border-radius: var(--r);
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  will-change: border-radius, box-shadow;
+  z-index: 1;                     /* контент поверх стекла */
+}
+.sort-trigger > *{ position: relative; z-index: 1; }
+
+.sort-trigger::before{
+  content: "";
+  position: absolute; inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  -webkit-backdrop-filter: blur(var(--blur)) saturate(1.08) contrast(1.03);
+          backdrop-filter: blur(var(--blur)) saturate(1.08) contrast(1.03);
+  background: rgba(255,255,255,var(--milk));
+  box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,.10),
+    inset 0 1px 0 rgba(255,255,255,.35),
+    0 6px 14px rgba(0,0,0,.06);
+  transition: box-shadow .25s ease, background .25s ease, border-radius .24s cubic-bezier(.22,.61,.36,1);
+  z-index: 0;
+}
+
+.sort-trigger:hover::before{
+  box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,.14),
+    inset 0 1px 0 rgba(255,255,255,.45),
+    0 10px 20px rgba(0,0,0,.10),
+    0 4px 8px rgba(0,0,0,.06);
+}
+
+.sort-trigger:focus-visible{
+  outline: none;
+  box-shadow: none;
+}
+.sort-trigger:focus-visible::before{
+  box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,.16),
+    inset 0 1px 0 rgba(255,255,255,.5),
+    0 0 0 3px rgba(24,144,255,.08),
+    0 0 0 1px rgba(24,144,255,.35) inset,
+    0 10px 20px rgba(0,0,0,.10);
+}
+
+/* когда открыто — низ триггера «ровный», чтобы слиться с меню */
+.sort-select.open .sort-trigger{ border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+.sort-select.open .sort-trigger::before{ border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+
+/* стрелка */
+.sort-trigger svg{
+  display:block;
+  transform-origin: 50% 50%;
+  transform-box: fill-box;
+  transition: transform .25s ease;
+}
+.sort-select.open .sort-trigger svg{ transform: rotate(180deg); }
+
+
+:root{
+  --menu-max: 320px; /* максимальная высота раскрытого меню */
+}
+
+/* --- Menu (glass panel) --------------------------------------- */
+.sort-menu{
+  position: absolute;
+  top: 100%; left: 0; right: 0;
+  margin: 0; padding: 0;
+  list-style: none;
+
+  /* стекло прямо на элементе */
+  background: rgba(255,255,255,var(--milk));
+  -webkit-backdrop-filter: blur(var(--blur)) saturate(1.08) contrast(1.03);
+          backdrop-filter: blur(var(--blur)) saturate(1.08) contrast(1.03);
+
+  border: none;
+  border-bottom-left-radius: var(--r);
+  border-bottom-right-radius: var(--r);
+
+  /* тени — внешние, без инсет-хайлайта сверху */
+  box-shadow:
+    0 10px 20px rgba(0,0,0,.10),
+    0 4px 8px rgba(0,0,0,.06),
+    inset 0 0 0 1px rgba(0,0,0,.10);
+
+  max-height: none;
+  overflow: hidden;
+
+  opacity: 0;
+  transform: translateY(-8px);
+  pointer-events: none;
+  transform-origin: top center;
+  transition: opacity .22s ease, transform .22s ease;
+  z-index: 100;
+  will-change: opacity, transform;
+}
+
+.sort-select.open .sort-menu{
+  margin-top: -1px;               /* убираем «шов» */
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.sort-select.open .sort-menu::before{
+  /* был: inset 0 1px 0 rgba(255,255,255,.35) — даёт белую «нить» */
+  box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,.10),
+    /* верхний хайлайт убираем */
+    0 10px 20px rgba(0,0,0,.10),
+    0 4px 8px rgba(0,0,0,.06);
+  border-top-left-radius: 0; 
+  border-top-right-radius: 0;     /* чтобы радиусы тоже совпали */
+}
+
+.sort-select.open .sort-trigger,
+.sort-select.open .sort-trigger::before{
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  /* на некоторых DPR помогает убрать внешние тени снизу */
+  box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,.10),
+    inset 0 1px 0 rgba(255,255,255,.35);
+}
+
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))){
+  .sort-menu{ background: rgba(255,255,255,.85); }
+}
+
+/* --- Options --------------------------------------------------- */
+.sort-option{
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: .55rem 1rem .55rem .9rem;
+  color: #111;
+  cursor: pointer;
+  z-index: 1;
+  transform-origin: left center;
+  transition: transform .16s ease, color .16s ease;
+  will-change: transform;
+}
+
+
+.sort-option:hover,
+.sort-option:focus-visible{
+  transform: scale(1.05);
+}
+
+.sort-option:hover::before,
+.sort-option:focus-visible::before{ opacity: 1; }
+
+.sort-option[aria-selected="true"]{
+  cursor: default;
+}
+
+.sort-option[aria-selected="true"]::after {
+  content: "";
+  position: absolute;
+  right: 14px;          /* отступ справа */
+  top: 51%;
+  width: 13px;
+  height: 13px;
+  transform: translateY(-50%);
+  background: no-repeat center/contain
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256' fill='%23000'><path d='M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z'/></svg>");
+}
+
+/* при наведении на выбранный — без анимаций/масштаба */
+.sort-option[aria-selected="true"]:hover,
+.sort-option[aria-selected="true"]:focus-visible{
+  transform: none;
+}
+
+/* подпись в триггере */
+.sort-label{
+  color:#000;
+  transition: opacity .18s ease, transform .18s ease;
+}
+.sort-select.updating .sort-label{ opacity:0; transform: translateY(-4px); }
+.sort-select.updated  .sort-label{ opacity:1; transform: translateY(0); }
+
+/* --- Misc ------------------------------------------------------ */
+@media (max-width:640px){
+  .sort-trigger{ padding: .5rem .8rem; }
+  .sort-menu{ max-height: 60vh; }
+}
+
+.sort-menu,
+.sort-trigger svg{
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-reduced-motion: reduce){
+  .sort-trigger,
+  .sort-menu,
+  .sort-trigger svg{ transition: none !important; }
+}

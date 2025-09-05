@@ -5,8 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Главная</title>
     <link rel="stylesheet" href="styles/gallery.css">
+    <link rel="stylesheet" href="styles/menu.css">
   </head>
   <body>
+    <div class="ambient" aria-hidden="true"></div>
+    
     <header class="site-header" id="siteHeader">
       <div class="header-inner">
         <div class="header-left">
@@ -17,6 +20,7 @@
           <div class="search-bar">
             <div class="input-wrap">
               <input class="input-section" type="search" placeholder="" aria-label="Поиск">
+              <span class="glass-soften" aria-hidden="true"></span>
               <button class="clear-btn" type="button" aria-label="Очистить">✕</button>
             </div>
           </div>
@@ -36,9 +40,12 @@
       </div>
     </header>
 
+    <div class="glass-cutout header"></div>
+    <div class="glass-cutout sort"></div>
+
     <section class="sort-bar" id="sortBar">
       <div class="sort-inner">
-        <select id="sortSelect" class="visually-hidden" aria-hidden="true">
+        <select id="sortSelect" class="visually-hidden" aria-hidden="true" tabindex="-1">
           <option value="" disabled selected hidden>Сортировать</option>
           <option value="year_desc"><span>Сначала новые </span></option>
           <option value="year_asc"><span>Сначала старые</span></option>
@@ -103,6 +110,7 @@
         </a>
       </div>
     </footer>
+
 
     <script type="module" src="scripts/gallery.js"></script>
   </body>

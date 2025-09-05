@@ -9,8 +9,8 @@ export let currentPhotos = [...photosData];
 
 // Ленивый рендер (paging) — разбиваем контент на страницы по PAGE_SIZE картчоек
 export const paging = {
-  PAGE_SIZE: 8,
-  visibleCount: Math.min(8, photosData.length),
+  PAGE_SIZE: 18,
+  visibleCount: Math.min(18, photosData.length),
 };
 
 // Публичный сеттер (обновляем список + сбрасываем пагинацию)
@@ -66,16 +66,18 @@ let savedInitialVisible = null;
 let skipNextSave = false;
 let restoredVisibility = null;
 
-const SHOW_DELAY = 90;
-const HIDE_DELAY = 140;
-const COOLDOWN = 220;
-const DELTA_PX = 8;
+const SHOW_DELAY = 40;
+const HIDE_DELAY = 50;
+const COOLDOWN   = 200;
+const DELTA_PX   = 4;
 let tShow = 0, tHide = 0, until = 0;
 
 function setSortVisible(v){
   if (visible === v) return;
   sortBar.classList.toggle('is-visible', v);
   visible = v;
+  applyEdge();
+  applyBlendState();
 }
 
 function setVisibleDebounced(v){
@@ -96,24 +98,18 @@ function setVisibleDebounced(v){
   v ? (tShow = id) : (tHide = id);
 }
 
-function onScroll(){
-  if (initialLock) return;
-  const y  = scrollY;
-  const dy = y - lastY;
-
-  if (y < 40) {
-    setVisibleDebounced(true);
-  } else if (Math.abs(dy) > DELTA_PX) {
-    setVisibleDebounced(dy < 0);
-  }
-
-  lastY = y;
-  rafId = null;
+function applyBlendState(){
+  const scrolled300 = scrollY >= 300;
+  document.body.classList.toggle('bar-hidden', visible === false);
+  document.body.classList.toggle('sort-visible',  visible === true); // важно
+  document.body.classList.toggle('scrolled-300', scrolled300);
 }
 
-addEventListener('scroll', () => {
-  if (!rafId) rafId = requestAnimationFrame(onScroll);
-}, { passive: true });
+function applyEdge(){
+  if (!sortBar) return;
+  const scrolled300 = scrollY >= 300;
+  const edge = (visible === true) && !scrolled300;
+}
 
 if (sortBar) {
   sortBar.classList.add('boot');
@@ -167,6 +163,7 @@ function updateSortBarVisibility() {
       ? savedInitialVisible
       : ((scrollY < 40) || (visible === true))
     setSortVisible(!!should);
+    applyBlendState();
   }
 
   measureAll();
@@ -190,19 +187,24 @@ function renderGallery(photosData) {
     return `
       <a class="card-link" href="photo.html?id=${card.id}">
         <article class="card" data-id="${card.id}">
-          <img class="card-photo" src="${card.thumb}">
+          <div class="card-media">
+            <img class="card-photo" src="${card.thumb}">
+          </div>
+
+          <button
+            class="card-like-button ${isFav ? 'is-fav' : ''}" 
+            data-fav-id="${card.id}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#292929ff" viewBox="0 0 256 256">
+              <path d="M240,98a57.63,57.63,0,0,1-17,41L133.7,229.62a8,8,0,0,1-11.4,0L33,139a58,58,0,0,1,82-82.1L128,69.05l13.09-12.19A58,58,0,0,1,240,98Z"></path>
+            </svg>
+          </button>
 
           <div class="card-content">
-            <p class="card-photo-title">${card.location || ''}</p>
-
-            <button
-              class="card-like-button ${isFav ? 'is-fav' : ''}" 
-              data-fav-id="${card.id}">
-              ❤
-            </button>
+            <div class="card-meta">
+              <p class="card-photo-title">${card.location || ''}</p>
+              <p class="card-photo-year">${card.year || ''}</p>
+            </div>
           </div>
-          
-          <p class="card-photo-year">${card.year || ''}</p>
         </article>
       </a>
     `;
@@ -748,58 +750,107 @@ window.addEventListener('pageshow', (event) => {
   });
 }());
 
+/* =============== SORT DROPDOWN (rewrite) =============== */
+(() => {
+  const native  = document.getElementById('sortSelect');       // <select hidden>
+  const dd      = document.getElementById('sortDropdown');     // .sort-select
+  const trigger = dd.querySelector('.sort-trigger');
+  const label   = dd.querySelector('.sort-label');
+  const menu    = dd.querySelector('.sort-menu');
 
-/* ========= CUSTOM SORT MENU ========= */
-const native = document.getElementById('sortSelect');
-const dd = document.getElementById('sortDropdown');
-const trigger = dd.querySelector('.sort-trigger');
-const label = dd.querySelector('.sort-label');
-const menu = dd.querySelector('.sort-menu');
+  function buildMenu(){
+    menu.innerHTML = '';
+    [...native.options].forEach(o => {
+      if (o.disabled || o.hidden) return;
+      const li = document.createElement('li');
+      li.className = 'sort-option';
+      li.setAttribute('role','option');
+      li.dataset.value = o.value;
+      li.tabIndex = 0;
+      li.textContent = o.textContent;
+      if (o.selected) li.setAttribute('aria-selected','true');
+      menu.appendChild(li);
+    });
+    label.textContent = native.selectedOptions[0]?.textContent || 'Сортировать';
+  }
+  buildMenu();
 
-function buildMenu() {
-  menu.innerHTML = '';
-  [...native.options].forEach(o => {
-    if (o.disabled || o.hidden) return;
-    const li = document.createElement('li');
-    li.className = 'sort-option';
-    li.setAttribute('role', 'option');
-    li.dataset.value = o.value;
-    li.textContent = o.textContent;
-    if (o.selected) li.setAttribute('aria-selected', 'true');
-    menu.appendChild(li);
-  });
-  label.textContent = native.selectedOptions[0]?.textContent || 'Сортировать';
-}
-buildMenu();
+  const open  = () => { if (!dd.classList.contains('open')) { dd.classList.add('open'); trigger.setAttribute('aria-expanded','true'); requestAnimationFrame(()=>menu.focus?.()); } };
+  const close = () => { if (dd.classList.contains('open'))  { dd.classList.remove('open'); trigger.setAttribute('aria-expanded','false'); } };
 
-const open = () => { dd.classList.add('open'); trigger.setAttribute('aria-expanded', 'true'); menu.focus?.(); }
-const close = () => { dd.classList.remove('open'); trigger.setAttribute('aria-expanded','false'); }
+  trigger.addEventListener('click', () => dd.classList.contains('open') ? close() : open());
+  document.addEventListener('click', (e) => { if (!dd.contains(e.target)) close(); });
 
-trigger.addEventListener('click', () => dd.classList.contains('open') ? close() : open());
-
-document.addEventListener('click', (e) => { 
-  if (!dd.contains(e.target)) close(); 
-});
-
-menu.addEventListener('click', e => {
-  const li = e.target.closest('.sort-option'); if (!li) return;
-  
-  dd.classList.add('updating');
-  setTimeout(() => {
+  menu.addEventListener('click', (e) => {
+    const li = e.target.closest('.sort-option'); if (!li) return;
     native.value = li.dataset.value;
-    native.dispatchEvent(new Event ('change', { bubbles: true }));
+    native.dispatchEvent(new Event('change', { bubbles:true }));
     [...menu.children].forEach(x => x.removeAttribute('aria-selected'));
     li.setAttribute('aria-selected','true');
     label.textContent = li.textContent;
-    dd.classList.remove('updating');
-    dd.classList.add('updated');
-    setTimeout(() => dd.classList.remove('updated'), 10);
-  }, 120);
-  close();
-});
+    close(); trigger.blur();
+  });
 
-native.addEventListener('change', () => {
-  const o = [...native.options].find(opt => opt.value === native.value);
-  if (o) label.textContent = o.textContent;
-    [...menu.children].forEach(li => li.toggleAttribute('aria-selected', li.dataset.value===native.value));
-});
+  /* клавиатура */
+  dd.addEventListener('keydown', (e) => {
+    const opts = [...menu.querySelectorAll('.sort-option')];
+    const i = opts.indexOf(document.activeElement);
+    if (e.key === 'ArrowDown'){ e.preventDefault(); (opts[i+1] || opts[0])?.focus(); }
+    else if (e.key === 'ArrowUp'){ e.preventDefault(); (opts[i-1] || opts.at(-1))?.focus(); }
+    else if (e.key === 'Escape'){ close(); trigger.focus(); }
+    else if (e.key === 'Enter'){ document.activeElement?.click(); }
+  });
+
+  /* синхронизация метки, если сортировку меняет твой код */
+  native.addEventListener('change', () => {
+    const o = [...native.options].find(x => x.value === native.value);
+    if (o) label.textContent = o.textContent;
+  });
+})();
+
+
+
+(function attachPressAnimation(minHold = 180) { // мс
+  const btns = document.querySelectorAll('.card-like-button');
+
+  btns.forEach(btn => {
+    let downAt = 0;
+    let released = false;
+    let holdTimer = null;
+
+    const pressDown = () => {
+      clearTimeout(holdTimer);
+      released = false;
+      downAt = performance.now();
+      btn.classList.add('is-pressed');
+    };
+
+    const pressUp = () => {
+      if (released) return;
+      released = true;
+      const elapsed = performance.now() - downAt;
+      const wait = Math.max(0, minHold - elapsed);
+      clearTimeout(holdTimer);
+      holdTimer = setTimeout(() => {
+        btn.classList.remove('is-pressed');
+      }, wait);
+    };
+
+    // Pointer (мышь/тач/стилус)
+    btn.addEventListener('pointerdown', pressDown);
+    btn.addEventListener('pointerup', pressUp);
+    btn.addEventListener('pointerleave', pressUp);
+    btn.addEventListener('pointercancel', pressUp);
+
+    // Клава (доступность): Space/Enter
+    btn.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' || e.code === 'Enter') {
+        // предотвращаем «залипание» при авто-повторе
+        if (!btn.classList.contains('is-pressed')) pressDown();
+      }
+    });
+    btn.addEventListener('keyup', (e) => {
+      if (e.code === 'Space' || e.code === 'Enter') pressUp();
+    });
+  });
+})();
