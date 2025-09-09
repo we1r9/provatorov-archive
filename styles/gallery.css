@@ -26,6 +26,7 @@
   font-family: "FiraSans-Regular", "Segoe UI", Helvetica, Arial;
   color: #111;
   z-index: 100;
+  padding-left: 0.7rem;
 }
 
 /* Базовые настройки */
@@ -39,6 +40,11 @@
   --z-sortbar: 49;
   --sb-h: 10px;
   --edge-thick: 2px;
+}
+
+:root{
+  /* единый край страницы */
+  --edge-pad: 1rem;
 }
 
 .site-header {
@@ -103,7 +109,7 @@ body:not(.bar-hidden) .site-header::after{
   gap: 16px;
   width: 100%;
   max-width: 1400px;
-  padding: 0 1rem;
+  padding: 0 var(--edge-pad);
   margin: 0 auto;
 }
 
@@ -221,98 +227,118 @@ body:not(.bar-hidden) .site-header::after{
   display: inline-grid;
 }
 
-/* Кнопка избранного */
+
+
+
+/* ===== Кнопка избранного в виде чипсы (визуально как "Назад") ===== */
+/* База */
 .fav-btn{
+  all: unset;
+  color: #292929ff;
   display: inline-flex;
   align-items: center;
-  color: #111;
-  text-decoration: none;
-  will-change: auto;
-  padding-left: .8rem;
-  transition:
-    transform 240ms cubic-bezier(.22,.61,.36,1),
-    box-shadow 240ms ease,
-    color 160ms ease,
-    background-color 200ms ease,
-    padding 200ms ease,
-    border-radius 200ms ease;
-  z-index: 100;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
   -webkit-tap-highlight-color: transparent;
+  vertical-align: middle;
+
+  /* геометрия чипсы */
+  min-height: 40px;
+  border-radius: 999px;
+
+  /* стеклянная подложка + тени (как у go-back-arrow) */
+  -webkit-backdrop-filter: blur(3px) saturate(1.06) contrast(1.02);
+          backdrop-filter: blur(3px) saturate(1.06) contrast(1.02);
+  background: rgba(255,255,255,.10);
+  box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,.10),
+    0 3px 8px -3px rgba(0,0,0,.08);
+
+  /* плавность и сохранены предыдущие правила по transition */
+  will-change: transform, box-shadow, background-color;
+  transform: translateZ(0);
+  transform-origin: center;
+  transition:
+    padding-inline 300ms cubic-bezier(.22,.61,.36,1),
+    box-shadow 300ms ease,
+    background-color 300ms ease,
+    color 300ms ease,
+    border-radius 300ms ease,
+    transform 300ms cubic-bezier(.22,.61,.36,1);
+  z-index: 100;
+  text-decoration: none;
 }
 
-.fav-btn:hover{ transform: scale(1.15); }
+.fav-btn svg{ display: block; }
 
-.fav-btn:active{ transform: scale(1); }
-
+/* Фокус — как было */
 .fav-btn:focus{ outline: none; }
-
 .fav-btn:focus-visible{
   outline: 2px solid #1113;
   outline-offset: 2px;
 }
-
 .fav-btn::-moz-focus-inner{ border: 0; }
 
-.fav-btn svg{ display: block; }
-
-.fav-btn.has-count{
-  gap: .25rem;
-  padding: .4rem .7rem;
-  min-height: 40px;
-  border-radius: 999px;
-}
-
-.fav-btn.has-count:hover{
-  transform: scale(1.05);
+/* Ховер — как у "Назад": без смещения, мягче тень + светлее фон */
+.fav-btn:hover{
+  transform: scale(1.12);
   box-shadow:
-    0 4px 8px rgba(0,0,0,.08),
-    0 10px 25px rgba(0,0,0,.12);
+    inset 0 0 0 1px rgba(0,0,0,.10),
+    0 4px 10px -4px rgba(0,0,0,.10);
 }
+
+
+.fav-btn:not(.has-count){
+  inline-size: 40px;
+  block-size: 40px;
+  justify-content: center;
+  align-items: center;
+}
+
+.fav-btn:not(.has-count) .fav-count{
+  display: none;   /* ключевая правка: убрать из потока */
+}
+
+/* С числом — как у кнопки "Назад": расширенные паддинги */
+.fav-btn.has-count{
+  padding: 0 .7rem 0 .52rem;
+}
+
+/* Дополнительно: при наличии числа отображаем счётчик плавно */
+.fav-count{
+  max-width: 0;                       /* скрыт по ширине */
+  overflow: hidden;                   /* обрезаем контент */
+  opacity: 0;
+  transform: translateX(-6px) scale(.92);
+  margin-left: 0;                     /* без зазора до появления */
+  font-size: 1.1rem;
+  font-variant-numeric: tabular-nums;
+  transition:
+    max-width 300ms cubic-bezier(.22,.61,.36,1),
+    margin-left 300ms cubic-bezier(.22,.61,.36,1),
+    opacity 300ms ease,
+    transform 300ms ease;
+  /* оставь min-width, если хочешь выравнивание разрядов — можно убрать */
+  min-width: 0;                       /* не мешаем закрытию */
+}
+
 
 .fav-btn.has-count .fav-count{
+  max-width: 4ch;                     /* хватает на 3–4 разряда */
+  margin-left: .25rem;                /* как твой gap */
   opacity: 1;
   transform: translateX(0) scale(1);
 }
 
-.fav-btn.has-count:active{ transform: scale(1); }
 
-.fav-count{
-  opacity: 0;
-  transform: translateX(-4px) scale(.92);
-  transition: opacity 220ms ease, transform 220ms ease;
-  font-size: 1.1rem;
-  font-variant-numeric: tabular-nums;
-  min-width: 1.2ch;
-}
-
+/* Пульс при обновлении числа — без изменений */
 @keyframes favCountPop{
-  0%{ transform: translateX(0) scale(1); }
-  50%{ transform: translateX(0) scale(1.18); }
+  0%{   transform: translateX(0) scale(1); }
+  50%{  transform: translateX(0) scale(1.18); }
   100%{ transform: translateX(0) scale(1); }
 }
-
 .fav-count.is-updating{ animation: favCountPop 180ms ease; }
-
-@supports selector(:focus-visible){
-  .fav-btn:focus{ outline: none; }
-}
-
-@media (max-width: 640px){
-  .site-header{
-    height: auto;
-    padding: .6rem 0;
-  }
-  .header-inner{
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto auto;
-    row-gap: 10px;
-  }
-  .header-middle{
-    grid-column: 1 / -1;
-    justify-self: stretch;
-  }
-  .header-middle .search-bar{ max-width: none; }
-}
 
 
 
@@ -396,7 +422,7 @@ body::before{
   box-shadow: none !important;
 }
 .site-header{
-  top: 0;
+  top: -1.4px;
   height: var(--header-h);
   z-index: var(--z-header);
   border-bottom-left-radius: var(--hdr-radius);
@@ -431,7 +457,6 @@ body::before{
   margin: 10px auto;
   padding: 0 1rem;
 }
-.sort-actions{ padding-right: 12.6px; }
 
 /* Состояния видимости */
 #sortBar.is-visible{
@@ -506,38 +531,9 @@ body.bar-hidden .site-header{ overflow: clip; }
 
 
 
-/* ====== BIG BLURRED MONOCHROME DOTS ====== */
-:root{
-  --dots-size: clamp(320px, 45vw, 720px); /* размер пятен */
-  --dots-blur: 6px;                      /* сила размытия */
-  --dots-opacity: 1;                    /* прозрачность */
-}
 
-body::after{
-  content:"";
-  position: fixed;
-  inset: -18vh -18vw;
-  z-index: -1;
-  pointer-events: none;
-  opacity: var(--dots-opacity);
-  filter: blur(var(--dots-blur));
-  transform: translateZ(0);
 
-  background:
-    radial-gradient(var(--dots-size) var(--dots-size) at 15% 20%,  rgba(0,0,0,0.8), transparent 65%),
-    radial-gradient(calc(.8*var(--dots-size)) calc(.8*var(--dots-size)) at 80% 25%, rgba(80,80,80,0.7), transparent 65%),
-    radial-gradient(calc(.9*var(--dots-size)) calc(.9*var(--dots-size)) at 30% 75%, rgba(40,40,40,0.6), transparent 60%),
-    radial-gradient(var(--dots-size) var(--dots-size) at 85% 70%,  rgba(120,120,120,0.6), transparent 65%),
-    radial-gradient(calc(.7*var(--dots-size)) calc(.7*var(--dots-size)) at 50% 50%, rgba(0,0,0,0.5), transparent 60%);
-}
 
-@media (max-width:640px){
-  :root{
-    --dots-size: clamp(280px, 70vw, 520px);
-    --dots-blur: 52px;
-    --dots-opacity: .42;
-  }
-}
 
 
 
@@ -559,161 +555,9 @@ body::after{
 
 
 
-/* Empty state */
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: 1rem;
-}
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* ========== FOOTER ========== */
-.footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.9rem;
-  color: #282828;
-  gap: 1rem;
-  padding: .8rem 0;
-}
-
-.footer-left,
-.footer-right {
-  display: inline-flex;
-  align-items: center;
-  gap: .3rem;
-  text-decoration: none;
-  color: inherit;
-  cursor: pointer;
-}
-
-.telegram-text {
-  text-decoration: none;
-  color: inherit;
-}
-
-.telegram-logo-img {
-  width: 1.5rem;
-  height: auto;
-}
-
-.rights-text {
-  color: #666666;
-}
-
-.rights-year-text {
-  font-size: 0.81rem;
-}
-
-.site-footer {
-  margin-top: auto;
-  width: 100%;
-  box-shadow: 0 -1px 1px rgba(0,0,0,.1);
-} 
-
-.footer { 
-  width: 100%; 
-}
-
-/* Load more button */
-.load-more-wrap {
-  display: flex;
-  justify-content: center;
-  padding: 0 0 2rem;
-}
-
-.load-more-btn {
-  padding: 0.6rem 1.2rem;
-  border-radius: 999px;
-  border: 1px solid #ddd;
-  background: #fff;
-  cursor: pointer;
-  font-size: 0.95rem;
-}
-
-/* Search counter */
-.search-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  align-items: center;
-  min-height: 1.6rem;
-}
-
-.search-counter[hidden] {
-  display: none;
-}
-
-.search-counter {
-  display:inline-block;
-  padding: 0.6rem 1.2rem;
-  border-radius: 999px;
-  border: 1px solid #ddd;
-  background: #fff;
-  cursor: pointer;
-  font-size: 0.95rem;
-}
-
-/* Scroll top button */
-.scroll-top-btn {
-  position: fixed;
-  bottom: 2rem;
-  right: 2rem;
-  width: 44px;
-  height: 44px;
-  border: none;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 2px 6px rgba(0,0,0,.2);
-  cursor: pointer;
-  font-size: 1.2rem;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  transition: opacity .3s ease;
-  z-index: 1000;
-}
-
-.scroll-top-btn.show {
-  display: flex;
-  opacity: 1;
-  margin-bottom: 3rem;
-}
 
 
 
@@ -1172,57 +1016,147 @@ main.container {
 
 
 
+/*
 
+.grid{ --row-gap: var(--gap); overflow-anchor: none; }
 
-
-
-
-
-/* ////////////////////////////////////////// */
-
-.edge-mask{
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 45;             /* ниже шапки/сортбара, но выше контента */
-}
-.edge-mask svg{
-  width: 100%; height: 100%;
-  display: block;
-  /* лёгкий общий blur краёв, чтобы они «вплавлялись» в стекло */
-  filter: blur(0.4px);
+.card[data-row]{
+  transform-origin: top center;
+  backface-visibility: hidden;
+  transition: transform .18s ease, opacity .18s ease;
 }
 
-
-
-
-
-/* Общие настройки для motion-path */
-.card.edge-left, .card.edge-right{
-  offset-rotate: 0deg;
-  will-change: transform, opacity;
+.card[data-row].row-active{
+  will-change: transform;
 }
 
-/* Дуги (подгони радиусы под свой вкус) */
-.card.edge-left{
-  offset-path: path("M 0 0 C -12 12, -18 28, -22 44"); /* вправо->влево и чуть вниз */
-}
-.card.edge-right{
-  offset-path: path("M 0 0 C 12 12, 18 28, 22 44");    /* влево->вправо и чуть вниз */
+.card[data-row].row-active::before{
+  -webkit-backdrop-filter: none;
+          backdrop-filter: none;
+  background: rgba(255,255,255, calc(var(--lg-milk) + .04));
 }
 
-/* Связка с горизонтальным пересечением (Chromium/Safari) */
-@supports (animation-timeline: view(inline)) {
-  .card.edge-left, .card.edge-right{
-    animation: slideOut 1 both linear;
-    animation-timeline: view(inline);
-    /* Когда элемент начинает выходить за окно по X — старт;
-       когда полностью «ушёл» — конец. Подстрой «range» при нужде */
-    animation-range: exit -10% cover 40%;
-  }
+.card[data-row]{
+  transform:
+    translateY(calc( (-8px - (var(--row-gap)*.60)) * var(--rowP, 0) ))
+    scale(calc(1 - .18 * var(--rowP, 0)));
+  opacity: calc(1 - 0.12 * var(--rowP, 0));
+}
 
-  @keyframes slideOut{
-    from { offset-distance: 0%; opacity: 1; filter: blur(0px); transform: translateZ(0) scale(1); }
-    to   { offset-distance: 100%; opacity: .0; filter: blur(1.2px); transform: translateZ(0) scale(.985); }
-  }
+@media (pointer: coarse), (max-width: 640px){
+  .card[data-row]{ filter: none !important; }
+}
+
+.card{
+  content-visibility: auto;
+  contain-intrinsic-size: 320px 260px;
+}
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Load more button */
+.load-more-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 0 0 2rem;
+}
+
+.load-more-btn {
+  padding: 0.6rem 1.2rem;
+  border-radius: 999px;
+  border: 1px solid #ddd;
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+/* Search counter */
+.search-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  min-height: 1.6rem;
+}
+
+.search-counter[hidden] {
+  display: none;
+}
+
+.search-counter {
+  display:inline-block;
+  padding: 0.6rem 1.2rem;
+  border-radius: 999px;
+  border: 1px solid #ddd;
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+
+
+
+
+/* SHUFFLE */
+.shuffle-button{
+  cursor: pointer;
+}
+
+#shuffleBtn svg{
+  display:block;
+  transform-origin:center;
+  transition: transform .5s cubic-bezier(.22,.61,.36,1);
+}
+
+
+
+
+
+
+
+/* Empty state */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1rem;
 }

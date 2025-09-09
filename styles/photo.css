@@ -1,46 +1,142 @@
+/* Шрифты */
+@font-face {
+  font-family: "SF Pro Rounded";
+  src: url("../../fonts/SF-Pro-Rounded-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "SF Pro Rounded";
+  src: url("../../fonts/SF-Pro-Rounded-Medium.otf") format("opentype");
+  font-weight: 500;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "FiraSans-Regular";
+  src: url("../../fonts/FiraSans-Regular.ttf") format("opentype");
+  font-display: swap;
+}
+
+/* ====== BIG BLURRED MONOCHROME DOTS ====== */
+:root{
+  --dots-size: clamp(320px, 45vw, 720px); /* размер пятен */
+  --dots-blur: 6px;                      /* сила размытия */
+  --dots-opacity: 1;                    /* прозрачность */
+}
+
+body::after{
+  content:"";
+  position: fixed;
+  inset: -18vh -18vw;
+  z-index: -1;
+  pointer-events: none;
+  opacity: var(--dots-opacity);
+  filter: blur(var(--dots-blur));
+  transform: translateZ(0);
+
+  background:
+    radial-gradient(var(--dots-size) var(--dots-size) at 15% 20%,  rgba(0,0,0,0.8), transparent 65%),
+    radial-gradient(calc(.8*var(--dots-size)) calc(.8*var(--dots-size)) at 80% 25%, rgba(80,80,80,0.7), transparent 65%),
+    radial-gradient(calc(.9*var(--dots-size)) calc(.9*var(--dots-size)) at 30% 75%, rgba(40,40,40,0.6), transparent 60%),
+    radial-gradient(var(--dots-size) var(--dots-size) at 85% 70%,  rgba(120,120,120,0.6), transparent 65%),
+    radial-gradient(calc(.7*var(--dots-size)) calc(.7*var(--dots-size)) at 50% 50%, rgba(0,0,0,0.5), transparent 60%);
+}
+
+/* Базовые настройки */
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: "SF Pro Rounded", "Segoe UI", Helvetica, Arial;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main { flex: 1 0 auto; }
+
+.container {
+  margin: 0 auto;
+  padding-inline: clamp(16px, 6vw, 48px);
+}
+
+main.container {
+  padding-top: calc(var(--header-h) + var(--sort-h));
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* ========== MAIN CONTAINER ========== */
 .view-container{
   display: grid;
-  grid-template-columns: minmax(0,1fr) minmax(280px,320px);
+  grid-template-columns: minmax(0,1fr) minmax(280px,300px);
   grid-template-areas: "photo aside";
-  column-gap: 4rem;
+  column-gap: 5rem;
   row-gap: 2rem;  /* например */
   max-width: 1200px;
   margin: 0 auto;
-  padding: 1rem 1rem 3rem;
+  padding: 2rem 1rem 2rem;
   margin-top: 2rem;
 }
 
-/* Header */
-.aside-header {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.header-left {
-  display: flex;
-  gap: 0.7rem;
-}
-
-.go-back-arrow {
-  text-decoration: none;
-  background-color: rgb(240, 240, 240);
-  padding: 0.3rem 0.45rem;
-  border-radius: 50px;
-  color: black;
-  cursor: pointer;
-}
+/* убираем верхний отступ у контейнера просмотра (перекрытие) */
+.view > .view-container{ margin-top: 0; }
 
 /* ========== PHOTO ========== */
+/* контейнер */
 .photo-wrap{
   grid-area: photo;
   display: grid;
   place-items: center;
-  border-radius: 20px;
-  overflow: hidden;
+  border-radius: 40px;
+  overflow: clip;
 }
 
+.photo-shadow{
+  /* только тень */
+  filter: drop-shadow(0 10px 28px rgba(0,0,0,.16))
+          drop-shadow(0  2px  6px rgba(0,0,0,.08));
+}
+
+/* картинка */
 .photo-img{
   display:block;
   max-width:100%;
@@ -48,44 +144,70 @@
   width:auto;
   height:auto;
   object-fit:contain;
-  border-radius: 20px;
+  border-radius: inherit;
 }
-
 .view-container.is-portrait{
   grid-template-columns: minmax(0,680px) minmax(280px,360px);
 }
-
 .photo-wrap.is-landscape .photo-img { max-height: 65vh; }
 .photo-wrap.is-portrait  .photo-img { max-height: 80vh; }
 .photo-wrap.is-panorama  .photo-img { max-height: 55vh; }
 
-@media (max-width: 900px){
-  .view-container,
-  .view-container.is-portrait{
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "photo"
-      "aside";
-    column-gap: 1rem;
-    row-gap: 1.25rem;
-    max-width: 100%;
-  }
-}
-
-.photo-aside {
+/* ========== ASIDE ==========
+   (общая колонка справа) */
+.photo-aside{
   display: flex;
   flex-direction: column;
+  min-height: 100%;
+}
+
+/* заголовок aside */
+.aside-header{
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.title{ margin-top:0; font-size:1.4rem; }
+
+.date{ margin-top:8px; }
+
+/* базовые интервалы */
+:root{
+  --space-date-desc: 0px;   /* от даты до описания */
+  --space-desc-camera: 24px; /* от описания до камеры */
+}
+
+/* описание */
+.aside-description{ margin-top: var(--space-date-desc); }
+
+/* если внутри описания пусто — прячем секцию целиком */
+.aside-description:has(> .description:empty){
+  display:none;              /* не оставляем пустой зазор */
+  margin-top:0;
+}
+
+/* камера по умолчанию */
+.aside-block-camera{ margin-top: var(--space-desc-camera); }
+
+/* если описания нет — складываем оба отступа от даты до камеры */
+.aside-description:has(> .description:empty) + .aside-block-camera{
+  margin-top: calc(var(--space-date-desc) + var(--space-desc-camera));
+}
+
+
+.aside-description{
+  margin-top: 14px;
 }
 
 /* ========== CAMERA BLOCK ========== */
-.aside-block-camera {
+.aside-block-camera{
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem 2rem;
   font-size: 0.9rem;
+  margin-top: 24px;
 }
-
-.aside-block-camera .row {
+.aside-block-camera .row{
   grid-column: 1 / -1;
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -94,18 +216,217 @@
   row-gap: .25rem;
   align-items: start;
 }
-
-.aside-block-camera .row p:nth-child(1) { grid-column: 1; grid-row: 1; }
-.aside-block-camera .row p:nth-child(2) { grid-column: 1; grid-row: 2; }
-.aside-block-camera .row p:nth-child(3) { grid-column: 2; grid-row: 1; }
-.aside-block-camera .row p:nth-child(4) { grid-column: 2; grid-row: 2; }
-
-.aside-block-camera .row p { margin: 0; }
+.aside-block-camera .row p:nth-child(1){ grid-column: 1; grid-row: 1; }
+.aside-block-camera .row p:nth-child(2){ grid-column: 1; grid-row: 2; }
+.aside-block-camera .row p:nth-child(3){ grid-column: 2; grid-row: 1; }
+.aside-block-camera .row p:nth-child(4){ grid-column: 2; grid-row: 2; }
+.aside-block-camera .row p{ margin: 0; }
 .aside-block-camera .row p:nth-child(1),
-.aside-block-camera .row p:nth-child(3) { font-weight: 600; color: #444; }
+.aside-block-camera .row p:nth-child(3){ font-weight: 600; color: #444; }
 
-@media (max-width: 700px) {
-  .view-container {
+/* запрет переносов у лейблов */
+.aside-block-camera .row p:nth-child(1),
+.aside-block-camera .row p:nth-child(3){
+  white-space: nowrap;
+}
+
+/* на совсем узких — разрешаем перенос, чтобы не выезжало */
+@media (max-width: 420px){
+  .aside-block-camera .row p:nth-child(1),
+  .aside-block-camera .row p:nth-child(3){
+    white-space: normal;
+  }
+}
+
+
+/* Лейблы: обычный вес, чёрные */
+.aside-block-camera .row p:nth-child(1),
+.aside-block-camera .row p:nth-child(3){
+  font-weight: 400;     /* был 600 */
+  color: #000;          /* чёрный */
+  white-space: nowrap;  /* чтобы не переносилось */
+}
+
+/* Значения: на 2px меньше и серые */
+.aside-block-camera .row p:nth-child(2),
+.aside-block-camera .row p:nth-child(4){
+  /* базовый размер у блока сейчас 0.9rem — уменьшаем ровно на 2px */
+  font-size: calc(0.9rem - 1.1px);
+  color: #434343;
+}
+
+
+
+/* ========== ACTIONS (низ правого столбца) ========== */
+.photo-actions{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: auto;
+  align-items: center;
+  gap: 1rem;
+}
+
+
+/* БАЗА */
+.download-wrap{
+  display: flex;
+  align-items: center;
+}
+.download-hq-btn{
+  font-family: SF Pro Rounded;
+  border: none;
+  padding: 0.65rem 1rem;
+  font-size: 1.05rem;
+  color: #fff;
+  background: #292929ff;
+  border-radius: 999px;
+
+  /* важно: чтобы спиннер занимал место внутри кнопки */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  transition: gap 0.25s ease, padding 0.25s ease;
+
+  box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,.10),
+    0 6px 12px rgba(0,0,0,.08);
+
+  will-change: transform, box-shadow, background-color;
+  transform: translateZ(0);            /* без мерцаний */
+  transform-origin: center;
+  transition:
+    transform .18s cubic-bezier(.22,.61,.36,1),
+    box-shadow .18s ease,
+    background-color .18s ease;
+}
+
+.download-hq-btn:hover{
+  box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,.10),
+    0 10px 20px rgba(0,0,0,.18);
+  cursor: pointer;
+}
+
+/* Состояние загрузки: без прозрачности и без absolute */
+.download-hq-btn.is-loading{
+  pointer-events: none;
+  opacity: 1;
+}
+
+/* по умолчанию хвостика нет */
+.download-hq-btn::after{ content: none; }
+
+/* при загрузке — показываем спиннер как обычный элемент справа */
+.download-hq-btn.is-loading::after{
+  content: "";
+  width: 13px;
+  height: 13px;
+  border: 2px solid rgba(255,255,255,.6);
+  transition: opacity 0.25s ease, transform 0.25s ease, margin-left 0.25s ease;
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin .6s linear infinite;
+  flex: 0 0 auto;            /* не сжимать */
+}
+
+.download-hq-btn.is-unavailable:hover {
+  transform: scale(1);
+  cursor: default;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* опционально: уважение prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce){
+  .download-hq-btn.is-loading::after{ animation: none; }
+}
+
+
+
+
+
+/* Лайк в aside */
+
+
+.photo-actions .card-like-button {
+  all: unset;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  cursor: pointer;
+  padding: 2px;
+
+  /* стекло */
+  -webkit-backdrop-filter: blur(3px) saturate(1.06) contrast(1.02);
+          backdrop-filter: blur(3px) saturate(1.06) contrast(1.02);
+  background: rgba(255,255,255,.28);
+  box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,.10),
+    0 6px 12px rgba(0,0,0,.06);
+
+  --cb: cubic-bezier(.22,.61,.36,1);
+  --sc: 1;
+
+  transform: translateZ(0) scale(var(--sc));
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+
+  transition:
+    transform        .26s var(--cb),
+    background-color .28s var(--cb),
+    box-shadow       .28s var(--cb);
+}
+
+.photo-actions .card-like-button:hover {
+  background: rgba(255,255,255,.36);
+  box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,.10),
+    0 10px 20px rgba(0,0,0,.14);
+}
+
+.photo-actions .card-like-button:active,
+.photo-actions .card-like-button.is-pressed {
+  --sc: .90; /* глубина нажатия */
+  transition:
+    transform        .085s ease-out,
+    background-color .12s var(--cb),
+    box-shadow       .12s var(--cb);
+}
+
+/* Состояние избранного */
+.photo-actions .card-like-button.is-fav svg { fill: #ff002a; }
+.photo-actions .card-like-button svg {
+  transition: fill .28s var(--cb);
+}
+
+
+/* ========== MEDIA ==========
+   (внизу, чтобы перекрывать выше) */
+@media (max-width: 1230px){
+  .view-container,
+  .view-container.is-portrait{
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "photo"
+      "aside";
+    column-gap: 1rem;
+    row-gap: 24px;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 1230px){
+  .photo-actions{
+    margin-top: 24px;
+  }
+}
+
+@media (max-width: 700px){
+  .view-container{
     grid-template-columns: 1fr;
     grid-template-areas:
       "photo"
@@ -114,104 +435,130 @@
   }
 }
 
-/* Photo actions section */
-.photo-actions {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  margin-top: auto;
+.aside-block-camera .row,
+.aside-block-camera .row p{
+  min-width: 0;
 }
 
-/* Download HQ button */
-.download-hq-btn {
-  font-family: SF Pro rounded;
-  margin-top: auto;
-  border: none;
-  padding: 0.7rem 1.5rem;
-  font-size: 1.05rem;
-  color: white;
-  background-color: rgb(31, 31, 31);
-  border-radius: 10px;
+@media (max-width: 390px){
+  .aside-block-camera .label-focal{
+    display: inline-block;
+    max-width: 12ch;         /* длину можно подстроить */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* троеточие */
+    vertical-align: bottom;
+  }
 }
 
-.download-hq-btn:hover {
-  cursor: pointer;
-  transform: scale(1.03);
-  transition: transform 0.1s ease;
-}
 
-.download-hq-btn.is-loading {
-  pointer-events: none;
-  opacity: .6;
-  position: relative;
-}
 
-.download-hq-btn.is-loading::after {
-  content: '…';
-  margin-left: .4rem;
-}
 
-.download-hq-btn.is-unavailable {
-  background: #fff;
-  color: #d00;
-  border: 1px solid #000000;
-  cursor: not-allowed;
-  pointer-events: none;
-  opacity: 1;
-}
 
-.download-hq-btn.is-offline {
-  opacity: 0.6;
-}
 
-.download-hq-btn.is-offline:hover { 
-  transform: none;
-  pointer-events: none;
-}
+
+
+
+
+
+
+
+
+
+
 
 /* Toast */
 .toast {
   position: fixed;
-  top: 12px;
+  top: 54px;
   left: 50%;
-  transform: translate(-50%, -140%);
-  background: rgba(20,20,20,.92);
+  transform: translate(-50%, -250%);
+  background: rgba(20,20,20,0.92);
   color: #fff;
-  padding: 10px 14px;
-  border-radius: 10px;
+  padding: 10px 14px 10px 13px;
+  border-radius: 999px;
   box-shadow: 0 10px 28px rgba(0,0,0,.25);
-  opacity: 0;
+  opacity: 0;                  /* базово скрыт */
   pointer-events: none;
   z-index: 9999;
-  transition: transform .25s ease, opacity .25s ease;
+
+  /* вход: двигаем + показываем, выход: только opacity */
+  transition: transform .3s ease, opacity .3s ease;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+
+  will-change: transform, opacity;
+  white-space: nowrap;
 }
+
+/* Псевдо-иконка слева (скрыта по умолчанию) */
+.toast::before{
+  content: "";
+  width: 17px;
+  height: 17px;
+  flex: 0 0 20px;
+  background: var(--toast-icon, none) center / contain no-repeat;
+  display: none;
+}
+
+/* Показываем, если иконка задана */
+.toast.has-icon::before{
+  display: inline-block;
+}
+
+/* Показ: выезд + появление */
 .toast.is-show {
   transform: translate(-50%, 0);
   opacity: 1;
 }
 
-/* Add to favorites button */
-.card-like-button {
-  font-size: 2rem;
+/* Уход: остаёмся на месте и плавно растворяемся */
+.toast.is-leaving {
+  transform: translate(-50%, 0);   /* фиксируем позицию, чтобы не уезжал */
+  opacity: 0;                      /* только fade-out */
+  transition: opacity .4s ease;    /* на выходе анимируем только прозрачность */
 }
 
-/* Similar photos section */
+
+
+
+
+
+
+
+
+
+
+/* ===== Similar photos (точно как на главной, без hover) ===== */
 :root{
-  --card-w: 260px;
+  /* фикс-размеры карточки */
+  --similar-card-w: 260px;
+  --similar-img-h: 150px;
+
+  /* стили стекла — как у .card на главной */
+  --border-radius: 32px;
+  --lg-blur: 12px;
+  --lg-milk: .15;
+  --lg-stroke: rgba(0,0,0,.10);
+  --lg-hi: rgba(255,255,255,.40);
+  --lg-shadow: 0 10px 24px -14px rgba(0,0,0,.18);
 }
 
+/* секция */
 .similar{
-  margin-top: 2rem;
+  margin-top: 1rem;
   grid-column: 1 / -1;
   min-width: 0;
   position: relative;
 }
-
 .similar-title{
   margin: 0 0 .75rem;
-  font-size: 1.3rem;
+  font-size: 1.35rem;
 }
 
+/* горизонтальная лента */
 .similar-strip{
   display: flex;
   flex-wrap: nowrap;
@@ -224,48 +571,93 @@
   min-width: 0;
   overflow-anchor: none;
 }
-
-.similar-card{
-  flex: 0 0 var(--card-w);
-  width: var(--card-w);
-  min-width: var(--card-w);
-  max-width: var(--card-w);
-  display: grid;
-  grid-template-rows: 1fr auto;
-  text-decoration: none;
-  color: inherit;
-  border-radius: 22px;
-  overflow: hidden;
-  scroll-snap-align: start;
-  background-color: rgb(245, 245, 245);
-}
-
-.similar-img{
-  width: 100%;
-  height: 150px;
-  object-fit: cover;
-  display: block;
-  background: #eee;
-}
-
-.similar-caption{
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 8px 10px;
-  font-size: 0.9rem;
-  opacity: 0.85;
-}
-
 .similar-strip::-webkit-scrollbar{ height: 6px; }
 .similar-strip::-webkit-scrollbar-thumb{
   border-radius: 999px;
   background: #cfcfcf;
 }
 
+/* ===== Карточка (визуально как .card) ===== */
+.similar-card{
+  position: relative;
+  isolation: isolate;
+  flex: 0 0 var(--similar-card-w);
+  width: var(--similar-card-w);
+  min-width: var(--similar-card-w);
+  max-width: var(--similar-card-w);
+
+  display: grid;
+  grid-template-rows: auto auto;
+
+  text-decoration: none;
+  color: inherit;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  background: transparent;
+  box-shadow: 0 2px 24px -14px rgba(0,0,0,.18);
+  scroll-snap-align: start;
+}
+
+/* стеклянная подложка + нижняя кромка как у .card */
+.similar-card::before{
+  content:"";
+  position:absolute; inset:0;
+  z-index:0; pointer-events:none;
+  border-radius: inherit;
+  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(1.06) contrast(1.02);
+          backdrop-filter: blur(var(--lg-blur)) saturate(1.06) contrast(1.02);
+  background: rgba(255,255,255,var(--lg-milk));
+  box-shadow:
+    inset 0 0 0 1px var(--lg-stroke),
+    inset 0 1px 0 var(--lg-hi);
+}
+.similar-card::after{
+  content:"";
+  position:absolute; left:0; right:0; bottom:0; height:14px;
+  z-index:0; pointer-events:none;
+  background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(0,0,0,.06));
+}
+
+/* фото: фикс-высота 150, ширина 100%, скругление сверху */
+.similar-img{
+  grid-row: 1;
+  display:block;
+  width:100%;
+  height: var(--similar-img-h);
+  object-fit: cover;
+  border-top-left-radius: var(--border-radius);
+  border-top-right-radius: var(--border-radius);
+  border: 0;
+  filter: saturate(1.02) contrast(1.02);
+  position: relative; z-index:1;
+}
+
+/* подпись: как .card-content + .card-meta */
+.similar-caption{
+  grid-row: 2;
+  position: relative; z-index:2;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  column-gap: 10px;
+  padding: 12px 16px 14px;
+}
+.cap-loc{
+  font-size: 14px;
+  color: rgba(17,17,17,.86);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cap-date{
+  font-size: 13px;
+  color: rgba(17,17,17,.72);
+  margin-left: 10px;
+}
+
+/* сентинел */
 .similar-sentinel{
   flex: 0 0 1px;
-  width: 1px;
-  height: 1px;
+  width: 1px; height: 1px;
   pointer-events: none;
 }

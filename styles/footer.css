@@ -1,0 +1,234 @@
+:root{
+  /* единый край страницы */
+  --edge-pad: 1rem;
+}
+
+:root{
+  --page-max: 1400px;                 /* фолбэк, если страница не задаёт */
+  --footer-gutter: clamp(16px, 6vw, 48px);
+}
+
+/* Ссылки в футере — без подчёркивания и с наследованием цвета */
+.site-footer .footer-left,
+.site-footer .footer-right,
+.site-footer .footer-left:link,
+.site-footer .footer-left:visited,
+.site-footer .footer-right:link,
+.site-footer .footer-right:visited {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* По желанию: при hover не подчеркивать, только тень чипсы */
+.site-footer .footer-left:hover,
+.site-footer .footer-right:hover {
+  text-decoration: none;
+}
+
+/* Текст внутри чипсы — тоже без подчёркивания */
+.telegram-text {
+  color: inherit;
+  text-decoration: none;
+  line-height: 1;
+}
+
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+  color: #282828;
+  gap: 1rem;
+  height: 72px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* ==== Footer links: same FX as .fav-btn.has-count ==== */
+
+
+.footer-left{
+  display: inline-flex;
+  align-items: center;
+  gap: .25rem;
+  padding: 5px 9px;     /* теперь есть паддинги */
+  border-radius: 999px;
+  line-height: 1;                /* чтобы текст не раздувал высоту */
+  background: transparent;
+  transition:
+    box-shadow 300ms ease,
+    background-color 300ms ease,
+    border-radius 300ms ease,
+    padding 300ms ease;
+}
+
+
+.telegram-text{ 
+  margin:0; 
+  line-height:1; 
+  font-size:16px; 
+}
+
+.telegram-logo-img{ 
+  height: 29px; 
+  width:auto; 
+  display:block; 
+}
+
+
+
+.about-text{
+  font-size:16px; 
+  display: inline-flex;
+  align-items: center;
+  gap: .25rem;
+  padding: 10px 11px;     /* теперь есть паддинги */
+  border-radius: 999px;
+  line-height: 1;                /* чтобы текст не раздувал высоту */
+  background: transparent;
+  white-space: nowrap;
+  transition:
+    box-shadow 300ms ease,
+    background-color 300ms ease,
+    border-radius 300ms ease,
+    padding 300ms ease;
+}
+
+.about-text:hover{
+  /* верх/низ будут постоянными благодаря height */
+  box-shadow:
+    0 4px 8px rgba(0,0,0,.08),
+    0 10px 25px rgba(0,0,0,.12);
+  /* если хочешь “дышать” по бокам: */
+  /* padding: 0 calc(var(--chip-px) + 2px); */
+}
+
+.footer-left:hover{
+  /* верх/низ будут постоянными благодаря height */
+  box-shadow:
+    0 4px 8px rgba(0,0,0,.08),
+    0 10px 25px rgba(0,0,0,.12);
+  /* если хочешь “дышать” по бокам: */
+  /* padding: 0 calc(var(--chip-px) + 2px); */
+}
+
+/* ====== Copyright (одна строка с троеточием при нехватке места) ====== */
+.rights{
+  flex: 1 1 auto;
+  min-width: 0;            /* обязательно для ellipsis во flex */
+  display: flex;
+  align-items: center;
+  justify-content: center;  /* центрируем текст по горизонтали */
+  gap: 4px;
+  margin: 0;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  margin-top: 2px;
+}
+
+.copy-year {
+  white-space: nowrap;
+  font-size: 14px;
+  flex-shrink: 0; 
+  flex: 0 0 auto;      
+}
+
+.author{
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.author {
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;      /* именно имя обрезается */
+  text-overflow: ellipsis;
+}
+
+.author{ min-width:0; overflow:hidden; text-overflow:ellipsis; }
+
+
+.site-footer {
+  margin-top: auto;
+  width: 100%;
+  /* убираем старую жёсткую тень */
+  box-shadow: none;
+
+  position: relative;
+  background: transparent;
+  isolation: isolate; /* чтобы ::before был под содержимым */
+}
+
+.site-footer .footer{
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0,1fr) auto minmax(0,1fr);
+  align-items: center;
+
+  
+  max-width: var(--page-max, 1400px);
+  width: 100%;
+
+
+  gap: .5rem;
+}
+
+.footer-left,
+.footer-right { flex: 0 0 auto; }
+
+/* === стеклянная подложка под футером === */
+.site-footer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+
+  -webkit-backdrop-filter: blur(8px) saturate(1.08) contrast(1.02);
+          backdrop-filter: blur(8px) saturate(1.08) contrast(1.02);
+
+  background: rgba(255,255,255,.25);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.45),
+    0 -12px 24px -12px rgba(0,0,0,.15);
+}
+
+
+.site-footer .footer .rights{
+  position: static;
+  transform: none;
+  z-index: auto;
+  pointer-events: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 500px){
+  .author{ display: none; }
+  .footer { padding-inline: 0.7rem; }
+}
+
+.footer-left  { grid-column: 1; justify-self: start; }
+.rights       { grid-column: 2; justify-self: center; min-width: 0; }
+.footer-right { grid-column: 3; justify-self: end; }
+
+
+/* убираем синие/серые подсветки на тач-устройствах */
+a, button {
+  -webkit-tap-highlight-color: transparent; /* iOS/Android */
+}
+
+a, button {
+  outline: none;              /* убираем рамку при клике */
+}
+
+a:focus,
+button:focus {
+  outline: none;              /* чтобы на мобилке не рисовалось кольцо */
+}

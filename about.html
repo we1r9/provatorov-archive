@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Об авторе</title>
+  <link rel="stylesheet" href="styles/about.css"/>
+  <link rel="stylesheet" href="styles/ambient.css"/>
+</head>
+<body>
+  <div class="ambient">
+  <span class="blob blob1"></span>
+  <span class="blob blob2"></span>
+  <span class="blob blob3"></span>
+</div>
+
+
+  
+  <!-- HEADER -->
+  <header class="site-header" id="siteHeader">
+    <div class="header-inner header-view">
+      <a class="go-back-arrow" aria-label="Назад">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="#000000" viewBox="0 0 256 256">
+          <path d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z"/>
+        </svg>
+        <span class="back-label">Назад</span>
+      </a>
+      <a class="logo-text" href="index.html" data-role="logo">provatorov</a>
+    </div>
+  </header>
+
+  <main class="about-main">
+    <section class="about-hero-text container">
+      <h1 class="about-title">Об авторе</h1>
+
+      <div class="about-text-glass">
+        <p><span class="provatorov">Александр Проваторов</span> — путешественник и фотограф из Алтайского края, родился в Барнауле в 1961 году. Участник сложнейших маршрутов и экспедиций по всему миру: восходил на Эльбрус, Килиманджаро, Аконкагуа, Мак-Кинли; достиг отметки 8 450 м на Эвересте. Пересёк Атлантику на парусном катамаране — от Марокко до Бразилии, участвовал в кругосветной экспедиции через Индийский океан и в полярных походах на снегоходах вокруг Северного Ледовитого океана.</p>
+
+        <p>Считается одной из ключевых фигур советского и российского водного туризма, первопроходцем наиболее сложных рек и маршрутов.</p>
+
+        <div class="last-p">
+          <p>Помимо путешествий является основателем детского лагеря «Детская империя туризма», как педагог-наставник создал школу гидов и разработал авторские программы для молодежи на Алтае.
+        </p>
+        </div>
+
+        <a href="https://www.vtourisme.com/turizm-na-altae/znamenitosti-turizma/1361-provatorov-aleksandr-alekseevich" 
+            class="more more-link" target="_blank" rel="noopener noreferrer">
+            Подробнее →
+          </a>
+      </div>
+    </section>
+
+    <section class="visited-countries container" id="visited">
+      <h2 class="visited-title">Посещенные страны</h2>
+      <div class="visited-chips" id="visitedChips"></div>
+    </section>
+
+    <section class="author-photo-section">
+      <figure class="about-figure">
+        <img class="author-photo" src="images/image.png" alt="Александр Проваторов">
+      </figure>
+    </section>
+  </main>
+
+
+  <footer class="site-footer">
+    <div class="footer">
+      <div class="rights" aria-label="copyright">
+        <div class="copy-block">
+          <span class="copy-year"></span>
+          <span class="author">Александр Проваторов.</span>
+        </div>
+        <span class="usage">Фотографии доступны для некоммерческого использования.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const backEl = document.querySelector(".go-back-arrow");
+      if (!backEl) return;
+
+      const fallbackUrl = "index.html";
+
+      const goBack = () => {
+        const hasHistory = window.history.length > 1;
+        const sameOrigin =
+          document.referrer && new URL(document.referrer, location.href).origin === location.origin;
+
+        if (hasHistory && sameOrigin) {
+          window.history.back();
+        } else {
+          window.location.assign(fallbackUrl);
+        }
+      };
+
+      backEl.addEventListener("click", (e) => { e.preventDefault(); goBack(); });
+      backEl.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); goBack(); }
+      });
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const yearEl = document.querySelector(".copy-year");
+      if (yearEl) yearEl.textContent = `© ${new Date().getFullYear()}`;
+    });
+  </script>
+  <script type="module" src="scripts/about.js"></script>
+</body>
+</html>

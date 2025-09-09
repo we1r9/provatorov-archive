@@ -1,0 +1,410 @@
+/* Fonts (как на других страницах) */
+@font-face{
+  font-family:"SF Pro Rounded"; src:url("../../fonts/SF-Pro-Rounded-Regular.otf") format("opentype");
+  font-weight:400; font-display:swap;
+}
+@font-face{
+  font-family:"SF Pro Rounded"; src:url("../../fonts/SF-Pro-Rounded-Medium.otf") format("opentype");
+  font-weight:500; font-display:swap;
+}
+@font-face{
+  font-family:"FiraSans-Regular"; src:url("../../fonts/FiraSans-Regular.ttf") format("opentype");
+  font-display:swap;
+}
+
+/* ===== Общие переменные и базовая сетка ===== */
+:root{
+  --header-h: 72px;
+  --sort-h: 0px;
+  --gutter: clamp(16px, 6vw, 16px);
+  --page-max: 1400px;
+
+  /* стекло */
+  --blur: 6px;
+  --overlay: .08;
+  --radius: 50px;
+}
+
+*{ box-sizing: border-box; }
+html, body{ height:100%; margin:0; font-family: "SF Pro Rounded","Segoe UI",Helvetica,Arial; }
+body{ min-height:100vh; display:flex; flex-direction:column; }
+main{ flex:1 0 auto; }
+
+.container{
+  margin: 0 auto;
+  padding-inline: var(--gutter);
+  padding-top: calc(var(--header-h) + var(--sort-h));
+  max-width: var(--page-max);
+  width: 100%;
+}
+
+/* ================= HEADER ================= */
+.site-header{
+  position: fixed; top: -1.4px; left:0; right:0;
+  z-index:80; height: var(--header-h);
+  display:flex; align-items:center;
+  background: transparent; border-bottom-left-radius: var(--radius); border-bottom-right-radius: var(--radius);
+  overflow: clip; isolation: isolate;
+  box-shadow: 0 20px 32px -18px rgba(0,0,0,.22), 0 6px 12px -6px rgba(0,0,0,.08);
+}
+.site-header::before{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  border-bottom-left-radius: var(--radius); border-bottom-right-radius: var(--radius);
+  -webkit-backdrop-filter: blur(var(--blur)) saturate(1.08) contrast(1.03);
+          backdrop-filter: blur(var(--blur)) saturate(1.08) contrast(1.03);
+  background: radial-gradient(140% 180% at 50% 40%, rgba(255,255,255, calc(var(--overlay)*.25)) 55%, rgba(255,255,255, var(--overlay)) 100%);
+}
+.site-header::after{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  border-bottom-left-radius: var(--radius); border-bottom-right-radius: var(--radius);
+  box-shadow: inset 0 0 0 2px rgba(0,0,0,.10), inset 0 1px 0 rgba(255,255,255,.45);
+}
+
+.header-inner.header-view{
+  position: relative;
+  display:grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  width:100%; max-width: var(--page-max);
+  margin:0 auto;
+  padding-inline: var(--gutter);
+}
+
+
+/* Back chip (как на других страницах) */
+.go-back-arrow{
+  all:unset; display:inline-flex; align-items:center; gap:.25rem;
+  padding: 0 .7rem 0 .52rem; min-height:40px; border-radius:999px; cursor:pointer; line-height:1; color:#111;
+  -webkit-backdrop-filter: blur(3px) saturate(1.06) contrast(1.02);
+          backdrop-filter: blur(3px) saturate(1.06) contrast(1.02);
+  background: rgba(255,255,255,.10);
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.10), 0 3px 8px -3px rgba(0,0,0,.08);
+  transform: translateZ(0); transition: box-shadow .24s ease, background-color .24s ease;
+}
+.go-back-arrow:hover{
+  background: rgba(255,255,255,.2);
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.10), 0 4px 10px -4px rgba(0,0,0,.10);
+}
+.back-label{ font-size:16px; }
+
+/* logo по центру */
+.logo-text{
+  text-decoration: none;
+  font-size: 1.4rem;
+  font-family: "FiraSans-Regular","Segoe UI",Helvetica,Arial;
+  color: #111;
+  justify-self: center;
+}
+
+
+/* позиционирование в сетке */
+.header-inner.header-view .go-back-arrow{ justify-self:start; }
+.header-inner.header-view .logo-text{ justify-self: end; }
+
+/* ================= FOOTER ================= */
+.site-footer{
+  margin-top:auto; width:100%; position:relative; background:transparent; isolation:isolate;
+}
+.site-footer::before{
+  content:""; position:absolute; inset:0; pointer-events:none; z-index:-1;
+  -webkit-backdrop-filter: blur(8px) saturate(1.08) contrast(1.02);
+          backdrop-filter: blur(8px) saturate(1.08) contrast(1.02);
+  background: rgba(255,255,255,.25);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.45), 0 -12px 24px -12px rgba(0,0,0,.15);
+}
+.footer{
+  display:grid; grid-template-columns: 1fr; align-items:center;
+  max-width: var(--page-max); width:100%;
+  margin:0 auto; padding-inline: var(--gutter); height:72px;
+}
+
+/* ==== FOOTER (fix) ==== */
+.rights{
+  justify-self: center;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  line-height: 1.3;
+  /* НИЧЕГО не задаём про wrap/nowrap тут */
+}
+
+.copy-block{
+  display: flex;
+  gap: 4px;
+  white-space: nowrap;    /* © и автор всегда в одну линию */
+}
+
+.copy-year{ font-size:14px; flex:0 0 auto; }
+.author{ font-size:14px; min-width:0; overflow:hidden; text-overflow:ellipsis; }
+
+/* ===== Демоконтент ===== */
+.about{ max-width: 800px; margin: 2rem auto; }
+.about p{ margin: 0; }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* main как колонка, чтобы «прижать» фото к футеру */
+.about-main{
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+
+  /* плавный боковой margin: 8rem → … → 2rem */
+  margin-inline: clamp(1rem, 8vw, 8rem);
+
+  margin-block: 0;
+}
+
+/* текстовый блок под фикс-хедером */
+.about-hero-text{
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding-inline: var(--gutter);
+  padding-top: 6rem;
+  padding-bottom: clamp(12px, 2.5vw, 20px);
+}
+
+.about-title{
+  margin: 0 0 1rem;
+  font-size: 1.9rem;
+  font-weight: 400;
+  letter-spacing: .2px;
+}
+
+.about-text-glass{
+  background: rgba(255,255,255,.1);
+  -webkit-backdrop-filter: blur(6px) saturate(1.06) contrast(1.02);
+          backdrop-filter: blur(6px) saturate(1.06) contrast(1.02);
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.10),
+              0 6px 12px rgba(0,0,0,.08);
+  border-radius: 32px;
+  padding: 22px 20px 18px 26px;
+  display: flex;           /* ключ */
+  flex-direction: column;  /* абзацы сверху вниз */
+}
+
+.about-hero-text p{
+  margin: 0 0 .6rem;
+  font-size: 17px;
+  line-height: 1.8;
+  color: #222;
+}
+.about-hero-text p:last-child{ margin-bottom: 0; }
+
+.last-p{
+  margin-bottom: 2px;
+}
+
+.provatorov{
+  font-weight: 500;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+/* ===== Список стран: контейнер и заголовок — как было ===== */
+.visited-countries{
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding-inline: var(--gutter);
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+.visited-title{
+  margin: 0 0 16px;
+  font-weight: 400;
+  font-size: 1.4rem;
+  letter-spacing: .2px;
+  color: #111;
+}
+
+/* ===== Лента чипсов ===== */
+.visited-chips{
+  margin: 0 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+/* ===== Чип =====
+   Текст НЕ масштабируем. Всё визуальное — в ::before. */
+.chip{
+  position: relative;
+  z-index: 0;                      /* свой стек для псевдо-слоя */
+  display: inline-flex;
+  align-items: center;
+  padding: .42rem .7rem;
+  border-radius: 999px;
+  font-size: .95rem;
+  line-height: 1;
+  color: #111;
+  cursor: default;
+  /* никаких background/box-shadow здесь */
+}
+
+/* Увеличенная «зона наведения» (необязательная, но приятная) */
+.chip::after{
+  content: "";
+  position: absolute;
+  top: -10px; right: -10px; bottom: -10px; left: -10px;
+  border-radius: 999px;
+  pointer-events: none;            /* не мешаем кликам */
+}
+
+/* Фоновой слой: тут backdrop, фон и тени.
+   Его и масштабируем на hover. */
+.chip::before{
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  z-index: -1;                     /* позади текста */
+  background: rgba(255,255,255,.28);
+  -webkit-backdrop-filter: blur(3px) saturate(1.06) contrast(1.02);
+          backdrop-filter: blur(3px) saturate(1.06) contrast(1.02);
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.10), 0 6px 12px rgba(0,0,0,.08);
+  transform: scale(1);
+  will-change: transform;
+  transition:
+    transform .20s cubic-bezier(.22,.61,.36,1),
+    background-color .20s ease,
+    box-shadow .20s ease;
+}
+
+/* Плавный hover/focus — масштабируем ТОЛЬКО ::before */
+@media (hover:hover){
+  .chip:hover::before{
+    transform: scale(1.1);
+    background: rgba(255,255,255,.36);
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.12), 0 8px 16px rgba(0,0,0,.10);
+  }
+}
+.chip:focus-visible::before{
+  transform: scale(1.1);
+  background: rgba(255,255,255,.40);
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.14), 0 8px 18px rgba(0,0,0,.12);
+  outline: none;
+}
+
+/* Учитываем предпочтение «минимум анимаций» */
+@media (prefers-reduced-motion: reduce){
+  .chip::before{ transition: none; }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Фото внизу страницы, вплотную к футеру */
+.author-photo-section{
+  margin-top: auto;        /* ключ: уводит секцию к низу main */
+  padding: 0;
+  padding-top: 1rem;
+  background: transparent; /* оставляем фон страницы */
+}
+.about-figure{
+  margin: 0;
+  display: grid;
+  place-items: center;     /* центрируем картинку */
+}
+.author-photo{
+  display: block;
+  width: min(100%, 720px);
+  height: auto;
+  border: none;
+  outline: none;
+}
+
+/* адаптив: немного сжимаем отступы */
+@media (max-width: 900px){
+  .author-photo{ width: min(100%, 560px); }
+}
+
+
+
+
+.more{
+  display: inline-flex;
+  align-items: center;
+  padding: 9px 12px;
+  border-radius: 999px;
+  font-size: 14px;
+  align-self: flex-end;
+  font-weight: 500;
+  line-height: 1;
+  color: #111;
+  background: rgba(255,255,255,.28);
+  -webkit-backdrop-filter: blur(3px) saturate(1.06) contrast(1.02);
+          backdrop-filter: blur(3px) saturate(1.06) contrast(1.02);
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.10), 0 6px 12px rgba(0,0,0,.08);
+}
+
+/* чип-ссылка "Подробнее" */
+.more-link{
+  text-decoration: none;
+  color: inherit;             /* унаследовать цвет */
+  transition: background .2s ease, box-shadow .2s ease;
+}
+.more-link:hover{
+  background: rgba(255,255,255,.4);
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.12),
+              0 6px 14px rgba(0,0,0,.12);
+}
+
+.usage {
+  font-size: 14px;
+  white-space: normal;    /* разрешаем перенос текста */
+  text-align: center;
+  white-space: normal;
+}
+
+
+@media (max-width: 640px){
+  .rights{
+    flex-wrap: wrap;          /* разрешаем перенос элементов */
+    justify-content: center;  /* центрируем */
+  }
+  .usage{
+    flex-basis: 100%;         /* уходит на новую строку */
+    margin-top: -4px;
+  }
+}

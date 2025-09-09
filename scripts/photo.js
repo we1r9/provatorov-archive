@@ -1,6 +1,6 @@
 import photos from '../data/photos.json' with { type: 'json' };
 import { mapPhotos } from './utils/mapPhotos.js';
-import { isFavorite, toggleFavorite } from './favoritesStore.js';
+import { isFavorite, toggleFavorite, getFavoritesCount} from './favoritesStore.js';
 
 // Готовим данные для вставки по ID
 const photosData = mapPhotos(photos);
@@ -8,59 +8,114 @@ const params = new URLSearchParams(window.location.search);
 const id = params.get('id');
 const photo = photosData.find(photo => photo.id === id);
 
+function getMonthName(dateStr) {
+  if (!dateStr) return '—';
+
+  const monthMap = {
+    "01": "Январь",
+    "02": "Февраль",
+    "03": "Март",
+    "04": "Апрель",
+    "05": "Май",
+    "06": "Июнь",
+    "07": "Июль",
+    "08": "Август",
+    "09": "Сентябрь",
+    "10": "Октябрь",
+    "11": "Ноябрь",
+    "12": "Декабрь"
+  };
+
+  const parts = String(dateStr).trim().split("-");
+  // если пришло "YYYY-MM" — берём второй элемент; если просто "MM" — берём первый
+  const raw = parts[1] ?? parts[0] ?? "";
+  const month = String(raw).padStart(2, "0");
+
+  return monthMap[month] || '—';
+}
+
+function monthWordFromPhoto(p) {
+  // приоритет: date: "YYYY-MM"
+  if (p.date) return getMonthName(p.date);
+
+  // fallback: year + month (числом или строкой)
+  if (p.year && p.month != null) {
+    const yy = String(p.year);
+    const mm = String(p.month).padStart(2, "0");
+    return getMonthName(`${yy}-${mm}`);
+  }
+
+  // если вообще нет данных о дате
+  return '—';
+}
+
 // Инициализирует отображение фото
 function renderPhoto() {
   const isFav = isFavorite(photo.id);
   const view = document.querySelector('.view');
   if (!view) return;
 
+  const monthName = monthWordFromPhoto(photo);
+  const yearText = photo.year ? String(photo.year) : '';
+  const dateText = monthName !== '—'
+    ? `${monthName}${yearText ? ' ' + yearText : ''}`
+    : (yearText || '—');
+
   // Создаем HTML для секции с отображением
   const viewHTML = `
     <section class="view-container">
-      <div class="photo-wrap">
-        <img class="photo-img" src="${photo.web}">
+      <div class="photo-shadow">
+        <div class="photo-wrap">
+          <img class="photo-img" src="${photo.web}">
+        </div>
       </div>
 
       <div class="photo-aside">
         <header class="aside-header">
-          <span>${photo.location}</span>
-          <span>${photo.month} ${photo.year}</span>
+          <div class="title">${photo.location}</div>
+          <div class="date">${dateText}</div>
         </header>
 
         <section class="aside-description">
-          <p class="description">${photo.description || ''}</p>
+          <div class="description">${photo.description || ''}</div>
         </section>
 
         <section class="aside-block-camera">
           <div class="row">
             <p>Камера</p>
             <p>${photo.cameraModel || '—'}</p>
-            <p>Фокусное расстояние</p>
-            <p>${photo.cameraFocalLength || '—'} мм</p>
-          </div>
-
-          <div class="row">
             <p>Объектив</p>
             <p>${photo.cameraLens || '—'}</p>
-            <p>Выдержка</p>
-            <p>${photo.cameraShutter || '—'} с.</p>
           </div>
 
           <div class="row">
+            <p class="label-focal">Фокусное расстояние</p>
+            <p>${photo.cameraFocalLength || '—'} мм</p>
             <p>Диафрагма</p>
             <p>ƒ/${photo.cameraAperture || '—'}</p>
+          </div>
+
+          <div class="row">
+            <p>Выдержка</p>
+            <p>${photo.cameraShutter || '—'} с.</p>
             <p>ISO</p>
             <p>${photo.cameraIso || '—'}</p>
           </div>
         </section>
 
         <div class="photo-actions">
-          <button
-          class="card-like-button ${isFav ? 'is-fav' : ''}" 
-          data-fav-id="${photo.id}">
-          ❤
-          </button>
-          <button class="download-hq-btn">Скачать HQ</button>
+          <div class="download-wrap">
+            <button class="download-hq-btn">Скачать HQ</button>
+          </div>
+          <div class="like-wrap">
+            <button
+            class="card-like-button ${isFav ? 'is-fav' : ''}"
+            data-fav-id="${photo.id}">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="#292929ff" viewBox="0 0 256 256">
+                <path d="M240,98a57.63,57.63,0,0,1-17,41L133.7,229.62a8,8,0,0,1-11.4,0L33,139a58,58,0,0,1,82-82.1L128,69.05l13.09-12.19A58,58,0,0,1,240,98Z"></path>
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
     </section>
@@ -358,15 +413,81 @@ async function probeUrl(url, { timeout = 8000 } = {}) {
 // ========== РЕНДЕР + ОБРАБОТЧИКИ ==========
 const viewRoot = renderPhoto();
 if (viewRoot) {
-  // Обработчик добавления в избранное
   viewRoot.addEventListener('click', (event) => {
     const btn = event.target.closest('.card-like-button');
     if (!btn) return;
+
     event.preventDefault();
-    const id = btn.dataset.favId;
-    toggleFavorite(id);
-    btn.classList.toggle('is-fav', isFavorite(id));
+    const favId = btn.dataset.favId || photo.id; // подстрахуемся
+
+    toggleFavorite(favId);
+
+    const active = isFavorite(favId);
+    btn.classList.toggle('is-fav', active);
+    btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+    btn.title = active ? 'Убрать из избранного' : 'В избранное';
+
+    // уведомим все страницы в этом окне
+    window.dispatchEvent(new CustomEvent('favorites:changed'));
   });
+
+  // ========== ИЗБРАННОЕ ==========
+const favCountEl = document.getElementById('favCount');
+const favLinkEl = document.querySelector('.fav-btn');
+
+function bump(el){
+  el.classList.remove('is-updating');
+  el.offsetWidth;
+  el.classList.add('is-updating');
+}
+
+function renderFavCount() {
+  if(!favCountEl || !favLinkEl) return;
+
+  const n = getFavoritesCount();
+
+  if (n === 0) {
+    favCountEl.textContent = '';
+    favLinkEl.classList.remove('has-count');
+    favLinkEl.setAttribute('aria-label', 'Избранное, нет фото');
+  } else {
+    const shown = n > 99 ? '99+' : String(n);
+    const prev = favCountEl.textContent;
+
+    favLinkEl.classList.add('has-count');
+    favCountEl.textContent = shown;
+    favLinkEl.setAttribute('aria-label', `Избранное, ${shown} фото`);
+
+    if (prev !== shown) bump(favCountEl);
+  }
+}
+
+renderFavCount();
+
+window.addEventListener('favorites:changed', renderFavCount);
+
+window.addEventListener('storage', (e) => {
+  if (e.key === 'provatorov:favorites') renderFavCount();
+});
+
+window.addEventListener('pageshow', () => {
+  // перерисуем счётчик и уберём фокус с кнопки
+  renderFavCount();
+  if (document.activeElement === favLinkEl) favLinkEl.blur();
+});
+
+document.addEventListener('mousedown', (e) => {
+  const a = e.target.closest('.fav-btn');
+  if (a) a.blur();
+});
+
+requestAnimationFrame(() => {
+    document.documentElement.classList.add('html-blur-ready');
+  });
+
+requestAnimationFrame(() => {
+  favLinkEl?.classList.add('is-ready');
+});
 
   // Создаем универсальный тост
   function getToastEl() {
@@ -383,12 +504,40 @@ if (viewRoot) {
   }
 
   // Показываем тост
-  function showToast(msg) {
+  function showToast(message, { icon } = {}) {
     const el = getToastEl();
-    el.textContent = msg;
-    el.classList.add('is-show');
+
+    if (icon) {
+      el.style.setProperty('--toast-icon', `url("${icon}")`);
+      el.classList.add('has-icon');
+    } else {
+      el.style.removeProperty('--toast-icon');
+      el.classList.remove('has-icon');
+    }
+
+    el.replaceChildren(document.createTextNode(message));
+
+    // перезапуск входной анимации
+    el.classList.remove('is-show','is-leaving');
+    requestAnimationFrame(() => {
+      el.classList.add('is-show');
+    });
+
     clearTimeout(el._t);
-    el._t = setTimeout(() => el.classList.remove('is-show'), 3000);
+    el._t = setTimeout(() => {
+      // мягкий выход: только fade-out
+      el.classList.add('is-leaving');
+      el.classList.remove('is-show');
+
+      // после завершения fade уберём is-leaving
+      const onEnd = (e) => {
+        if (e.propertyName === 'opacity') {
+          el.classList.remove('is-leaving');
+          el.removeEventListener('transitionend', onEnd);
+        }
+      };
+      el.addEventListener('transitionend', onEnd);
+    }, 3200);
   }
 
   // Обработчик скачивания HQ
@@ -402,7 +551,7 @@ if (viewRoot) {
         if (downloadButton.disabled) return;
 
         if (!navigator.onLine) {
-          showToast('⚠️ Нет подключения к интернету :(');
+          showToast('Нет подключения к интернету', { icon: '/images/plug.png' });
           return;
         }
 
@@ -412,7 +561,7 @@ if (viewRoot) {
 
           if (probe.status === 404 || probe.status === 410) {
             markHqUnavailable(downloadButton, 'HQ недоступна');
-            showToast('⚠️ Файл не найден');
+            showToast('Файл не найден', { icon: '/images/warning.png' });
             return;
           }
 
@@ -428,11 +577,11 @@ if (viewRoot) {
           }
 
           if (probe.error) {
-            showToast('⚠️ Проблема с подключением');
+            showToast('Ошибка подключения', { icon: '/images/plug.png' });
             return;
           }
 
-          showToast('⚠️ Сервер временно недоступен');
+          showToast('Сервер временно недоступен', { icon: '/images/not-available.png' });
         } finally {
           if (!downloadButton.classList.contains('is-unavailable')) {
             setBtnLoading(downloadButton, false);
@@ -446,7 +595,7 @@ if (viewRoot) {
 
       window.addEventListener('online', () => {
         downloadButton.classList.remove('is-offline');
-        showToast('Подключение к интернету восстановлено!')
+        showToast('Соединение восстановлено', { icon: '/images/ura.png' });
       });
 
       const syncNetworkState = () => {

@@ -4,51 +4,65 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Избранное</title>
-    <link rel="stylesheet" href="styles/gallery.css">
     <link rel="stylesheet" href="styles/favorites.css">
+    <link rel="stylesheet" href="styles/footer.css">
+    <link rel="stylesheet" href="styles/header.css">
   </head>
   <body>
-    <header class="site-header">
-      <div class="container header">
-        <div class="header-left">
-          <a class="go-back-arrow">←</a>
-        </div>
+    <header class="site-header" id="siteHeader">
+      <div class="header-inner header-view">
+        <a class="go-back-arrow" aria-label="Назад">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="#000000" viewBox="0 0 256 256"><path d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z"></path></svg>
+          <span class="back-label">Назад</span>
+        </a>
 
-        <div class="header-middle">
-          <a class="logo-text" href="index.html">provatorov</a>
-        </div>
+        <a class="logo-text" href="index.html" data-role="logo">provatorov</a>
 
-        <div class="header-right">
-          <a class="favorites-link is-current">❤</a>
-        </div>
+        <a class="fav-btn has-count" title="Избранное">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="26" height="26" fill="currentColor" aria-hidden="true">
+            <path d="M240,98a57.63,57.63,0,0,1-17,41L133.7,229.62a8,8,0,0,1-11.4,0L33,139a58,58,0,0,1,82-82.1L128,69.05l13.09-12.19A58,58,0,0,1,240,98Z"></path>
+          </svg>
+          <span class="fav-count" id="favCount"></span>
+        </a>
       </div>
     </header>
 
     <main class="container">
       <div class="grid"></div>
       <section class="empty-state" hidden>
-        <p class="empty-state-text">Здесь пока что пусто.</p>
-        <a class="show-gallery-btn" href="index.html">Смотреть галерею</a>
+        <div class="title">Пока что здесь пусто.</div>
+        <a class="show-gallery-btn" href="index.html">Смотреть галерею →</a>
+        <img class="zaglushka-img" src="/images/zaglushka.png">
       </section>
     </main>
 
     <footer class="site-footer">
-      <div class="container footer">
-        <a class="footer-left" href="https://t.me/provalexphoto" target="_parent">
-        <img class="telegram-logo-img" src="images/telegram-logo.png">
-        <p class="telegram-text">Telegram</p>
+      <div class="footer">
+        <a class="footer-left" href="https://t.me/provalexphoto" target="_parent" aria-label="Telegram">
+          <img class="telegram-logo-img" src="images/telegram-black-icon.png" alt="">
+          <span class="telegram-text">Telegram</span>
         </a>
 
-        <div class="rights">
-          <span class="rights-year-text">© 2025</span> <span class="rights-text">provatorov</span>
+        <div class="rights" aria-label="copyright">
+          <span class="copy-year"></span>
+          <span class="author">Александр Проваторов</span>
         </div>
 
         <a class="footer-right" href="about.html">
-          <p class="about-text">Об авторе</p>
+          <span class="about-text">Об авторе</span>
         </a>
       </div>
     </footer>
     
     <script type="module" src="scripts/favorites.js"></script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const yearEl = document.querySelector(".copy-year");
+        if (yearEl) {
+          yearEl.textContent = `© ${new Date().getFullYear()}`;
+        }
+      });
+    </script>
   </body>
 </html>

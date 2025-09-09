@@ -530,24 +530,6 @@ window.addEventListener('load', () => {
   runSearchPlaceholderTypewriter();
 });
 
-// Кнопка возврата наверх страницы
-const scrollBtn = document.querySelector('.scroll-top-btn');
-
-window.addEventListener('scroll', () => {
-  // Показываем после 400px прокрутки
-  if (window.scrollY > 400) {
-    scrollBtn.classList.add('show');
-  } else {
-    scrollBtn.classList.remove('show');
-  }
-});
-
-scrollBtn.addEventListener('click', () => {
-  window.scrollTo({
-    top: 0,
-    behavior: 'smooth'
-  });
-});
 
 window.addEventListener('keydown', (e) => {
   if (e.key !== 'Escape') return;
@@ -854,3 +836,191 @@ window.addEventListener('pageshow', (event) => {
     });
   });
 })();
+
+
+
+
+
+
+
+
+/*
+// ===== Row Fold Engine =====
+(function rowFoldInit(){
+  const grid = document.querySelector('.grid');
+  if (!grid) return;
+
+  let rows = [];            // [{top: number, bottom: number, height: number, cards: HTMLElement[]}]
+  let gap = 20;             // fallback, перезатрём реальным значением из CSS
+
+  const readGap = () => {
+    const g = getComputedStyle(grid).gap || getComputedStyle(grid).rowGap;
+    const num = parseFloat(g);
+    if (!Number.isNaN(num)) gap = num;
+  };
+
+  // Группировка карточек в “ряды” по их top-координате (с допуском)
+  function computeRows(){
+    readGap();
+
+    const cards = Array.from(grid.querySelectorAll('.card'));
+    if (!cards.length) return;
+
+    // Сбрасываем прошлую разметку
+    cards.forEach(c => {
+      c.removeAttribute('data-row');
+      c.style.removeProperty('--rowP');
+      c.classList.remove('row-is-folding');
+      c.style.marginTop = '';
+    });
+
+    // Берём координаты относительно документа
+    const scrollY = window.scrollY || window.pageYOffset;
+    const buckets = new Map(); // key ~ округлённый top
+
+    const tolerance = 10; // px, сглаживаем погрешности
+
+    cards.forEach(card => {
+      const r = card.getBoundingClientRect();
+      const topDoc = r.top + scrollY;
+
+      // Квантование: приведём top к “ступеньке” с учётом tolerance
+      const key = Math.round(topDoc / tolerance) * tolerance;
+      if (!buckets.has(key)) buckets.set(key, []);
+      buckets.get(key).push({ card, topDoc, height: r.height });
+    });
+
+    // Соберём массив отсортированных рядов
+    rows = [...buckets.entries()]
+      .sort((a,b) => a[0] - b[0])
+      .map(([key, arr], idx) => {
+        const top = Math.min(...arr.map(x => x.topDoc));
+        const bottom = Math.max(...arr.map(x => x.topDoc + x.height));
+        const height = bottom - top;
+        const cards = arr.map(x => x.card);
+        cards.forEach(c => c.dataset.row = String(idx));
+        return { top, bottom, height, cards, idx };
+      });
+  }
+
+  // Преобразуем позицию ряда в прогресс сворачивания 0..1
+  // Начинаем “схлопывать”, когда середина ряда прошла верхнюю кромку вьюпорта.
+  // Преобразуем позицию ряда в прогресс сворачивания 0..1
+
+  // Симметрично для верхней и нижней границы вьюпорта
+  function foldProgressForRow(row){
+    const yTop = window.scrollY || window.pageYOffset;
+    const yBot = yTop + window.innerHeight;
+
+    // Когда начинаем схлопывать: какая часть ряда уже вышла за край
+    // FRACTION=0.5 → начинаем, когда за край вышло больше половины ряда
+    // У тебя было 0.4 (начало чуть раньше середины) — оставлю так по умолчанию
+    const FRACTION = 0.4;
+
+    const thresh = row.height * FRACTION;      // сколько может выйти без схлопывания
+    const span   = row.height - thresh;        // от начала схлопа до полного ухода
+
+    // Сколько «вышло» за верх
+    const overflowTop = Math.max(0, yTop - row.top - thresh);
+    // Сколько «вышло» за низ
+    const overflowBot = Math.max(0, row.bottom - yBot - thresh);
+
+    // Прогресс для каждой стороны (0..1), берём максимальный
+    const pTop = Math.min(1, overflowTop / span);
+    const pBot = Math.min(1, overflowBot / span);
+
+    return Math.max(pTop, pBot);
+  }
+
+
+  function applyFold(){
+    if (!rows.length) return;
+    grid.style.setProperty('--row-gap', `${gap}px`);
+
+    const yTop = window.scrollY || window.pageYOffset;
+    const yBot = yTop + window.innerHeight;
+
+    const FRACTION = 0.4;                   // когда начинается схлоп
+    const clamp = v => v < 0 ? 0 : v > 1 ? 1 : v;
+
+    for (const row of rows) {
+      const thresh = row.height * FRACTION;
+      const span   = Math.max(1, row.height - thresh);
+
+      // сколько вышло за верх/низ
+      const overflowTop = yTop - row.top - thresh;
+      const overflowBot = row.bottom - yBot - thresh;
+
+      // если ряд далеко от краёв — прогресс = 0, ничего не пишем
+      if (overflowTop <= 0 && overflowBot <= 0) {
+        if (row.lastP && row.lastP !== 0) {
+          row.lastP = 0;
+          for (const card of row.cards) {
+            card.style.removeProperty('--rowP');
+            card.classList.remove('row-active','row-is-folding');
+          }
+        }
+        continue;
+      }
+
+      const pTop = overflowTop > 0 ? overflowTop / span : 0;
+      const pBot = overflowBot > 0 ? overflowBot / span : 0;
+      const p    = clamp(Math.max(pTop, pBot));
+
+      if (row.lastP !== undefined && Math.abs(p - row.lastP) < 0.002) continue; // нет заметного изменения
+      row.lastP = p;
+
+      const active = p > 0 && p < 1;
+
+      for (const card of row.cards) {
+        card.style.setProperty('--rowP', p.toFixed(3));
+        if (active) {
+          card.classList.add('row-active','row-is-folding');
+        } else {
+          // либо полностью развернут, либо полностью схлопнут
+          card.classList.remove('row-is-folding');
+          card.classList.remove('row-active');
+          if (p === 0) card.style.removeProperty('--rowP');
+        }
+      }
+    }
+  }
+
+
+  // Обновляем ряды при:
+  // 1) первом запуске, 2) изменении размера/колонок, 3) смене списка карточек
+  const recompute = () => { computeRows(); applyFold(); };
+
+  // Debounce для resize/scroll
+  let rAF = 0;
+  const onScroll = () => { cancelAnimationFrame(rAF); rAF = requestAnimationFrame(applyFold); };
+  const onResize = () => { cancelAnimationFrame(rAF); rAF = requestAnimationFrame(recompute); };
+
+  // Если у тебя уже есть свой observer/пейджинг — зови recompute() после догрузки карточек.
+  const ro = new ResizeObserver(onResize);
+  ro.observe(grid);
+
+  // Первый проход
+  recompute();
+
+  // Слушаем скролл страницы
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  // На всякий случай — пересчёт после загрузки изображений (высоты рядов меняются)
+  window.addEventListener('load', recompute);
+})();
+*/
+
+
+
+const btn  = document.getElementById('shuffleBtn');
+const icon = btn?.querySelector('svg');
+let angle = 0;
+
+if (btn && icon) {
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    angle -= 180;
+    icon.style.transform = `rotate(${angle}deg)`; // transition сработает
+  });
+}

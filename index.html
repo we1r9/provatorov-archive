@@ -6,9 +6,15 @@
     <title>Главная</title>
     <link rel="stylesheet" href="styles/gallery.css">
     <link rel="stylesheet" href="styles/menu.css">
+    <link rel="stylesheet" href="styles/footer.css">
+    <link rel="stylesheet" href="styles/ambient.css">
   </head>
   <body>
-    <div class="ambient" aria-hidden="true"></div>
+    <div class="ambient">
+      <span class="blob blob1"></span>
+      <span class="blob blob2"></span>
+      <span class="blob blob3"></span>
+    </div>
     
     <header class="site-header" id="siteHeader">
       <div class="header-inner">
@@ -92,26 +98,36 @@
       </div>
     </main>
 
-    <button class="scroll-top-btn">↑</button>
-
     <footer class="site-footer">
-      <div class="container footer">
-        <a class="footer-left" href="https://t.me/provalexphoto" target="_parent">
-        <img class="telegram-logo-img" src="images/telegram-logo.png">
-        <p class="telegram-text">Telegram</p>
+      <div class="footer">
+        <a class="footer-left" href="https://t.me/provalexphoto" target="_parent" aria-label="Telegram">
+          <img class="telegram-logo-img" src="images/telegram-black-icon.png" alt="">
+          <span class="telegram-text">Telegram</span>
         </a>
 
-        <div class="rights">
-          <span class="rights-year-text">© 2025</span> <span class="rights-text">provatorov</span>
+        <div class="rights" aria-label="copyright">
+          <span class="copy-year"></span>
+          <span class="author">Александр Проваторов</span>
         </div>
 
         <a class="footer-right" href="about.html">
-          <p class="about-text">Об авторе</p>
+          <span class="about-text">Об авторе</span>
         </a>
       </div>
     </footer>
 
 
+
+
     <script type="module" src="scripts/gallery.js"></script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const yearEl = document.querySelector(".copy-year");
+        if (yearEl) {
+          yearEl.textContent = `© ${new Date().getFullYear()}`;
+        }
+      });
+    </script>
   </body>
 </html>

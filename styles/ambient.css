@@ -1,0 +1,74 @@
+:root{
+  --blob-size: 250px; /* базовый размер */
+  --blob-blur: 0px;  /* мягкость краёв */
+}
+
+.ambient{
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: #fff;
+}
+
+/* Общий стиль */
+.blob{
+  position: absolute;
+  width: var(--blob-size);
+  height: var(--blob-size);
+  filter: blur(var(--blob-blur));
+  opacity: 0.9;
+  mix-blend-mode: multiply; /* можно поменять на screen/overlay для другого вайба */
+}
+
+
+.blob1 {
+  top: 8%;
+  left: 8%;
+  width: 300px;
+  height: 400px;
+  filter: blur(60px);
+  opacity: 0.8;
+
+  background: radial-gradient(circle at 20% 30%, rgba(30,0,255,0.9), transparent 70%),
+              radial-gradient(circle at 70% 50%, rgba(255,120,0,0.8), transparent 80%);
+  
+  border-radius: 60% 40% 50% 70% / 50% 60% 40% 50%; /* органичная форма */
+
+  /* поворот */
+  transform: rotate(-50deg);
+}
+
+.blob2 {
+  top: 0%;
+  left: 70%;
+  width: 300px;
+  height: 400px;
+  filter: blur(60px);
+  opacity: 0.8;
+
+  background: radial-gradient(circle at 20% 30%, rgba(30,0,255,0.9), transparent 70%),
+              radial-gradient(circle at 70% 50%, rgba(255,120,0,0.8), transparent 80%);
+  
+  border-radius: 60% 40% 50% 70% / 50% 60% 40% 50%; /* органичная форма */
+
+  /* поворот */
+  transform: rotate(50deg);
+}
+
+.blob3 {
+  bottom: 0%;
+  left: 50%;
+  width: 300px;
+  height: 400px;
+  filter: blur(60px);
+  opacity: 0.8;
+
+  background: radial-gradient(circle at 20% 30%, rgba(30,0,255,0.9), transparent 70%),
+              radial-gradient(circle at 70% 50%, rgba(255,120,0,0.8), transparent 80%);
+  
+  border-radius: 60% 40% 50% 70% / 50% 60% 40% 50%; /* органичная форма */
+
+  /* поворот */
+  transform: rotate(-160deg);
+}

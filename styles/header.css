@@ -1,0 +1,304 @@
+/* === Единые отступы края (как на главной и в футере) === */
+:root{
+  --edge-pad: clamp(16px, 6vw, 48px);
+  --page-max: 1400px;
+  --sort-h: 0px; /* на странице фото сортбара нет */
+}
+
+:root{
+  --header-h: 72px;                /* высота шапки */
+  --edge-pad: clamp(16px, 6vw, 48px);
+  --page-max: 1400px;
+  --blur: 6px;                     /* сила blur как на главной */
+  --overlay: .08;                  /* «молоко» */
+  --radius: 50px;
+}
+
+.site-header{
+  position: fixed;
+  top: -1.4px; left: 0; right: 0;
+  z-index: 80;
+  height: var(--header-h);
+  display: flex; align-items: center;
+  background: transparent;
+  border-bottom-left-radius: var(--radius);
+  border-bottom-right-radius: var(--radius);
+  overflow: clip;          /* нужно для «среза» стекла */
+  isolation: isolate;
+
+  /* ВНЕШНИЕ тени сюда — они больше не обрезаются */
+  box-shadow:
+    0 20px 32px -18px rgba(0,0,0,.22),
+    0  6px 12px  -6px rgba(0,0,0,.08);
+}
+
+/* стекло внутри */
+.site-header::before{
+  content:"";
+  position:absolute; inset:0;
+  border-bottom-left-radius: var(--radius);
+  border-bottom-right-radius: var(--radius);
+  pointer-events:none;
+
+  -webkit-backdrop-filter: blur(var(--blur)) saturate(1.08) contrast(1.03);
+          backdrop-filter: blur(var(--blur)) saturate(1.08) contrast(1.03);
+
+  background:
+    radial-gradient(140% 180% at 50% 40%,
+      rgba(255,255,255, calc(var(--overlay)*.25)) 55%,
+      rgba(255,255,255, var(--overlay)) 100%);
+  /* БЕЗ внешних теней тут */
+}
+
+/* чтобы слои хедера не смешивались с окружением */
+.site-header{ isolation: isolate; }
+
+/* стеклянная кромка — потолще */
+.site-header::after{
+  content:"";
+  position:absolute; inset:0;
+  border-bottom-left-radius: var(--radius);
+  border-bottom-right-radius: var(--radius);
+  pointer-events:none;
+  box-shadow:
+    inset 0 0 0 2px rgba(0,0,0,.10),
+    inset 0 1px 0 rgba(255,255,255,.45);
+}
+
+/* внутренний контейнер (3 колонки: назад | логотип | избранное) */
+.header-inner.header-view{
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  max-width: var(--page-max);
+  padding: 0 16px;
+  margin: 0 auto;
+}
+
+/* выравнивания */
+.header-inner.header-view .go-back-arrow{ place-self: center start; width: max-content; }
+.header-inner.header-view .logo-text{     place-self: center; }
+.header-inner.header-view .fav-btn{       place-self: center end; }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Логотип */
+.logo-text{
+  text-decoration: none;
+  font-size: 1.4rem;
+  font-family: "FiraSans-Regular","Segoe UI",Helvetica,Arial;
+  color: #111;
+}
+
+
+
+
+
+
+
+
+
+/* chip-кнопка "Назад" */
+.header-inner.header-view .go-back-arrow{
+  justify-self: start;
+  width: max-content;
+  align-self: center;
+}
+
+.go-back-arrow{
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  gap: .25rem;
+  padding: 0 .7rem 0 .52rem;
+  min-height: 40px;
+  border-radius: 999px;
+  cursor: pointer;
+  line-height: 1;
+  color: #111;
+
+  -webkit-backdrop-filter: blur(3px) saturate(1.06) contrast(1.02);
+          backdrop-filter: blur(3px) saturate(1.06) contrast(1.02);
+  background: rgba(255,255,255,.10);
+
+  /* меньше и мягче внешняя тень + сохраняем тонкую внутреннюю обводку */
+  box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,.10),
+    0 3px 8px -3px rgba(0,0,0,.08);
+
+  /* плавнее анимации */
+  transform: translateZ(0);                 /* без «подпрыгивания» */
+  transform-origin: center;                 /* масштаб из центра */
+  will-change: transform, box-shadow, background-color;
+  transition:
+    box-shadow 240ms ease,
+    background-color 240ms ease;
+}
+
+/* hover: без смещения, обводка НЕ пропадает */
+.go-back-arrow:hover{
+  /* легкий масштаб, не меняем вертикальный offset тени */
+  background: rgba(255,255,255,.2);
+  box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,.10),       /* обводка остаётся */
+    0 4px 10px -4px rgba(0,0,0,.10);       /* аккуратнее внешняя тень */
+}
+
+.back-label{ font-size: 16px; }
+
+
+
+
+
+
+
+/* ===== Кнопка избранного в виде чипсы (визуально как "Назад") ===== */
+
+/* База */
+.fav-btn{
+  all: unset;
+  color: #292929ff;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  vertical-align: middle;
+
+  /* геометрия чипсы */
+  min-height: 40px;
+  border-radius: 999px;
+
+  /* стеклянная подложка + тени (как у go-back-arrow) */
+  -webkit-backdrop-filter: blur(3px) saturate(1.06) contrast(1.02);
+          backdrop-filter: blur(3px) saturate(1.06) contrast(1.02);
+  background: rgba(255,255,255,.10);
+  box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,.10),
+    0 3px 8px -3px rgba(0,0,0,.08);
+
+  /* плавность и сохранены предыдущие правила по transition */
+  will-change: transform, box-shadow, background-color;
+  transform: translateZ(0);
+  transform-origin: center;
+  transition:
+    padding-inline 300ms cubic-bezier(.22,.61,.36,1),
+    box-shadow 300ms ease,
+    background-color 300ms ease,
+    color 300ms ease,
+    border-radius 300ms ease,
+    transform 300ms cubic-bezier(.22,.61,.36,1);
+  z-index: 100;
+  text-decoration: none;
+}
+
+.fav-btn svg{ display: block; }
+
+/* Фокус — как было */
+.fav-btn:focus{ outline: none; }
+.fav-btn:focus-visible{
+  outline: 2px solid #1113;
+  outline-offset: 2px;
+}
+.fav-btn::-moz-focus-inner{ border: 0; }
+
+/* Ховер — как у "Назад": без смещения, мягче тень + светлее фон */
+.fav-btn:hover{
+  transform: scale(1.12);
+  box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,.10),
+    0 4px 10px -4px rgba(0,0,0,.10);
+}
+
+
+.fav-btn:not(.has-count){
+  inline-size: 40px;
+  block-size: 40px;
+  justify-content: center;
+  align-items: center;
+}
+
+.fav-btn:not(.has-count) .fav-count{
+  display: none;   /* ключевая правка: убрать из потока */
+}
+
+/* С числом — как у кнопки "Назад": расширенные паддинги */
+.fav-btn.has-count{
+  padding: 0 .7rem 0 .52rem;
+}
+
+/* Дополнительно: при наличии числа отображаем счётчик плавно */
+.fav-count{
+  max-width: 0;                       /* скрыт по ширине */
+  overflow: hidden;                   /* обрезаем контент */
+  opacity: 0;
+  transform: translateX(-6px) scale(.92);
+  margin-left: 0;                     /* без зазора до появления */
+  font-size: 1.1rem;
+  font-variant-numeric: tabular-nums;
+  transition:
+    max-width 300ms cubic-bezier(.22,.61,.36,1),
+    margin-left 300ms cubic-bezier(.22,.61,.36,1),
+    opacity 300ms ease,
+    transform 300ms ease;
+  /* оставь min-width, если хочешь выравнивание разрядов — можно убрать */
+  min-width: 0;                       /* не мешаем закрытию */
+}
+
+
+.fav-btn.has-count .fav-count{
+  max-width: 4ch;                     /* хватает на 3–4 разряда */
+  margin-left: .25rem;                /* как твой gap */
+  opacity: 1;
+  transform: translateX(0) scale(1);
+}
+
+
+/* Пульс при обновлении числа — без изменений */
+@keyframes favCountPop{
+  0%{   transform: translateX(0) scale(1); }
+  50%{  transform: translateX(0) scale(1.18); }
+  100%{ transform: translateX(0) scale(1); }
+}
+.fav-count.is-updating{ animation: favCountPop 180ms ease; }
+
+
+
+@media (max-width: 640px){
+  .site-header{
+    height: auto;
+    padding: .6rem 0;
+  }
+  .header-inner{
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    row-gap: 10px;
+  }
+  .header-middle{
+    grid-column: 1 / -1;
+    justify-self: stretch;
+  }
+  .header-middle .search-bar{ max-width: none; }
+}

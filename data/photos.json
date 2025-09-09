@@ -161,6 +161,29 @@
     }
   },
   {
+    "id": "charysh2",
+    "date": "2006",
+    "location": {
+      "country": "Россия",
+      "region": "Алтай, река Чарыш"
+    },
+    "tags": ["алтай", "река чарыш", "чарыш", "россия", "река", "пейзаж", "природа", "лето", "день", "черно-белое", "сверху"],
+    "files": {
+      "thumb": "/media/thumb/charysh-2-thumb.webp",
+      "web": "/media/web/charysh-web.webp",
+      "hq": "https://cdn.provatorov.ru/hq/charysh-hq.JPG"
+    },
+    "description": null,
+    "camera": {
+      "model": null,
+      "lens": null,
+      "focal_length_mm": null,
+      "aperture_f": null,
+      "shutter": null,
+      "iso": null
+    }
+  },
+  {
     "id": "cappadocia",
     "date": "2008-09",
     "location": {
