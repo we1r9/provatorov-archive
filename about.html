@@ -1,22 +1,60 @@
 <!DOCTYPE html>
 <html lang="ru">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Об авторе</title>
-  <link rel="stylesheet" href="styles/about.css"/>
-  <link rel="stylesheet" href="styles/ambient.css"/>
-</head>
-<body>
-  <div class="ambient">
-  <span class="blob blob1"></span>
-  <span class="blob blob2"></span>
-  <span class="blob blob3"></span>
-</div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Об авторе - Provatorov</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="stylesheet" href="styles/about.css"/>
+    <link rel="stylesheet" href="styles/ambient.css"/>
+    <link rel="stylesheet" href="styles/loader.css">
+    <link rel="stylesheet" href="styles/ambient.css">
+    <script>
+      (function () {
+        document.documentElement.classList.add("preload-lock");
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", () => {
+            document.body.classList.add("preload-lock");
+          });
+        } else {
+          document.body.classList.add("preload-lock");
+        }
+        window.__loaderStart = (performance.now?.() || Date.now());
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="loading" aria-hidden="true">
+      <div class="spinner">
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+      </div>
+    </div>
+      
+    <div class="dot dot1"></div>
+    <div class="dot dot2"></div>
+    <div class="dot dot3"></div>
+    <div class="dot dot4"></div>
+    <div class="dot dot5"></div>
+    <div class="dot dot6"></div>
+    <div class="dot dot7"></div>
+    <div class="dot dot8"></div>
+    <div class="dot dot9"></div>
+    <div class="dot dot10"></div>
 
-
-  
-  <!-- HEADER -->
   <header class="site-header" id="siteHeader">
     <div class="header-inner header-view">
       <a class="go-back-arrow" aria-label="Назад">
@@ -25,7 +63,9 @@
         </svg>
         <span class="back-label">Назад</span>
       </a>
-      <a class="logo-text" href="index.html" data-role="logo">provatorov</a>
+      <a class="logo" href="index.html" data-role="logo">
+        <img class="logo-image" src="/images/logo.png" width="125">
+      </a>
     </div>
   </header>
 
@@ -34,7 +74,7 @@
       <h1 class="about-title">Об авторе</h1>
 
       <div class="about-text-glass">
-        <p><span class="provatorov">Александр Проваторов</span> — путешественник и фотограф из Алтайского края, родился в Барнауле в 1961 году. Участник сложнейших маршрутов и экспедиций по всему миру: восходил на Эльбрус, Килиманджаро, Аконкагуа, Мак-Кинли; достиг отметки 8 450 м на Эвересте. Пересёк Атлантику на парусном катамаране — от Марокко до Бразилии, участвовал в кругосветной экспедиции через Индийский океан и в полярных походах на снегоходах вокруг Северного Ледовитого океана.</p>
+        <p><span class="provatorov">Александр Проватóров</span> — путешественник и фотограф из Алтайского края, родился в Барнауле в 1961 году. Участник сложнейших маршрутов и экспедиций по всему миру: восходил на Эльбрус, Килиманджаро, Аконкагуа, Мак-Кинли; достиг отметки 8 450 м на Эвересте. Пересёк Атлантику на парусном катамаране — от Марокко до Бразилии, участвовал в кругосветной экспедиции через Индийский океан и в полярных походах на снегоходах вокруг Северного Ледовитого океана.</p>
 
         <p>Считается одной из ключевых фигур советского и российского водного туризма, первопроходцем наиболее сложных рек и маршрутов.</p>
 
@@ -57,11 +97,10 @@
 
     <section class="author-photo-section">
       <figure class="about-figure">
-        <img class="author-photo" src="images/image.png" alt="Александр Проваторов">
+        <img class="author-photo" src="images/image.png">
       </figure>
     </section>
   </main>
-
 
   <footer class="site-footer">
     <div class="footer">
@@ -106,5 +145,36 @@
     });
   </script>
   <script type="module" src="scripts/about.js"></script>
-</body>
+
+  <script>
+    (function armLogoHardReset(){
+      const logo = document.querySelector('[data-role="logo"]');
+      if (!logo) return;
+
+      const isModifiedClick = (e) =>
+        e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey;
+
+      const homeURL = new URL('index.html', location.origin).toString();
+
+      logo.addEventListener('click', (e) => {
+        if (isModifiedClick(e)) return; // даём открыть в новой вкладке
+
+        e.preventDefault();
+        try { sessionStorage.setItem('__HARD_RESET__', '1'); } catch {}
+
+        const p = location.pathname.replace(/\/+$/, '/');
+        const onHome = p === '/' || /\/index\.html$/.test(p);
+
+        if (onHome) {
+          try { history.replaceState(null, '', location.pathname); } catch {}
+          location.replace(location.pathname);
+        } else {
+          location.assign(homeURL);
+        }
+      });
+    })();
+  </script>
+
+  <script type="module" src="/scripts/utils/loader.js"></script>
+  </body>
 </html>

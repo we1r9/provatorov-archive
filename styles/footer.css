@@ -1,14 +1,12 @@
 :root{
-  /* единый край страницы */
   --edge-pad: 1rem;
 }
 
 :root{
-  --page-max: 1400px;                 /* фолбэк, если страница не задаёт */
+  --page-max: 1400px;
   --footer-gutter: clamp(16px, 6vw, 48px);
 }
 
-/* Ссылки в футере — без подчёркивания и с наследованием цвета */
 .site-footer .footer-left,
 .site-footer .footer-right,
 .site-footer .footer-left:link,
@@ -19,13 +17,11 @@
   text-decoration: none;
 }
 
-/* По желанию: при hover не подчеркивать, только тень чипсы */
 .site-footer .footer-left:hover,
 .site-footer .footer-right:hover {
   text-decoration: none;
 }
 
-/* Текст внутри чипсы — тоже без подчёркивания */
 .telegram-text {
   color: inherit;
   text-decoration: none;
@@ -45,16 +41,13 @@
   padding: 0 1rem;
 }
 
-/* ==== Footer links: same FX as .fav-btn.has-count ==== */
-
-
 .footer-left{
   display: inline-flex;
   align-items: center;
   gap: .25rem;
-  padding: 5px 9px;     /* теперь есть паддинги */
+  padding: 5px 9px;
   border-radius: 999px;
-  line-height: 1;                /* чтобы текст не раздувал высоту */
+  line-height: 1;
   background: transparent;
   transition:
     box-shadow 300ms ease,
@@ -62,7 +55,6 @@
     border-radius 300ms ease,
     padding 300ms ease;
 }
-
 
 .telegram-text{ 
   margin:0; 
@@ -76,16 +68,14 @@
   display:block; 
 }
 
-
-
 .about-text{
   font-size:16px; 
   display: inline-flex;
   align-items: center;
   gap: .25rem;
-  padding: 10px 11px;     /* теперь есть паддинги */
+  padding: 10px 11px;
   border-radius: 999px;
-  line-height: 1;                /* чтобы текст не раздувал высоту */
+  line-height: 1;
   background: transparent;
   white-space: nowrap;
   transition:
@@ -96,30 +86,29 @@
 }
 
 .about-text:hover{
-  /* верх/низ будут постоянными благодаря height */
   box-shadow:
     0 4px 8px rgba(0,0,0,.08),
     0 10px 25px rgba(0,0,0,.12);
-  /* если хочешь “дышать” по бокам: */
-  /* padding: 0 calc(var(--chip-px) + 2px); */
 }
 
 .footer-left:hover{
-  /* верх/низ будут постоянными благодаря height */
   box-shadow:
     0 4px 8px rgba(0,0,0,.08),
     0 10px 25px rgba(0,0,0,.12);
-  /* если хочешь “дышать” по бокам: */
-  /* padding: 0 calc(var(--chip-px) + 2px); */
 }
 
-/* ====== Copyright (одна строка с троеточием при нехватке места) ====== */
+@media (max-width: 500px) {
+  .footer-left:hover{
+    box-shadow: none;
+  }
+}
+
 .rights{
   flex: 1 1 auto;
-  min-width: 0;            /* обязательно для ellipsis во flex */
+  min-width: 0;
   display: flex;
   align-items: center;
-  justify-content: center;  /* центрируем текст по горизонтали */
+  justify-content: center;
   gap: 4px;
   margin: 0;
   line-height: 1.3;
@@ -146,7 +135,7 @@
 .author {
   font-size: 14px;
   white-space: nowrap;
-  overflow: hidden;      /* именно имя обрезается */
+  overflow: hidden;
   text-overflow: ellipsis;
 }
 
@@ -156,12 +145,11 @@
 .site-footer {
   margin-top: auto;
   width: 100%;
-  /* убираем старую жёсткую тень */
   box-shadow: none;
 
   position: relative;
   background: transparent;
-  isolation: isolate; /* чтобы ::before был под содержимым */
+  isolation: isolate;
 }
 
 .site-footer .footer{
@@ -181,7 +169,6 @@
 .footer-left,
 .footer-right { flex: 0 0 auto; }
 
-/* === стеклянная подложка под футером === */
 .site-footer::before {
   content: "";
   position: absolute;
@@ -195,7 +182,7 @@
   background: rgba(255,255,255,.25);
 
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.45),
+    inset 0 1px 0 rgba(255,255,255,.18),
     0 -12px 24px -12px rgba(0,0,0,.15);
 }
 
@@ -219,16 +206,19 @@
 .footer-right { grid-column: 3; justify-self: end; }
 
 
-/* убираем синие/серые подсветки на тач-устройствах */
 a, button {
-  -webkit-tap-highlight-color: transparent; /* iOS/Android */
+  -webkit-tap-highlight-color: transparent;
 }
 
 a, button {
-  outline: none;              /* убираем рамку при клике */
+  outline: none;
 }
 
 a:focus,
 button:focus {
-  outline: none;              /* чтобы на мобилке не рисовалось кольцо */
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
 }

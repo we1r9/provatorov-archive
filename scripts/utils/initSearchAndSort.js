@@ -43,8 +43,9 @@ function updateCounterFromCurrentQuery() {
 
 // ========== УТИЛИТЫ ПРОКРУТКИ И URL ==========
 export function scrollToTopSmooth() {
+  if (window.__isRestoringScroll) return;
   try {
-    window.scrollTo({ top: 0, behavior: 'smooth'});
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   } catch {
     window.scrollTo(0, 0);
   }
@@ -165,19 +166,17 @@ function emptyStateElement() {
 function showEmptyState(list, query) {
   if (!grid) return;
 
-  const emptyElement = emptyStateElement();
-  
+  const emptyEl = document.querySelector(".empty-state");
   const hasQuery = query && query.trim().length > 0;
   const isEmpty = !list || list.length === 0;
 
-  // Если поиск не дал результатов
   if (hasQuery && isEmpty) {
-    emptyElement.textContent = `По вашему запросу ничего не найдено :(`;
-    emptyElement.style.display = 'block';
-    grid.style.display = 'none';
+    emptyEl.querySelector(".title").textContent = "По вашему запросу ничего не найдено.";
+    emptyEl.hidden = false;
+    requestAnimationFrame(() => emptyEl.classList.add("is-show"));
   } else {
-    emptyElement.style.display = 'none';
-    grid.style.display = '';
+    emptyEl.classList.remove("is-show");
+    emptyEl.hidden = true;
   }
 }
 
@@ -278,6 +277,10 @@ export function initSearchAndSort(photosData, { autoRender = true } = {}) {
       updateUrlState({ q, sort: currentSort, shuffle: false});
 
       updateCounterFromCurrentQuery();
+
+      if (!window.__isRestoringScroll) {
+        scrollToTopSmooth();
+      }
     });
   }
 
@@ -287,8 +290,15 @@ export function initSearchAndSort(photosData, { autoRender = true } = {}) {
       isShuffleMode = true;
       currentSort = ''; // Сбрасываем сортировку
       shuffleOrder = []; // Очищаем старый порядок
-      if (sortSelect) sortSelect.value = '';
-      document.documentElement.dataset.shuffle = '1';
+
+  if (sortSelect) {
+    sortSelect.value = '';
+    const dd = document.getElementById('sortDropdown');
+    const label = dd?.querySelector('.sort-label');
+    if (label) label.textContent = 'Сортировать';
+    dd?.querySelectorAll('.sort-option').forEach(li => li.removeAttribute('aria-selected'));
+  }
+  document.documentElement.dataset.shuffle = '1';
 
       // Схлопываем и скроллим вверх  
       runSearch(false);
@@ -298,6 +308,10 @@ export function initSearchAndSort(photosData, { autoRender = true } = {}) {
       updateUrlState({ q, sort: '', shuffle: true});
 
       updateCounterFromCurrentQuery();
+
+      if (!window.__isRestoringScroll) {
+        scrollToTopSmooth();
+      }
     });
   }
 
@@ -383,13 +397,18 @@ export function initSearchAndSort(photosData, { autoRender = true } = {}) {
     });
 
     revealGrid();
+
     updateUrlState({ q, sort: currentSort, shuffle: isShuffleMode }, {push: false});
-    scrollToTopSmooth();
+
+    if (!window.__isRestoringScroll) {
+      scrollToTopSmooth();
+    }
+
     lastQuery = q;
   }
 
   // Если включен автозапуск, сразу показываем результат
-  if (autoRender) runSearch(false);
+  if (autoRender && !window.__isRestoringScroll) runSearch(false);
 }
 
 // Применяет сохраненное состояние поиска/сортировки/перемешивания. Параметры передаются объектом: 
@@ -397,38 +416,59 @@ export function initSearchAndSort(photosData, { autoRender = true } = {}) {
 // sort — выбранная сортировка
 // isShuffle — флаг режима перемешивания (false по умолч.)
 // savedOrder — сохраненный порядок карточек при shuffle
-export function applySearchState(
-  { 
-    query = '', 
-    sort = '', 
-    isShuffle = false,
-    shuffleOrder: savedOrder = [] 
-  } = {},
-  {
-    preserveVisible = true
-  } = {}
-) {
+export function applySearchState(state = {}, opts = {}) {
+  const {
+    query,
+    // ВАЖНО: не вытаскиваем тут sort/isShuffle/shuffleOrder,
+    // чтобы можно было отличить «ключ не передан» от «передан пустой строкой/false».
+  } = state;
 
+  const preserveVisible = opts?.preserveVisible ?? true;
+
+  // Подтягиваем DOM-элементы при первом вызове
   if (!searchInput) searchInput = document.querySelector('.input-section');
-  if (!sortSelect) sortSelect = document.querySelector('#sortSelect');
+  if (!sortSelect)  sortSelect  = document.querySelector('#sortSelect');
 
-  if (searchInput) searchInput.value = query;
-  if (sortSelect) sortSelect.value = sort;
+  // Устанавливаем query, если пришёл (строкой)
+  if (typeof query === 'string' && searchInput) {
+    searchInput.value = query;
+  }
 
-  // Логика переключения
-  isShuffleMode = !!isShuffle;
-  currentSort = isShuffle ? '' : sort;
+  // Флаги «ключ присутствует в объекте state»
+  const hasSort       = Object.prototype.hasOwnProperty.call(state, 'sort');
+  const hasShuffle    = Object.prototype.hasOwnProperty.call(state, 'isShuffle');
+  const hasOrder      = Object.prototype.hasOwnProperty.call(state, 'shuffleOrder');
 
-  // Восстанавливаем сохранённый порядок перемешанных карточек
-  shuffleOrder = Array.isArray(savedOrder) ? savedOrder.slice() : [];
+  // -------- Shuffle toggle (бережно) --------
+  if (hasShuffle) {
+    isShuffleMode = !!state.isShuffle;
+  }
+  // Порядок для shuffle — обновляем ТОЛЬКО если явно передан
+  if (hasOrder) {
+    shuffleOrder = Array.isArray(state.shuffleOrder) ? state.shuffleOrder.slice() : [];
+  }
 
-  // Ставим атрибут data-shuffle на <html>
+  // -------- Sort (бережно) --------
+  // Если активен shuffle — сортировка пустая независимо от переданных значений
+  if (isShuffleMode) {
+    currentSort = '';
+  } else {
+    // Если сорт явно передали — применяем её
+    if (hasSort) {
+      if (sortSelect) sortSelect.value = state.sort;
+      currentSort = state.sort; // может быть '' — это осознанно, т.к. ключ передан явно
+    }
+    // Если сорт НЕ передан — currentSort оставляем как есть (ничего не делаем)
+  }
+
+  // data-* атрибут на <html> для CSS
   document.documentElement.dataset.shuffle = isShuffleMode ? '1' : '0';
 
-  runSearch(preserveVisible);
-
+  // Рендер один раз
   const res = runSearch(preserveVisible);
   updateCounterFromCurrentQuery();
+
+  return res;
 }
 
 // Собирает текущее состояние поиска/сортировки/перемешивания и возвращает в виде объекта

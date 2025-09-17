@@ -3,12 +3,59 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Избранное</title>
+    <title>Избранное - Provatorov</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
     <link rel="stylesheet" href="styles/favorites.css">
     <link rel="stylesheet" href="styles/footer.css">
     <link rel="stylesheet" href="styles/header.css">
+    <link rel="stylesheet" href="styles/loader.css">
+    <link rel="stylesheet" href="styles/ambient.css"/>
+    <script>
+      (function () {
+        document.documentElement.classList.add("preload-lock");
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", () => {
+            document.body.classList.add("preload-lock");
+          });
+        } else {
+          document.body.classList.add("preload-lock");
+        }
+        window.__loaderStart = (performance.now?.() || Date.now());
+      })();
+    </script>
   </head>
   <body>
+    <div id="loading" aria-hidden="true">
+      <div class="spinner">
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+      </div>
+    </div>
+    
+    <div class="dot dot1"></div>
+    <div class="dot dot2"></div>
+    <div class="dot dot3"></div>
+    <div class="dot dot4"></div>
+    <div class="dot dot5"></div>
+    <div class="dot dot6"></div>
+    <div class="dot dot7"></div>
+    <div class="dot dot8"></div>
+    <div class="dot dot9"></div>
+    <div class="dot dot10"></div>
+
     <header class="site-header" id="siteHeader">
       <div class="header-inner header-view">
         <a class="go-back-arrow" aria-label="Назад">
@@ -16,9 +63,11 @@
           <span class="back-label">Назад</span>
         </a>
 
-        <a class="logo-text" href="index.html" data-role="logo">provatorov</a>
+        <a class="logo" href="index.html" data-role="logo">
+          <img class="logo-image" src="/images/logo.png">
+        </a>
 
-        <a class="fav-btn has-count" title="Избранное">
+        <a class="fav-btn has-count">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="26" height="26" fill="currentColor" aria-hidden="true">
             <path d="M240,98a57.63,57.63,0,0,1-17,41L133.7,229.62a8,8,0,0,1-11.4,0L33,139a58,58,0,0,1,82-82.1L128,69.05l13.09-12.19A58,58,0,0,1,240,98Z"></path>
           </svg>
@@ -38,12 +87,12 @@
 
     <footer class="site-footer">
       <div class="footer">
-        <a class="footer-left" href="https://t.me/provalexphoto" target="_parent" aria-label="Telegram">
+        <a class="footer-left" href="https://t.me/provalexphoto" target="_blank" rel="noopener noreferrer">
           <img class="telegram-logo-img" src="images/telegram-black-icon.png" alt="">
           <span class="telegram-text">Telegram</span>
         </a>
 
-        <div class="rights" aria-label="copyright">
+        <div class="rights" aria-label="copyright" title="Фотографии доступны для некоммерческого использования.">
           <span class="copy-year"></span>
           <span class="author">Александр Проваторов</span>
         </div>
@@ -57,6 +106,44 @@
     <script type="module" src="scripts/favorites.js"></script>
 
     <script>
+      (function armHardHomeLinks(){
+        const homeURL = new URL('index.html', location.origin).toString();
+
+        const isModifiedClick = (e) =>
+          e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey;
+
+        function arm(el){
+          if (!el) return;
+
+          el.addEventListener('click', (e) => {
+            if (isModifiedClick(e)) return;
+
+            e.preventDefault();
+            try { sessionStorage.setItem('__HARD_RESET__', '1'); } catch {}
+
+            const p = location.pathname.replace(/\/+$/, '/');
+            const onHome = p === '/' || /\/index\.html$/.test(p);
+
+            if (onHome) {
+              try { history.replaceState(null, '', location.pathname); } catch {}
+              location.replace(location.pathname);
+            } else {
+              location.assign(homeURL);
+            }
+          });
+
+          el.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.click(); }
+          });
+        }
+
+        ['[data-role="logo"]', '.show-gallery-btn'].forEach(sel =>
+          document.querySelectorAll(sel).forEach(arm)
+        );
+      })();
+    </script>
+
+    <script>
       document.addEventListener("DOMContentLoaded", () => {
         const yearEl = document.querySelector(".copy-year");
         if (yearEl) {
@@ -64,5 +151,7 @@
         }
       });
     </script>
+
+    <script type="module" src="/scripts/utils/loader.js"></script>
   </body>
 </html>

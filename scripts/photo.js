@@ -27,7 +27,6 @@ function getMonthName(dateStr) {
   };
 
   const parts = String(dateStr).trim().split("-");
-  // если пришло "YYYY-MM" — берём второй элемент; если просто "MM" — берём первый
   const raw = parts[1] ?? parts[0] ?? "";
   const month = String(raw).padStart(2, "0");
 
@@ -35,19 +34,49 @@ function getMonthName(dateStr) {
 }
 
 function monthWordFromPhoto(p) {
-  // приоритет: date: "YYYY-MM"
   if (p.date) return getMonthName(p.date);
 
-  // fallback: year + month (числом или строкой)
   if (p.year && p.month != null) {
     const yy = String(p.year);
     const mm = String(p.month).padStart(2, "0");
     return getMonthName(`${yy}-${mm}`);
   }
 
-  // если вообще нет данных о дате
   return '—';
 }
+
+function bestLocation(p) {
+  return p.region || p.country || 'Фото';
+}
+
+function buildPhotoTitle(p) {
+  const loc = bestLocation(p);
+  return `${loc} - Provatorov`;
+}
+
+function formatShutter(v) {
+  if (v == null || v === '') return '—';
+  if (typeof v === 'string' && v.includes('/')) return `${v} с.`;
+  const n = Number(v);
+  if (Number.isFinite(n) && n > 1) return `1/${Math.round(n)} с.`;
+  if (Number.isFinite(n) && n > 0 && n <= 1) return `${n.toLocaleString('ru-RU')} с`;
+  return '—';
+}
+
+function formatFocal(v) {
+  if (v == null || v === '') return '—';
+  const n = Number(v);
+  if (Number.isFinite(n) && n > 0) return `${n} мм`;
+  return '—';
+}
+
+function formatAperture(v) {
+  if (v == null || v === '') return '—';
+  const n = Number(v);
+  if (Number.isFinite(n) && n > 0) return `ƒ/${n}`;
+  return `ƒ/${v}`;
+}
+
 
 // Инициализирует отображение фото
 function renderPhoto() {
@@ -60,6 +89,9 @@ function renderPhoto() {
   const dateText = monthName !== '—'
     ? `${monthName}${yearText ? ' ' + yearText : ''}`
     : (yearText || '—');
+
+  // Заголовок страницы
+  document.title = buildPhotoTitle(photo);
 
   // Создаем HTML для секции с отображением
   const viewHTML = `
@@ -90,14 +122,14 @@ function renderPhoto() {
 
           <div class="row">
             <p class="label-focal">Фокусное расстояние</p>
-            <p>${photo.cameraFocalLength || '—'} мм</p>
+            <p>${formatFocal(photo.cameraFocalLength)}</p>
             <p>Диафрагма</p>
-            <p>ƒ/${photo.cameraAperture || '—'}</p>
+            <p>${formatAperture(photo.cameraAperture)}</p>
           </div>
 
           <div class="row">
             <p>Выдержка</p>
-            <p>${photo.cameraShutter || '—'} с.</p>
+            <p>${formatShutter(photo.cameraShutter)}</p>
             <p>ISO</p>
             <p>${photo.cameraIso || '—'}</p>
           </div>
@@ -192,29 +224,36 @@ function norm(v) {
   return (v || '').toString().trim().toLowerCase();
 }
 
-// Ищем похожие фото
-function getSimilarPhotos(current, list, limit = Infinity) {
-  // Вытаскиваем регион/страну/локацию и прогоняем через norm, чтобы позднее сравнивать в одном формате
-  const region = norm(current.region);
-  const country = norm(current.country);
-  const location = norm(current.location);
-
-  // Создаем список всех фото, кроме текущего
-  const pool = list.filter(photo => photo.id !== current.id);
-
-  // Поиск по региону
-  // Если у текущего фото указан region, ищем все фото с таким же region
-  let result = region ? pool.filter(photo => norm(photo.region) === region) : [];
-  if (result.length) return result.slice(0, limit);
-
-  // Поиск по стране
-  result = country ? pool.filter(photo => norm(photo.country) === country) : [];
-  if (result.length) return result.slice(0, limit);
-
-  // Поиск по цельной локации
-  result = location ? pool.filter(photo => norm(photo.location) === location) : [];
-  return result.slice(0, limit);
+// Перемешивание массива (Fisher–Yates)
+function shuffle(array) {
+  const arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
 }
+
+// Ищем похожие фото
+function getSimilarPhotos(current, list, limit = 20) {
+  const regionNorm  = norm(current.region);
+  const countryNorm = norm(current.country);
+
+  const pool = list.filter(p => p.id !== current.id);
+  let result = [];
+
+  if (regionNorm) {
+    result = pool.filter(p => norm(p.region) === regionNorm);
+  }
+
+  if ((!result.length) && countryNorm) {
+    result = pool.filter(p => norm(p.country) === countryNorm);
+  }
+
+  result = shuffle(result);
+  return result.slice(0, Math.min(limit, 20));
+}
+
 
 // Рендер похожих фото
 function renderSimilar(similar, mount, { pageSize = 10 } = {}) {
@@ -418,7 +457,7 @@ if (viewRoot) {
     if (!btn) return;
 
     event.preventDefault();
-    const favId = btn.dataset.favId || photo.id; // подстрахуемся
+    const favId = btn.dataset.favId || photo.id;
 
     toggleFavorite(favId);
 
@@ -427,7 +466,6 @@ if (viewRoot) {
     btn.setAttribute('aria-pressed', active ? 'true' : 'false');
     btn.title = active ? 'Убрать из избранного' : 'В избранное';
 
-    // уведомим все страницы в этом окне
     window.dispatchEvent(new CustomEvent('favorites:changed'));
   });
 
@@ -471,7 +509,6 @@ window.addEventListener('storage', (e) => {
 });
 
 window.addEventListener('pageshow', () => {
-  // перерисуем счётчик и уберём фокус с кнопки
   renderFavCount();
   if (document.activeElement === favLinkEl) favLinkEl.blur();
 });
@@ -517,7 +554,6 @@ requestAnimationFrame(() => {
 
     el.replaceChildren(document.createTextNode(message));
 
-    // перезапуск входной анимации
     el.classList.remove('is-show','is-leaving');
     requestAnimationFrame(() => {
       el.classList.add('is-show');
@@ -525,11 +561,9 @@ requestAnimationFrame(() => {
 
     clearTimeout(el._t);
     el._t = setTimeout(() => {
-      // мягкий выход: только fade-out
       el.classList.add('is-leaving');
       el.classList.remove('is-show');
 
-      // после завершения fade уберём is-leaving
       const onEnd = (e) => {
         if (e.propertyName === 'opacity') {
           el.classList.remove('is-leaving');

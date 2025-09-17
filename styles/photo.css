@@ -1,4 +1,3 @@
-/* Шрифты */
 @font-face {
   font-family: "SF Pro Rounded";
   src: url("../../fonts/SF-Pro-Rounded-Regular.otf") format("opentype");
@@ -13,38 +12,6 @@
   font-display: swap;
 }
 
-@font-face {
-  font-family: "FiraSans-Regular";
-  src: url("../../fonts/FiraSans-Regular.ttf") format("opentype");
-  font-display: swap;
-}
-
-/* ====== BIG BLURRED MONOCHROME DOTS ====== */
-:root{
-  --dots-size: clamp(320px, 45vw, 720px); /* размер пятен */
-  --dots-blur: 6px;                      /* сила размытия */
-  --dots-opacity: 1;                    /* прозрачность */
-}
-
-body::after{
-  content:"";
-  position: fixed;
-  inset: -18vh -18vw;
-  z-index: -1;
-  pointer-events: none;
-  opacity: var(--dots-opacity);
-  filter: blur(var(--dots-blur));
-  transform: translateZ(0);
-
-  background:
-    radial-gradient(var(--dots-size) var(--dots-size) at 15% 20%,  rgba(0,0,0,0.8), transparent 65%),
-    radial-gradient(calc(.8*var(--dots-size)) calc(.8*var(--dots-size)) at 80% 25%, rgba(80,80,80,0.7), transparent 65%),
-    radial-gradient(calc(.9*var(--dots-size)) calc(.9*var(--dots-size)) at 30% 75%, rgba(40,40,40,0.6), transparent 60%),
-    radial-gradient(var(--dots-size) var(--dots-size) at 85% 70%,  rgba(120,120,120,0.6), transparent 65%),
-    radial-gradient(calc(.7*var(--dots-size)) calc(.7*var(--dots-size)) at 50% 50%, rgba(0,0,0,0.5), transparent 60%);
-}
-
-/* Базовые настройки */
 * { box-sizing: border-box; }
 
 html, body {
@@ -70,58 +37,24 @@ main.container {
   padding-top: calc(var(--header-h) + var(--sort-h));
 }
 
+:root{
+  --edge-pad: clamp(16px, 6vw, 48px);
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* ========== MAIN CONTAINER ========== */
 .view-container{
   display: grid;
   grid-template-columns: minmax(0,1fr) minmax(280px,300px);
   grid-template-areas: "photo aside";
   column-gap: 5rem;
-  row-gap: 2rem;  /* например */
+  row-gap: 2rem;
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem 1rem 2rem;
   margin-top: 2rem;
 }
 
-/* убираем верхний отступ у контейнера просмотра (перекрытие) */
 .view > .view-container{ margin-top: 0; }
 
-/* ========== PHOTO ========== */
-/* контейнер */
 .photo-wrap{
   grid-area: photo;
   display: grid;
@@ -131,12 +64,10 @@ main.container {
 }
 
 .photo-shadow{
-  /* только тень */
   filter: drop-shadow(0 10px 28px rgba(0,0,0,.16))
           drop-shadow(0  2px  6px rgba(0,0,0,.08));
 }
 
-/* картинка */
 .photo-img{
   display:block;
   max-width:100%;
@@ -153,15 +84,12 @@ main.container {
 .photo-wrap.is-portrait  .photo-img { max-height: 80vh; }
 .photo-wrap.is-panorama  .photo-img { max-height: 55vh; }
 
-/* ========== ASIDE ==========
-   (общая колонка справа) */
 .photo-aside{
   display: flex;
   flex-direction: column;
   min-height: 100%;
 }
 
-/* заголовок aside */
 .aside-header{
   margin-top: 0;
   padding-top: 0;
@@ -171,35 +99,28 @@ main.container {
 
 .date{ margin-top:8px; }
 
-/* базовые интервалы */
 :root{
-  --space-date-desc: 0px;   /* от даты до описания */
-  --space-desc-camera: 24px; /* от описания до камеры */
+  --space-date-desc: 0px;
+  --space-desc-camera: 24px;
 }
 
-/* описание */
 .aside-description{ margin-top: var(--space-date-desc); }
 
-/* если внутри описания пусто — прячем секцию целиком */
 .aside-description:has(> .description:empty){
-  display:none;              /* не оставляем пустой зазор */
+  display:none;
   margin-top:0;
 }
 
-/* камера по умолчанию */
 .aside-block-camera{ margin-top: var(--space-desc-camera); }
 
-/* если описания нет — складываем оба отступа от даты до камеры */
 .aside-description:has(> .description:empty) + .aside-block-camera{
   margin-top: calc(var(--space-date-desc) + var(--space-desc-camera));
 }
-
 
 .aside-description{
   margin-top: 14px;
 }
 
-/* ========== CAMERA BLOCK ========== */
 .aside-block-camera{
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -224,13 +145,11 @@ main.container {
 .aside-block-camera .row p:nth-child(1),
 .aside-block-camera .row p:nth-child(3){ font-weight: 600; color: #444; }
 
-/* запрет переносов у лейблов */
 .aside-block-camera .row p:nth-child(1),
 .aside-block-camera .row p:nth-child(3){
   white-space: nowrap;
 }
 
-/* на совсем узких — разрешаем перенос, чтобы не выезжало */
 @media (max-width: 420px){
   .aside-block-camera .row p:nth-child(1),
   .aside-block-camera .row p:nth-child(3){
@@ -238,26 +157,19 @@ main.container {
   }
 }
 
-
-/* Лейблы: обычный вес, чёрные */
 .aside-block-camera .row p:nth-child(1),
 .aside-block-camera .row p:nth-child(3){
-  font-weight: 400;     /* был 600 */
-  color: #000;          /* чёрный */
-  white-space: nowrap;  /* чтобы не переносилось */
+  font-weight: 400;
+  color: #000;
+  white-space: nowrap;
 }
 
-/* Значения: на 2px меньше и серые */
 .aside-block-camera .row p:nth-child(2),
 .aside-block-camera .row p:nth-child(4){
-  /* базовый размер у блока сейчас 0.9rem — уменьшаем ровно на 2px */
   font-size: calc(0.9rem - 1.1px);
   color: #434343;
 }
 
-
-
-/* ========== ACTIONS (низ правого столбца) ========== */
 .photo-actions{
   display: flex;
   flex-direction: row;
@@ -267,8 +179,6 @@ main.container {
   gap: 1rem;
 }
 
-
-/* БАЗА */
 .download-wrap{
   display: flex;
   align-items: center;
@@ -281,8 +191,6 @@ main.container {
   color: #fff;
   background: #292929ff;
   border-radius: 999px;
-
-  /* важно: чтобы спиннер занимал место внутри кнопки */
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -294,7 +202,7 @@ main.container {
     0 6px 12px rgba(0,0,0,.08);
 
   will-change: transform, box-shadow, background-color;
-  transform: translateZ(0);            /* без мерцаний */
+  transform: translateZ(0);
   transform-origin: center;
   transition:
     transform .18s cubic-bezier(.22,.61,.36,1),
@@ -309,16 +217,13 @@ main.container {
   cursor: pointer;
 }
 
-/* Состояние загрузки: без прозрачности и без absolute */
 .download-hq-btn.is-loading{
   pointer-events: none;
   opacity: 1;
 }
 
-/* по умолчанию хвостика нет */
 .download-hq-btn::after{ content: none; }
 
-/* при загрузке — показываем спиннер как обычный элемент справа */
 .download-hq-btn.is-loading::after{
   content: "";
   width: 13px;
@@ -328,7 +233,7 @@ main.container {
   border-top-color: #fff;
   border-radius: 50%;
   animation: spin .6s linear infinite;
-  flex: 0 0 auto;            /* не сжимать */
+  flex: 0 0 auto;
 }
 
 .download-hq-btn.is-unavailable:hover {
@@ -338,17 +243,9 @@ main.container {
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* опционально: уважение prefers-reduced-motion */
 @media (prefers-reduced-motion: reduce){
   .download-hq-btn.is-loading::after{ animation: none; }
 }
-
-
-
-
-
-/* Лайк в aside */
-
 
 .photo-actions .card-like-button {
   all: unset;
@@ -359,8 +256,9 @@ main.container {
   border-radius: 999px;
   cursor: pointer;
   padding: 2px;
+  margin-bottom: 3px;
+  margin-right: 50px;
 
-  /* стекло */
   -webkit-backdrop-filter: blur(3px) saturate(1.06) contrast(1.02);
           backdrop-filter: blur(3px) saturate(1.06) contrast(1.02);
   background: rgba(255,255,255,.28);
@@ -379,33 +277,40 @@ main.container {
     transform        .26s var(--cb),
     background-color .28s var(--cb),
     box-shadow       .28s var(--cb);
+
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+  -webkit-touch-callout: none;
+  user-select: none;
+  -webkit-user-select: none;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: none;
 }
 
-.photo-actions .card-like-button:hover {
-  background: rgba(255,255,255,.36);
-  box-shadow:
-    inset 0 0 0 1px rgba(0,0,0,.10),
-    0 10px 20px rgba(0,0,0,.14);
+@media (hover: hover) and (pointer: fine){
+  .photo-actions .card-like-button:hover {
+    background: rgba(255,255,255,.36);
+    box-shadow:
+      inset 0 0 0 1px rgba(0,0,0,.10),
+      0 10px 20px rgba(0,0,0,.14);
+  }
 }
 
 .photo-actions .card-like-button:active,
 .photo-actions .card-like-button.is-pressed {
-  --sc: .90; /* глубина нажатия */
+  --sc: .90;
   transition:
     transform        .085s ease-out,
     background-color .12s var(--cb),
     box-shadow       .12s var(--cb);
 }
 
-/* Состояние избранного */
 .photo-actions .card-like-button.is-fav svg { fill: #ff002a; }
 .photo-actions .card-like-button svg {
   transition: fill .28s var(--cb);
 }
 
 
-/* ========== MEDIA ==========
-   (внизу, чтобы перекрывать выше) */
 @media (max-width: 1230px){
   .view-container,
   .view-container.is-portrait{
@@ -422,6 +327,12 @@ main.container {
 @media (max-width: 1230px){
   .photo-actions{
     margin-top: 24px;
+  }
+}
+
+@media (max-width: 1230px){
+  .photo-actions .card-like-button {
+    margin-right: 0px;
   }
 }
 
@@ -443,31 +354,14 @@ main.container {
 @media (max-width: 390px){
   .aside-block-camera .label-focal{
     display: inline-block;
-    max-width: 12ch;         /* длину можно подстроить */
+    max-width: 12ch;
     white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis; /* троеточие */
+    text-overflow: ellipsis;
     vertical-align: bottom;
   }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* Toast */
 .toast {
   position: fixed;
   top: 54px;
@@ -478,11 +372,10 @@ main.container {
   padding: 10px 14px 10px 13px;
   border-radius: 999px;
   box-shadow: 0 10px 28px rgba(0,0,0,.25);
-  opacity: 0;                  /* базово скрыт */
+  opacity: 0;
   pointer-events: none;
   z-index: 9999;
 
-  /* вход: двигаем + показываем, выход: только opacity */
   transition: transform .3s ease, opacity .3s ease;
 
   display: inline-flex;
@@ -493,7 +386,6 @@ main.container {
   white-space: nowrap;
 }
 
-/* Псевдо-иконка слева (скрыта по умолчанию) */
 .toast::before{
   content: "";
   width: 17px;
@@ -503,41 +395,25 @@ main.container {
   display: none;
 }
 
-/* Показываем, если иконка задана */
 .toast.has-icon::before{
   display: inline-block;
 }
 
-/* Показ: выезд + появление */
 .toast.is-show {
   transform: translate(-50%, 0);
   opacity: 1;
 }
 
-/* Уход: остаёмся на месте и плавно растворяемся */
 .toast.is-leaving {
-  transform: translate(-50%, 0);   /* фиксируем позицию, чтобы не уезжал */
-  opacity: 0;                      /* только fade-out */
-  transition: opacity .4s ease;    /* на выходе анимируем только прозрачность */
+  transform: translate(-50%, 0);
+  opacity: 0;
+  transition: opacity .4s ease;
 }
 
-
-
-
-
-
-
-
-
-
-
-/* ===== Similar photos (точно как на главной, без hover) ===== */
 :root{
-  /* фикс-размеры карточки */
   --similar-card-w: 260px;
   --similar-img-h: 150px;
 
-  /* стили стекла — как у .card на главной */
   --border-radius: 32px;
   --lg-blur: 12px;
   --lg-milk: .15;
@@ -546,7 +422,6 @@ main.container {
   --lg-shadow: 0 10px 24px -14px rgba(0,0,0,.18);
 }
 
-/* секция */
 .similar{
   margin-top: 1rem;
   grid-column: 1 / -1;
@@ -558,7 +433,6 @@ main.container {
   font-size: 1.35rem;
 }
 
-/* горизонтальная лента */
 .similar-strip{
   display: flex;
   flex-wrap: nowrap;
@@ -577,7 +451,6 @@ main.container {
   background: #cfcfcf;
 }
 
-/* ===== Карточка (визуально как .card) ===== */
 .similar-card{
   position: relative;
   isolation: isolate;
@@ -598,7 +471,6 @@ main.container {
   scroll-snap-align: start;
 }
 
-/* стеклянная подложка + нижняя кромка как у .card */
 .similar-card::before{
   content:"";
   position:absolute; inset:0;
@@ -618,7 +490,6 @@ main.container {
   background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(0,0,0,.06));
 }
 
-/* фото: фикс-высота 150, ширина 100%, скругление сверху */
 .similar-img{
   grid-row: 1;
   display:block;
@@ -632,7 +503,6 @@ main.container {
   position: relative; z-index:1;
 }
 
-/* подпись: как .card-content + .card-meta */
 .similar-caption{
   grid-row: 2;
   position: relative; z-index:2;
@@ -655,9 +525,12 @@ main.container {
   margin-left: 10px;
 }
 
-/* сентинел */
 .similar-sentinel{
   flex: 0 0 1px;
   width: 1px; height: 1px;
   pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
 }

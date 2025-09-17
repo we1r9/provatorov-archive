@@ -22,12 +22,9 @@ function buildFavoritesList() {
 function renderEmpty() {
   if (!empty || !grid) return;
 
-  // скрываем грид как и раньше
   grid.hidden = true;
 
-  // показываем empty-state с анимацией
-  empty.hidden = false;                  // снять display:none
-  // сбросить класс и запустить в следующем кадре, чтобы переход сработал
+  empty.hidden = false;
   empty.classList.remove('is-show');
   requestAnimationFrame(() => empty.classList.add('is-show'));
 }
@@ -67,7 +64,6 @@ function renderGallery(list) {
   grid.hidden = false;
   if (empty) empty.hidden = true;
 }
-
 
 // Если избранные есть — отображаем галерею
 // Если нет — отображаем элемеент пустого состояния
@@ -166,7 +162,6 @@ window.addEventListener('storage', (e) => {
 });
 
 window.addEventListener('pageshow', () => {
-  // перерисуем счётчик и уберём фокус с кнопки
   renderFavCount();
   if (document.activeElement === favLinkEl) favLinkEl.blur();
 });

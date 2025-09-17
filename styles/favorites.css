@@ -1,4 +1,3 @@
-/* Шрифты */
 @font-face {
   font-family: "SF Pro Rounded";
   src: url("../../fonts/SF-Pro-Rounded-Regular.otf") format("opentype");
@@ -13,38 +12,6 @@
   font-display: swap;
 }
 
-@font-face {
-  font-family: "FiraSans-Regular";
-  src: url("../../fonts/FiraSans-Regular.ttf") format("opentype");
-  font-display: swap;
-}
-
-/* ====== BIG BLURRED MONOCHROME DOTS ====== */
-:root{
-  --dots-size: clamp(320px, 45vw, 720px); /* размер пятен */
-  --dots-blur: 6px;                      /* сила размытия */
-  --dots-opacity: 1;                    /* прозрачность */
-}
-
-body::after{
-  content:"";
-  position: fixed;
-  inset: -18vh -18vw;
-  z-index: -1;
-  pointer-events: none;
-  opacity: var(--dots-opacity);
-  filter: blur(var(--dots-blur));
-  transform: translateZ(0);
-
-  background:
-    radial-gradient(var(--dots-size) var(--dots-size) at 15% 20%,  rgba(0,0,0,0.8), transparent 65%),
-    radial-gradient(calc(.8*var(--dots-size)) calc(.8*var(--dots-size)) at 80% 25%, rgba(80,80,80,0.7), transparent 65%),
-    radial-gradient(calc(.9*var(--dots-size)) calc(.9*var(--dots-size)) at 30% 75%, rgba(40,40,40,0.6), transparent 60%),
-    radial-gradient(var(--dots-size) var(--dots-size) at 85% 70%,  rgba(120,120,120,0.6), transparent 65%),
-    radial-gradient(calc(.7*var(--dots-size)) calc(.7*var(--dots-size)) at 50% 50%, rgba(0,0,0,0.5), transparent 60%);
-}
-
-/* Базовые настройки */
 * { box-sizing: border-box; }
 
 html, body {
@@ -70,70 +37,22 @@ main.container {
   padding-top: calc(var(--header-h) + var(--sort-h));
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* ====== базовые ====== */
 * { box-sizing: border-box; }
 
 :root{
-  /* изолируем отступ сверху: на избранном нет сортбара */
-  --header-h: 72px;      /* если header.css это меняет — он победит */
-  --sort-h: 0px;         /* на избранном сортбара нет */
+  --header-h: 72px;
+  --sort-h: 0px;
   --page-max: 1400px;
-
-  /* сетка */
   --card-min: 200px;
   --card-max: 320px;
   --gap: 20px;
-
-  /* стекло/тени как на главной */
   --border-radius: 32px;
   --lg-blur: 12px;
   --lg-milk: .15;
   --lg-stroke: rgba(0,0,0,.10);
   --lg-hi: rgba(255,255,255,.40);
   --lg-shadow: 0 10px 24px -14px rgba(0,0,0,.18);
-
   --ease: cubic-bezier(.22,.61,.36,1);
-}
-
-/* фон-пятна — как на главной */
-:root{
-  --dots-size: clamp(320px, 45vw, 720px);
-  --dots-blur: 6px;
-  --dots-opacity: 1;
-}
-body::after{
-  content:"";
-  position: fixed;
-  inset: -18vh -18vw;
-  z-index: -1;
-  pointer-events: none;
-  opacity: var(--dots-opacity);
-  filter: blur(var(--dots-blur));
-  transform: translateZ(0);
-  background:
-    radial-gradient(var(--dots-size) var(--dots-size) at 15% 20%,  rgba(0,0,0,0.8), transparent 65%),
-    radial-gradient(calc(.8*var(--dots-size)) calc(.8*var(--dots-size)) at 80% 25%, rgba(80,80,80,0.7), transparent 65%),
-    radial-gradient(calc(.9*var(--dots-size)) calc(.9*var(--dots-size)) at 30% 75%, rgba(40,40,40,0.6), transparent 60%),
-    radial-gradient(var(--dots-size) var(--dots-size) at 85% 70%,  rgba(120,120,120,0.6), transparent 65%),
-    radial-gradient(calc(.7*var(--dots-size)) calc(.7*var(--dots-size)) at 50% 50%, rgba(0,0,0,0.5), transparent 60%);
 }
 
 html, body {
@@ -156,11 +75,9 @@ main { flex: 1 0 auto; }
 }
 
 main.container {
-  /* такой же отступ, как на главной, но сортбар = 0 */
   padding-top: calc(var(--header-h) + var(--sort-h));
 }
 
-/* ====== сетка как на главной (чёткие колонки) ====== */
 .grid{
   display: grid;
   gap: var(--gap);
@@ -170,29 +87,23 @@ main.container {
   max-width: calc(var(--cols) * var(--card-max) + (var(--cols) - 1) * var(--gap));
   margin-inline: auto;
 
-  justify-content: start;   /* по горизонтали (несколько карточек) */
+  justify-content: start;
   align-content: start;
 }
 
-/* 1 карточка — делаем 1 колонку, грид центрируется целиком */
 .grid:not(:has(> :nth-child(2))) {
   --cols: 1;
 }
 
-/* ровно 2 карточки — делаем 2 колонки */
 .grid:has(> :nth-child(2)):not(:has(> :nth-child(3))) {
   --cols: 2;
 }
 
-/* общее поведение: всегда сверху по вертикали */
 .grid {
-  align-content: start;    /* сверху по вертикали */
-  justify-content: start;  /* по умолчанию слева по горизонтали */
+  align-content: start;
+  justify-content: start;
 }
 
-
-
-/* брейкпоинты 1/2/3 колонки — как на главной */
 @media (max-width: 480px){
   :root{
     --mobile-card-min: 280px;
@@ -211,7 +122,6 @@ main.container {
   .grid{ --cols: 3; }
 }
 
-/* ====== карточка: стекло, фото, контент ====== */
 .card{
   position: relative;
   isolation: isolate;
@@ -232,11 +142,8 @@ main.container {
   opacity: 0;
   transform: scale(.96) translateY(6px);
   box-shadow: none;
-  pointer-events: none; /* чтобы по ней не кликали во время анимации */
+  pointer-events: none;
 }
-
-
-
 
 .card::before{
   content:"";
@@ -257,7 +164,6 @@ main.container {
   background: linear-gradient(to bottom, rgba(255,255,255,.00), rgba(0,0,0,.06));
 }
 
-/* медиа-область + фото (как на главной) */
 .card-media{
   position: relative;
   border-top-left-radius: var(--border-radius);
@@ -313,7 +219,6 @@ main.container {
   color: rgba(17,17,17,.72);
 }
 
-/* ссылка-обёртка */
 .card-link{
   display: block;
   color: inherit;
@@ -321,7 +226,6 @@ main.container {
   cursor: pointer;
 }
 
-/* ====== лайк-кнопка: плавающая (как на главной) ====== */
 .card-like-button{
   all: unset;
   position: absolute; top: 12px; right: 12px;
@@ -368,7 +272,6 @@ main.container {
   .card:hover .card-like-button{ opacity: 1; }
 }
 
-/* «нажатие» */
 .card-like-button.is-pressed{
   --sc: .90;
   transition:
@@ -377,7 +280,6 @@ main.container {
     box-shadow       .12s var(--cb);
 }
 
-/* ====== hover/акцент карточки (как на главной) ====== */
 @media (hover: hover) and (pointer: fine){
   .card{
     transition:
@@ -407,42 +309,6 @@ main.container {
   }
   .card-content{ transition: transform .28s var(--ease); }
   .card:hover .card-content{ transform: translateY(1px); }
-
-  /* доступность: фокус на ссылке поднимает карточку */
-  @supports selector(:has(*)) {
-    .card:has(.card-link:focus-visible){
-      transform: translateY(-4px);
-      box-shadow: 0 18px 36px -18px rgba(0,0,0,.22);
-    }
-    .card:has(.card-link:focus-visible)::before{
-      background: rgba(255,255,255, calc(var(--lg-milk) + .03));
-      box-shadow:
-        inset 0 0 0 1px var(--lg-stroke),
-        inset 0 1px 0 rgba(255,255,255,.52);
-    }
-    .card:has(.card-link:focus-visible) .card-media > .card-photo{
-      transform: scale(1.02);
-      filter: saturate(1.08) contrast(1.04);
-    }
-    /* фокус на лайке — не поднимать всю карточку */
-    .card:has(.card-like-button:focus-visible){
-      transform: none;
-      box-shadow: var(--lg-shadow);
-    }
-    .card:has(.card-like-button:focus-visible)::before{
-      background: rgba(255,255,255,var(--lg-milk));
-      box-shadow:
-        inset 0 0 0 1px var(--lg-stroke),
-        inset 0 1px 0 var(--lg-hi);
-    }
-  }
-}
-
-/* reduce motion */
-@media (prefers-reduced-motion: reduce){
-  .card, .card::before, .card-media > .card-photo, .card-content{
-    transition: none !important;
-  }
 }
 
 .card.is-leaving,
@@ -453,27 +319,10 @@ main.container {
   pointer-events: none;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* ====== пустое состояние ====== */
 :root{
-  --footer-h: 72px; /* как в твоём футере */
+  --footer-h: 72px;
 }
 
-/* если сетка пуста — не занимает место */
 .grid:empty{
   display: none;
 }
@@ -485,22 +334,20 @@ main.container {
   padding: 10rem 0;
 }
 
-/* плавное появление/исчезновение empty-state */
 .empty-state{
   opacity: 0;
   transform: translateY(6px);
   visibility: hidden;
-  transition: opacity .28s var(--ease), visibility 0s linear .28s; /* visibility включим позже */
+  transition: opacity .28s var(--ease), visibility 0s linear .28s;
   will-change: opacity, transform;
-  pointer-events: none;   /* когда скрыта — не кликается */
+  pointer-events: none;
 }
 
-/* показ */
 .empty-state.is-show{
   opacity: 1;
   transform: none;
   visibility: visible;
-  transition: opacity .28s var(--ease); /* без задержки visibility */
+  transition: opacity .28s var(--ease);
   pointer-events: auto;
 }
 
@@ -512,7 +359,6 @@ main.container {
   padding-bottom: 2rem;
 }
 
-/* Стеклянная кнопка «Показать галерею» */
 .show-gallery-btn{
   all: unset;
   display: inline-flex;
@@ -526,12 +372,10 @@ main.container {
   line-height: 1;
   color: #111;
 
-  /* стекло как у карточек */
   -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(1.06) contrast(1.02);
           backdrop-filter: blur(var(--lg-blur)) saturate(1.06) contrast(1.02);
   background: rgba(255,255,255, var(--lg-milk));
 
-  /* базовая тень */
   box-shadow:
     inset 0 0 0 1px var(--lg-stroke),
     inset 0 1px 0 var(--lg-hi),
@@ -540,64 +384,52 @@ main.container {
   transition:
     background-color .24s ease,
     box-shadow .24s ease;
+
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+  -webkit-touch-callout: none;
+  user-select: none;
+  -webkit-user-select: none;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: none;
 }
 
-/* hover — добавляем светлее фон и усиливаем внешнюю тень */
 @media (hover:hover){
   .show-gallery-btn:hover{
     background: rgba(255,255,255, calc(var(--lg-milk) + .04));
     box-shadow:
       inset 0 0 0 1px var(--lg-stroke),
-      inset 0 1px 0 rgba(255,255,255,.55), /* чуть ярче */
-      0 14px 28px -12px rgba(0,0,0,.22);   /* глубже внешняя */
+      inset 0 1px 0 rgba(255,255,255,.55),
+      0 14px 28px -12px rgba(0,0,0,.22);
   }
 }
 
-/* скрытие */
 [hidden]{ display:none !important; }
 
 .zaglushka-img{
   margin-top: 2rem;
   display: block;
 
-  /* адаптивная ширина: от 220px до 520px, обычно ~60% ширины окна */
   width: clamp(220px, 60vw, 520px);
 
-  /* не вылезаем по высоте: максимум ~45% видимой высоты */
   height: auto;
-  max-height: 45svh;            /* svh — корректно на мобилках с URL-баром */
+  max-height: 45svh;
   object-fit: contain;
 }
 
 @media (max-width: 640px){
   .zaglushka-img{
-    width: clamp(240px, 78vw, 560px);  /* ↑ было 60vw → стало 78vw */
-    max-height: 52svh;                 /* можно видеть картинку побольше */
+    width: clamp(240px, 78vw, 560px);
+    max-height: 52svh;
   }
 }
 
-/* очень узкие телефоны */
 @media (max-width: 380px){
   .zaglushka-img{
-    width: clamp(240px, 86vw, 540px);  /* ещё немного шире в процентах */
+    width: clamp(240px, 86vw, 540px);
   }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}

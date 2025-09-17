@@ -1,8 +1,3 @@
-
-
-
-
-/* ========= SORT (Liquid Glass) ========= */
 #sortSelect{
   position: absolute !important;
   width: 0 !important;
@@ -18,14 +13,13 @@
 
 .sort-select{
   position: relative;
-  z-index: 2;             /* выше кромки сортбара */
+  z-index: 2;
   isolation: auto; 
-  --r: 18px;                      /* радиус */
+  --r: 18px;
   --blur: 12px;
-  --milk: .22;                    /* базовая «молочность» */
+  --milk: .22;
 }
 
-/* --- Trigger --------------------------------------------------- */
 .sort-trigger{
   position: relative;
   display: flex;
@@ -39,7 +33,7 @@
   cursor: pointer;
   font: inherit;
   will-change: border-radius, box-shadow;
-  z-index: 1;                     /* контент поверх стекла */
+  z-index: 1;
 }
 .sort-trigger > *{ position: relative; z-index: 1; }
 
@@ -80,11 +74,9 @@
     0 10px 20px rgba(0,0,0,.10);
 }
 
-/* когда открыто — низ триггера «ровный», чтобы слиться с меню */
 .sort-select.open .sort-trigger{ border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
 .sort-select.open .sort-trigger::before{ border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
 
-/* стрелка */
 .sort-trigger svg{
   display:block;
   transform-origin: 50% 50%;
@@ -95,17 +87,15 @@
 
 
 :root{
-  --menu-max: 320px; /* максимальная высота раскрытого меню */
+  --menu-max: 320px;
 }
 
-/* --- Menu (glass panel) --------------------------------------- */
 .sort-menu{
   position: absolute;
   top: 100%; left: 0; right: 0;
   margin: 0; padding: 0;
   list-style: none;
 
-  /* стекло прямо на элементе */
   background: rgba(255,255,255,var(--milk));
   -webkit-backdrop-filter: blur(var(--blur)) saturate(1.08) contrast(1.03);
           backdrop-filter: blur(var(--blur)) saturate(1.08) contrast(1.03);
@@ -114,7 +104,6 @@
   border-bottom-left-radius: var(--r);
   border-bottom-right-radius: var(--r);
 
-  /* тени — внешние, без инсет-хайлайта сверху */
   box-shadow:
     0 10px 20px rgba(0,0,0,.10),
     0 4px 8px rgba(0,0,0,.06),
@@ -133,28 +122,25 @@
 }
 
 .sort-select.open .sort-menu{
-  margin-top: -1px;               /* убираем «шов» */
+  margin-top: -1px;
   opacity: 1;
   transform: translateY(0);
   pointer-events: auto;
 }
 
 .sort-select.open .sort-menu::before{
-  /* был: inset 0 1px 0 rgba(255,255,255,.35) — даёт белую «нить» */
   box-shadow:
     inset 0 0 0 1px rgba(0,0,0,.10),
-    /* верхний хайлайт убираем */
     0 10px 20px rgba(0,0,0,.10),
     0 4px 8px rgba(0,0,0,.06);
   border-top-left-radius: 0; 
-  border-top-right-radius: 0;     /* чтобы радиусы тоже совпали */
+  border-top-right-radius: 0;
 }
 
 .sort-select.open .sort-trigger,
 .sort-select.open .sort-trigger::before{
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
-  /* на некоторых DPR помогает убрать внешние тени снизу */
   box-shadow:
     inset 0 0 0 1px rgba(0,0,0,.10),
     inset 0 1px 0 rgba(255,255,255,.35);
@@ -164,7 +150,6 @@
   .sort-menu{ background: rgba(255,255,255,.85); }
 }
 
-/* --- Options --------------------------------------------------- */
 .sort-option{
   position: relative;
   display: flex;
@@ -194,7 +179,7 @@
 .sort-option[aria-selected="true"]::after {
   content: "";
   position: absolute;
-  right: 14px;          /* отступ справа */
+  right: 14px;
   top: 51%;
   width: 13px;
   height: 13px;
@@ -203,13 +188,11 @@
     url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256' fill='%23000'><path d='M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z'/></svg>");
 }
 
-/* при наведении на выбранный — без анимаций/масштаба */
 .sort-option[aria-selected="true"]:hover,
 .sort-option[aria-selected="true"]:focus-visible{
   transform: none;
 }
 
-/* подпись в триггере */
 .sort-label{
   color:#000;
   transition: opacity .18s ease, transform .18s ease;
@@ -217,7 +200,6 @@
 .sort-select.updating .sort-label{ opacity:0; transform: translateY(-4px); }
 .sort-select.updated  .sort-label{ opacity:1; transform: translateY(0); }
 
-/* --- Misc ------------------------------------------------------ */
 @media (max-width:640px){
   .sort-trigger{ padding: .5rem .8rem; }
   .sort-menu{ max-height: 60vh; }
@@ -233,4 +215,81 @@
   .sort-trigger,
   .sort-menu,
   .sort-trigger svg{ transition: none !important; }
+}
+
+.sort-trigger .chevron {
+  position: relative;
+  z-index: 3;
+  isolation: isolate;
+  pointer-events: none;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+.sort-trigger::before,
+.sort-menu{
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  background-clip: padding-box;
+}
+
+.sort-select.open .sort-menu{
+  margin-top: -2px;
+}
+
+.sort-trigger::before{
+  box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,.10),
+    inset 0 1px 0 rgba(255,255,255,.28),
+    0 6px 14px rgba(0,0,0,.06);
+}
+.sort-select.open .sort-trigger,
+.sort-select.open .sort-trigger::before{
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.10), inset 0 1px 0 rgba(255,255,255,.30);
+}
+
+.sort-option,
+.sort-trigger{
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+  -webkit-touch-callout: none;
+  user-select: none;
+  -webkit-user-select: none;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: none;
+}
+
+.sort-trigger:focus,
+.sort-trigger:focus-visible{
+  outline: none !important;
+  box-shadow: none !important;
+}
+.sort-trigger:focus-visible::before{
+  box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,.16),
+    inset 0 1px 0 rgba(255,255,255,.50) !important;
+}
+
+.sort-option:focus,
+.sort-option:focus-visible{
+  outline: none !important;
+  box-shadow: none !important;
+  transform: none;
+}
+
+.sort-menu:focus{
+  outline: none !important;
+}
+
+.sort-menu [tabindex]:focus{
+  outline: none !important;
+}
+
+.sort-trigger,
+.sort-option{
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
 }
