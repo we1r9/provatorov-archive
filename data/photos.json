@@ -10256,5 +10256,304 @@
       "shutter": null,
       "iso": null
     }
+  },
+  {
+    "id": "christchurch-2",
+    "date": "2008",
+    "location": {
+      "country": "Новая Зеландия",
+      "region": "Крайст-черч"
+    },
+    "tags": ["Canon EOS 5D Mark II", "город", "чб", "ч/б", "черно-белое", "день", "улица", "архитектура", "человек"],
+    "files": {
+      "thumb": "/media/thumb/christchurch-2-thumb.webp",
+      "web": "/media/web/christchurch-2-web.webp",
+      "hq": "https://cdn.provatorov.ru/hq/christchurch-2-hq.jpg"
+    },
+    "description": null,
+    "camera": {
+      "model": "Canon EOS 5D Mark II",
+      "lens": null,
+      "focal_length_mm": 16,
+      "aperture_f": 13,
+      "shutter": 640,
+      "iso": null
+    }
+  },
+  {
+    "id": "budapest-hq",
+    "date": "2015",
+    "location": {
+      "country": "Венгрия",
+      "region": "Будапешт"
+    },
+    "tags": ["статуя", "Canon PowerShot G12", "памятник", "чб", "ч/б", "черно-белое"],
+    "files": {
+      "thumb": "/media/thumb/budapest-thumb.webp",
+      "web": "/media/web/budapest-web.webp",
+      "hq": "https://cdn.provatorov.ru/hq/budapest-hq.jpg"
+    },
+    "description": null,
+    "camera": {
+      "model": "Canon PowerShot G12",
+      "lens": null,
+      "focal_length_mm": 30.5,
+      "aperture_f": 7.1,
+      "shutter": 1250,
+      "iso": null
+    }
+  },
+  {
+    "id": "altai-24",
+    "date": "2002-09",
+    "location": {
+      "country": "Россия",
+      "region": "Алтай"
+    },
+    "tags": ["осень", "цветное", "пейзаж", "облака", "снег", "горы"],
+    "files": {
+      "thumb": "/media/thumb/altai-24-thumb.webp",
+      "web": "/media/web/altai-24-web.webp",
+      "hq": "https://cdn.provatorov.ru/hq/altai-24-hq.jpg"
+    },
+    "description": null,
+    "camera": {
+      "model": null,
+      "lens": null,
+      "focal_length_mm": null,
+      "aperture_f": null,
+      "shutter": null,
+      "iso": null
+    }
+  },
+  {
+    "id": "north-chuisky-ridge-9",
+    "date": "2002-09",
+    "location": {
+      "country": "Россия",
+      "region": "Алтай, Северо-Чуйский хребет"
+    },
+    "tags": ["цветное", "осень", "вечер", "горы", "озеро", "снег", "отражение"],
+    "files": {
+      "thumb": "/media/thumb/north-chuisky-ridge-9-thumb.webp",
+      "web": "/media/web/north-chuisky-ridge-9-web.webp",
+      "hq": "https://cdn.provatorov.ru/hq/north-chuisky-ridge-9-hq.jpg"
+    },
+    "description": null,
+    "camera": {
+      "model": null,
+      "lens": null,
+      "focal_length_mm": null,
+      "aperture_f": null,
+      "shutter": null,
+      "iso": null
+    }
+  },
+  {
+    "id": "altai-21",
+    "date": "2002-09",
+    "location": {
+      "country": "Россия",
+      "region": "Алтай"
+    },
+    "tags": ["осень", "цветное", "пейзаж", "облака", "снег", "горы"],
+    "files": {
+      "thumb": "/media/thumb/altai-21-thumb.webp",
+      "web": "/media/web/altai-21-web.webp",
+      "hq": "https://cdn.provatorov.ru/hq/altai-21-hq.jpg"
+    },
+    "description": null,
+    "camera": {
+      "model": null,
+      "lens": null,
+      "focal_length_mm": null,
+      "aperture_f": null,
+      "shutter": null,
+      "iso": null
+    }
+  },
+  {
+    "id": "altai-22",
+    "date": "2002-09",
+    "location": {
+      "country": "Россия",
+      "region": "Алтай"
+    },
+    "tags": ["осень", "цветное", "пейзаж", "лошадь", "река", "горы"],
+    "files": {
+      "thumb": "/media/thumb/altai-22-thumb.webp",
+      "web": "/media/web/altai-22-web.webp",
+      "hq": "https://cdn.provatorov.ru/hq/altai-22-hq.jpg"
+    },
+    "description": null,
+    "camera": {
+      "model": null,
+      "lens": null,
+      "focal_length_mm": null,
+      "aperture_f": null,
+      "shutter": null,
+      "iso": null
+    }
+  },
+  {
+    "id": "teletskoye-lake-3",
+    "date": "2023-08",
+    "location": {
+      "country": "Россия",
+      "region": "Алтай, Телецкое озеро"
+    },
+    "tags": ["цветное", "iPhone 14 Pro Max", "тучи", "гроза", "лето", "озеро", "пейзаж", "катер", "лодка"],
+    "files": {
+      "thumb": "/media/thumb/teletskoye-lake-3-thumb.webp",
+      "web": "/media/web/teletskoye-lake-3-web.webp",
+      "hq": "https://cdn.provatorov.ru/hq/teletskoye-lake-3-hq.jpg"
+    },
+    "description": null,
+    "camera": {
+      "model": "iPhone 14 Pro Max",
+      "lens": null,
+      "focal_length_mm": 9,
+      "aperture_f": 2.8,
+      "shutter": 750,
+      "iso": null
+    }
+  },
+  {
+    "id": "tehuacan-cuicatlan-2",
+    "date": "2021-11",
+    "location": {
+      "country": "Мексика",
+      "region": null
+    },
+    "tags": ["ноябрь", "iPhone 11 Pro Max", "пейзаж", "ч/б", "чб", "черно-белое", "пустыня", "кактусы", "заповедник", "небо", "природа"],
+    "files": {
+      "thumb": "/media/thumb/tehuacan-cuicatlan-2-thumb.webp",
+      "web": "/media/web/tehuacan-cuicatlan-2-web.webp",
+      "hq": "https://cdn.provatorov.ru/hq/tehuacan-cuicatlan-2-hq.jpg"
+    },
+    "description": "Заповедник Техуакан-Куикатлан.",
+    "camera": {
+      "model": "iPhone 11 Pro Max",
+      "lens": null,
+      "focal_length_mm": 6,
+      "aperture_f": 2,
+      "shutter": 1370,
+      "iso": null
+    }
+  },
+  {
+    "id": "sumidero-canyon-2",
+    "date": "2021-12",
+    "location": {
+      "country": "Мексика",
+      "region": null
+    },
+    "tags": ["декабрь", "iPhone 11 Pro Max", "пейзаж", "цветное", "каньон", "лодка", "река", "скалы", "природа"],
+    "files": {
+      "thumb": "/media/thumb/sumidero-canyon-2-thumb.webp",
+      "web": "/media/web/sumidero-canyon-2-web.webp",
+      "hq": "https://cdn.provatorov.ru/hq/sumidero-canyon-2-hq.jpg"
+    },
+    "description": "Каньон Сумидеро реки Грихальва.",
+    "camera": {
+      "model": "iPhone 11 Pro Max",
+      "lens": null,
+      "focal_length_mm": 6,
+      "aperture_f": 2,
+      "shutter": 872,
+      "iso": null
+    }
+  },
+  {
+    "id": "belukha-7",
+    "date": "2020-06",
+    "location": {
+      "country": "Россия",
+      "region": "Алтай"
+    },
+    "tags": ["iPhone XS Max", "лето", "день", "горы", "снег", "альпинисты"],
+    "files": {
+      "thumb": "/media/thumb/belukha-7-thumb.webp",
+      "web": "/media/web/belukha-7-web.webp",
+      "hq": "https://cdn.provatorov.ru/hq/belukha-7-hq.jpg"
+    },
+    "description": "Восхождение на Белуху.",
+    "camera": {
+      "model": "iPhone XS Max",
+      "lens": null,
+      "focal_length_mm": 4.25,
+      "aperture_f": 1.8,
+      "shutter": 12800,
+      "iso": null
+    }
+  },
+  {
+    "id": "altai-23",
+    "date": "2002-09",
+    "location": {
+      "country": "Россия",
+      "region": "Алтай"
+    },
+    "tags": ["осень", "цветное", "пейзаж", "луна", "облака", "снег", "горы", "ночь"],
+    "files": {
+      "thumb": "/media/thumb/altai-23-thumb.webp",
+      "web": "/media/web/altai-23-web.webp",
+      "hq": "https://cdn.provatorov.ru/hq/altai-23-hq.jpg"
+    },
+    "description": null,
+    "camera": {
+      "model": null,
+      "lens": null,
+      "focal_length_mm": null,
+      "aperture_f": null,
+      "shutter": null,
+      "iso": null
+    }
+  },
+  {
+    "id": "shebalino",
+    "date": "2003",
+    "location": {
+      "country": "Россия",
+      "region": "Алтай, Шебалино"
+    },
+    "tags": ["цветное", "пейзаж", "дельтаплан", "облака", "параплан", "горы", "туман", "лес"],
+    "files": {
+      "thumb": "/media/thumb/shebalino-thumb.webp",
+      "web": "/media/web/shebalino-web.webp",
+      "hq": "https://cdn.provatorov.ru/hq/shebalino-hq.jpg"
+    },
+    "description": null,
+    "camera": {
+      "model": null,
+      "lens": null,
+      "focal_length_mm": null,
+      "aperture_f": null,
+      "shutter": null,
+      "iso": null
+    }
+  },
+  {
+    "id": "perito-moreno-4",
+    "date": "2012-01",
+    "location": {
+      "country": "Аргентина",
+      "region": "Ледник Перито-Морено"
+    },
+    "tags": ["январь", "Canon EOS 5D Mark II", "цветное", "ледник", "приведение", "лед", "природа"],
+    "files": {
+      "thumb": "/media/thumb/perito-moreno-4-thumb.webp",
+      "web": "/media/web/perito-moreno-4-web.webp",
+      "hq": "https://cdn.provatorov.ru/hq/perito-moreno-4-hq.jpg"
+    },
+    "description": null,
+    "camera": {
+      "model": "Canon EOS 5D Mark II",
+      "lens": null,
+      "focal_length_mm": 214,
+      "aperture_f": 9,
+      "shutter": 1250,
+      "iso": 250
+    }
   }
 ]
