@@ -2,7 +2,6 @@ import photos from '../data/photos.json' with { type: 'json' };
 import { mapPhotos } from './utils/mapPhotos.js';
 import { isFavorite, toggleFavorite, getFavoritesCount} from './favoritesStore.js';
 
-// Готовим данные для вставки по ID
 const photosData = mapPhotos(photos);
 const params = new URLSearchParams(window.location.search);
 const id = params.get('id');
@@ -78,7 +77,6 @@ function formatAperture(v) {
 }
 
 
-// Инициализирует отображение фото
 function renderPhoto() {
   const isFav = isFavorite(photo.id);
   const view = document.querySelector('.view');
@@ -90,10 +88,8 @@ function renderPhoto() {
     ? `${monthName}${yearText ? ' ' + yearText : ''}`
     : (yearText || '—');
 
-  // Заголовок страницы
   document.title = buildPhotoTitle(photo);
 
-  // Создаем HTML для секции с отображением
   const viewHTML = `
     <section class="view-container">
       <div class="photo-shadow">
@@ -153,22 +149,17 @@ function renderPhoto() {
     </section>
   `;
 
-  // Вставляем HTML в секцию
   view.innerHTML = viewHTML;
 
-  // Возвращаем контейнер для использования извне
   return view;
 }
 
-// Сохраняем вертикальный скролл карточки
 (function initPhotoScrollY() {
   const KEY = `photoScrollY:${photo.id}`;
 
-  // Пределы
   const clampY = (y) => 
     Math.max(0, Math.min(y, document.documentElement.scrollHeight - window.innerHeight));
 
-  // Восстановление позиции
   const restore = () => {
     const raw = sessionStorage.getItem(KEY);
     if (!raw) return;
@@ -176,37 +167,29 @@ function renderPhoto() {
     if (y > 0) window.scrollTo({ top: y, behavior: 'auto' });
   };
 
-  // Сохранение позиции
   const save = () => sessionStorage.setItem(KEY, String(window.scrollY || 0));
 
-  // Ставим ручное управление скролом
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 
-  // Сохраняем с дебаунсом во время скролла
   let t;
   window.addEventListener('scroll', () => {
     clearTimeout(t);
     t = setTimeout(save, 80);
   }, { passive: true });
 
-  // Сохраняем перед уходом со страницы
   window.addEventListener('pagehide', save);
 
-  // Сохраняем при клике по любым ссылкам
   document.addEventListener('click', (e) => {
     const a = e.target.closest('a, button.go-back-arrow, .go-back-arrow');
     if (a) save();
   });
 
-  // Восстанавливаем после полной загрузки
   window.addEventListener('load', restore);
 
-  // При возврате из кэша
   window.addEventListener('pageshow', (e) => { 
     if (e.persisted) restore();
   });
 
-  // Сохраняем позицию перед навигацией по кнопке назад
   const backBtn = document.querySelector('.go-back-arrow');
   if (backBtn) {
     backBtn.addEventListener('click', (e) => {
@@ -218,13 +201,10 @@ function renderPhoto() {
   }
 })();
 
-// ========== ХЭЛПЕРЫ ДЛЯ ПОИСКА ПОХОЖИХ ==========
-// Нормализация поиска
 function norm(v) {
   return (v || '').toString().trim().toLowerCase();
 }
 
-// Перемешивание массива (Fisher–Yates)
 function shuffle(array) {
   const arr = [...array];
   for (let i = arr.length - 1; i > 0; i--) {
@@ -234,7 +214,6 @@ function shuffle(array) {
   return arr;
 }
 
-// Ищем похожие фото
 function getSimilarPhotos(current, list, limit = 20) {
   const regionNorm  = norm(current.region);
   const countryNorm = norm(current.country);
@@ -255,30 +234,24 @@ function getSimilarPhotos(current, list, limit = 20) {
 }
 
 
-// Рендер похожих фото
 function renderSimilar(similar, mount, { pageSize = 10 } = {}) {
   if (!similar || !similar.length) return;
 
-  // Корневой блок секции
   const section = document.createElement('section');
   section.className = 'similar';
 
-  // Заголовок
   const title = document.createElement('p');
   title.className = 'similar-title';
   title.textContent = 'Похожие фото';
 
-  // Лента
   const strip = document.createElement('div');
   strip.className = 'similar-strip';
   strip.setAttribute('role', 'list');
 
-  // Скрытая точка конца
   const sentinel = document.createElement('div');
   sentinel.className = 'similar-sentinel';
   sentinel.setAttribute('aria-hidden', 'true');
 
-  // Ленивая загрузка
   const imgObserver = new IntersectionObserver((entries,  obs) => {
     for (const entry of entries) {
       if (!entry.isIntersecting) continue;
@@ -296,7 +269,6 @@ function renderSimilar(similar, mount, { pageSize = 10 } = {}) {
     threshold: 0.01
   });
 
-  // Фабрика карточки
   function createCard(p) {
     const a = document.createElement('a');
     a.className = 'similar-card';
@@ -328,7 +300,6 @@ function renderSimilar(similar, mount, { pageSize = 10 } = {}) {
     return a;
   }
 
-  // Пагинация и догрузка
   const total = similar.length;
   let nextIndex = 0;
 
@@ -351,7 +322,6 @@ function renderSimilar(similar, mount, { pageSize = 10 } = {}) {
     return true;
   }
 
-  // Наблюдатель за концом ленты
   const endObserver = new IntersectionObserver((entries) => {
     for (const entry of entries) {
       if (!entry.isIntersecting) continue;
@@ -363,21 +333,16 @@ function renderSimilar(similar, mount, { pageSize = 10 } = {}) {
     threshold: 0.01
   });
 
-  // Сборка секции
   strip.appendChild(sentinel);
   section.appendChild(title);
   section.appendChild(strip);
 
-  // Вставка
   mount.insertAdjacentElement('beforeend', section);
 
-  // Первичная загрузка (10 шт)
   appendChunk();
 
-  // Вкл. наблюдение за концом
   endObserver.observe(sentinel);
 
-  // Состояние скролла
   const key = `similarScroll:${photo.id}`;
 
   const save = (() => {
@@ -390,12 +355,10 @@ function renderSimilar(similar, mount, { pageSize = 10 } = {}) {
 
   strip.addEventListener('scroll', save, { passive: true });
 
-  // Сохраняем перед кликом по карточке
   strip.addEventListener('click', (e) => {
     if (e.target.closest('a.similar-card')) save();
   });
 
-  // Восстановление
   function restore() {
     const s  = parseInt(sessionStorage.getItem(key) || '0', 10);
     if (!Number.isNaN(s) && s > 0) {
@@ -409,13 +372,11 @@ function renderSimilar(similar, mount, { pageSize = 10 } = {}) {
   }
   requestAnimationFrame(restore);
 
-  // При возврате из кэша
   window.addEventListener('pageshow', (e) => {
     if (e.persisted) restore();
   });
 }
 
-// Хелперы для скачивания HQ
 function markHqUnavailable(btn, msg = 'HQ недоступна') {
   if (!btn) return;
   btn.classList.add('is-unavailable');
@@ -449,7 +410,6 @@ async function probeUrl(url, { timeout = 8000 } = {}) {
   }
 }
 
-// ========== РЕНДЕР + ОБРАБОТЧИКИ ==========
 const viewRoot = renderPhoto();
 if (viewRoot) {
   viewRoot.addEventListener('click', (event) => {
@@ -469,7 +429,6 @@ if (viewRoot) {
     window.dispatchEvent(new CustomEvent('favorites:changed'));
   });
 
-  // ========== ИЗБРАННОЕ ==========
 const favCountEl = document.getElementById('favCount');
 const favLinkEl = document.querySelector('.fav-btn');
 
@@ -526,7 +485,6 @@ requestAnimationFrame(() => {
   favLinkEl?.classList.add('is-ready');
 });
 
-  // Создаем универсальный тост
   function getToastEl() {
     let el = document.getElementById('toast');
     if (!el) {
@@ -540,7 +498,6 @@ requestAnimationFrame(() => {
     return el;
   }
 
-  // Показываем тост
   function showToast(message, { icon } = {}) {
     const el = getToastEl();
 
@@ -574,7 +531,6 @@ requestAnimationFrame(() => {
     }, 3200);
   }
 
-  // Обработчик скачивания HQ
   const downloadButton = viewRoot.querySelector('.download-hq-btn');
 
   if (downloadButton) {
@@ -649,7 +605,6 @@ requestAnimationFrame(() => {
   renderSimilar(similar, container || viewRoot);
 }
 
-// Авто-определение ориентации кадра
 const img = new Image();
 img.src = photo.web;
 img.onload = () => {

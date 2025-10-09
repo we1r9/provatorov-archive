@@ -4,21 +4,16 @@ import { getFavorites, isFavorite, toggleFavorite, getFavoritesCount } from './f
 
 import { STORAGE_KEY } from './favoritesStore.js';
 
-// Готовим данные
 const photosData = mapPhotos(photos);
 
-// Находим элементы для вставки на странице
 const grid = document.querySelector('.grid');
 const empty = document.querySelector('.empty-state');
 
-// Создаем сет из массива для быстрых проверок
-// Оставляем только те фото, чей id есть в сете
 function buildFavoritesList() {
   const ids = new Set(getFavorites());
   return photosData.filter(photo => ids.has(String(photo.id)));
 }
 
-// Элемент пустого состояния
 function renderEmpty() {
   if (!empty || !grid) return;
 
@@ -29,7 +24,6 @@ function renderEmpty() {
   requestAnimationFrame(() => empty.classList.add('is-show'));
 }
 
-// Рендерим галерею только для избранных
 function renderGallery(list) {
   if (!grid) return;
   const html = list.map(card => {
@@ -65,8 +59,6 @@ function renderGallery(list) {
   if (empty) empty.hidden = true;
 }
 
-// Если избранные есть — отображаем галерею
-// Если нет — отображаем элемеент пустого состояния
 function render() {
   const list = buildFavoritesList();
   if (list.length === 0) renderEmpty();
@@ -74,7 +66,6 @@ function render() {
 }
 render();
 
-// Удаляем карточку при удалении из избранного
 grid?.addEventListener('click', (event) => {
   const btn = event.target.closest('[data-fav-id]');
   if (!btn) return;
@@ -86,7 +77,6 @@ grid?.addEventListener('click', (event) => {
   renderFavCount();
   window.dispatchEvent(new Event('favorites:changed'));
 
-  // Убираем карточку из DOM
   const card = btn.closest('.card');
   const cardLink = btn.closest('.card-link');
   if (!card || !cardLink) return;
@@ -98,7 +88,6 @@ grid?.addEventListener('click', (event) => {
   const onEnd = (ev) => {
     if (ev.propertyName !== 'opacity') return;
     cardLink.remove();
-    // если карточек не осталось — показываем пустое состояние
     if (grid.children.length === 0) renderEmpty();
   };
   card.addEventListener('transitionend', onEnd, { once: true });
@@ -111,12 +100,10 @@ grid?.addEventListener('click', (event) => {
   }, 400);
 });
 
-// Если избранное изменили на другой вкладке
 window.addEventListener('storage', (event) => {
   if (event.key === STORAGE_KEY) render();
 });
 
-// Обработчик возврата назад
 const back = document.querySelector('.go-back-arrow');
 back.addEventListener('click', () => {
   if (history.length > 1) history.back();

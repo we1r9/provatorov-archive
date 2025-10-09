@@ -1,4 +1,3 @@
-// Вытаскиваем нужные поля из photos.json и формируем объект
 export function mapPhotos(photos) {
   return photos.map(item => {
     const hasRegion = item.location && item.location.region;

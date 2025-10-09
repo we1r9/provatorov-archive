@@ -12,10 +12,8 @@ const countries = [
   "Мексика","Перу","США","Чили","Антарктида"
 ];
 
-// Сортируем по алфавиту
 countries.sort((a,b) => a.localeCompare(b, 'ru'));
 
-// Фабрика
 function createChip(name){
   const span = document.createElement('span');
   span.className = 'chip';
@@ -23,7 +21,6 @@ function createChip(name){
   return span;
 }
 
-// Рендер
 (function renderVisited(){
   const wrap = document.getElementById('visitedChips');
   if (!wrap) return;

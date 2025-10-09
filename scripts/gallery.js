@@ -9,21 +9,15 @@ window.addEventListener('pageshow', (e) => {
   }
 });
 
-// ========== ПОДГОТОВКА ДАННЫХ ==========
 const photosData = mapPhotos(photos);
 export let currentPhotos = [...photosData];
 
-// Ленивый рендер (paging) — разбиваем контент на страницы по PAGE_SIZE картчоек
 export const paging = {
   PAGE_SIZE: 18,
   visibleCount: Math.min(18, photosData.length),
 };
 
-// Публичный сеттер (обновляем список + сбрасываем пагинацию)
-// list — новый массив карточек
-// options — объект с настройками
 export function setCurrentPhotos(list, options = {}) {
-  // Достаем флаг preserveVisible из объекта опций (решает, сбрасывать ли количество видимых карточек или нет)
   const { preserveVisible = false } = options;
 
   listVersion++;
@@ -31,7 +25,6 @@ export function setCurrentPhotos(list, options = {}) {
 
   lastRenderedCount = 0;
   
-  // Считаем, сколько карточек показывать
   paging.visibleCount = preserveVisible
     ? Math.min(paging.visibleCount, currentPhotos.length)
     : Math.min(paging.PAGE_SIZE, currentPhotos.length);
@@ -39,7 +32,6 @@ export function setCurrentPhotos(list, options = {}) {
   updateView();
 }
 
-// Выезд сортбара (тест)
 const header  = document.getElementById('siteHeader');
 const sortBar = document.getElementById('sortBar');
 
@@ -74,7 +66,6 @@ let lastRenderedVersion = -1;
 
 measureAll();
 
-// Видимость сортбара в зависимости от наличия результатов
 function updateSortBarVisibility() {
   if (!sortBar) return;
   const hasResults = currentPhotos.length > 0;
@@ -96,7 +87,6 @@ function updateSortBarVisibility() {
   measureAll();
 }
 
-// DOM
 const grid = document.querySelector('.grid');
 const loadMoreBtn = document.querySelector('.load-more-btn');
 const loadMoreWrap = loadMoreBtn?.closest('.load-more-wrap');
@@ -105,11 +95,9 @@ const clearBtn = document.querySelector('.clear-btn');
 const mid = document.querySelector('.header-middle');
 const emptyState = document.querySelector('.empty-state');
 
-// ========== РЕНЕДЕР ГАЛЕРЕИ ==========
 function renderGallery(photosData, { append = false, startIndex = 0 } = {}) {
   if (!grid) return;
 
-  // Генерируем HTML для всех карточек
   const makeCardHTML = (card) => {
     const isFav = isFavorite(card.id);
 
@@ -159,7 +147,6 @@ function updateSortControlsState() {
   const native = document.getElementById('sortSelect');
   const shuffleBtn = document.getElementById('shuffleBtn');
 
-  // включить/выключить
   if (native) native.disabled = !hasResults;
   dd?.classList.toggle('is-disabled', !hasResults);
   shuffleBtn?.toggleAttribute('disabled', !hasResults);
@@ -174,7 +161,6 @@ function updateEmptyState() {
   if (loadMoreWrap) loadMoreWrap.toggleAttribute('hidden', isEmpty);
 }
 
-// Helper: дождаться конца CSS-перехода opacity или таймаута (подстраховка)
 function waitOpacityTransition(el, timeout = 260){
   return new Promise(resolve => {
     let done = false;
@@ -197,15 +183,12 @@ async function fadeRender(renderFn){
     await waitOpacityTransition(gridEl, 260);
   }
 
-  // Рендерим новый DOM
   renderFn();
 
-  // Дадим браузеру проставить размеры, затем дождёмся картинок
   await new Promise(r => requestAnimationFrame(r));
   const gridForWait = document.querySelector('.grid');
-  await waitGridImagesLoaded(gridForWait, 800); // у тебя эта функция уже есть
+  await waitGridImagesLoaded(gridForWait, 800);
 
-  // Возвращаем непрозрачность
   gridEl.classList.remove('is-fading');
   await waitOpacityTransition(gridEl, 260);
 }
@@ -213,7 +196,6 @@ async function fadeRender(renderFn){
 let suppressNextFade = false;
 let lastRenderedCount = 0;
 
-// Рендер с учетом visibleCount
 export function updateView() {
   if (currentPhotos.length > 0 && paging.visibleCount === 0) {
     paging.visibleCount = Math.min(paging.PAGE_SIZE, currentPhotos.length);
@@ -257,7 +239,6 @@ export function updateView() {
   });
 }
 
-// Обработчик "Показать еще"
 if (loadMoreBtn) {
   loadMoreBtn.addEventListener('click', () => {
     paging.visibleCount = Math.min(
@@ -275,11 +256,8 @@ if (loadMoreBtn) {
   });
 }
 
-// ========== ПОИСК И СОРТИРОВКА ==========
-// Вызываем основную логику с опицей авто-ренедра
 initSearchAndSort(photosData, { autoRender: false });
 
-// Читаем параметры из URL
 const params = new URLSearchParams(location.search);
 const urlQ = (params.get('q') || '').trim();
 const urlSort = (params.get('sort') || '').trim();
@@ -291,21 +269,17 @@ const hasUrlFilters = !!(urlQ || urlSort || urlShuffle);
 const SCROLL_IDLE_MS = 200;
 const SCROLL_EPS = 12;
 
-// Флаг для полного сброса всех состояний
 const forceReset = sessionStorage.getItem('forceReset') === '1';
 if (forceReset) {
   sessionStorage.removeItem('forceReset');
 }
 
-// ===== ИНИЦИАЛИЗАЦИЯ СОСТОЯНИЯ =====
 const restored = !forceReset && restoreState();
 
 if (restored) {
-  // Уже восстановили: не вызываем applySearchState повторно
   suppressNextFade = true;
   lastRenderedCount = paging.visibleCount;
 } else if (urlQ || urlSort || urlShuffle) {
-  // Применяем фильтры из URL (если есть)
   applySearchState(
     {
       query: urlQ,
@@ -316,7 +290,6 @@ if (restored) {
     { preserveVisible: false }
   );
 } else {
-  // Иначе — стартовое состояние/автоперемешивание
   const AUTO_SHUFFLE_ON_LOAD = !hasSavedState && !hasUrlFilters;
   if (AUTO_SHUFFLE_ON_LOAD) {
     applySearchState({ isShuffle: true });
@@ -325,7 +298,6 @@ if (restored) {
   }
 }
 
-// Обработчик добавления в избранное
 if (grid) {
   grid.addEventListener('click', (event) => {
     const btn = event.target.closest('.card-like-button');
@@ -337,7 +309,6 @@ if (grid) {
   });
 }
 
-// ========== ИЗБРАННОЕ ==========
 const favCountEl = document.getElementById('favCount');
 const favLinkEl = document.querySelector('.fav-btn');
 
@@ -394,7 +365,6 @@ requestAnimationFrame(() => {
   favLinkEl?.classList.add('is-ready');
 });
 
-// ========== ПОИСК ==========
 function sync() {
   const wrap = input.closest('.input-wrap');
   if (wrap) wrap.classList.toggle('has-value', !!input.value);
@@ -499,7 +469,6 @@ function onScrollStartCollapse(e) {
   if (document.activeElement === input) return;
   if (KEEP_WHEN_HAS_QUERY && input.value) return;
 
-  // Любая прокрутка — сразу схлопываем
   onUserScrollCollapse();
 }
 
@@ -524,7 +493,6 @@ window.addEventListener('touchmove', onUserScrollCollapse, { passive: true });
 addEventListener('load',  refreshScrollability);
 addEventListener('resize', refreshScrollability);
 
-// ========== Typewriter ==========
 const searchExamples = [
   'Алтай, лето, день...',
   'Афганистан, портрет, девушка...',
@@ -600,16 +568,12 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
-// ========== СОСТОЯНИЕ СТРАНИЦЫ ==========
-// Меняем режим пролистыания страницы на ручной
 if ('scrollRestoration' in history) {
   history.scrollRestoration = 'manual';
 }
 
-// Достаем сохраненное состояние
 function readSavedState() {
   try {
-    // Берем из истории браузера или из sessionStorage
     return history.state || JSON.parse(sessionStorage.getItem('galleryState') || 'null') || null;
   } catch {
     return null;
@@ -638,7 +602,6 @@ window.addEventListener('scroll', () => {
   }
 }, { passive: true });
 
-// Сохраняем состояние и положение страницы
 function saveState() {
   if (skipNextSave || sessionStorage.getItem('forceReset') === '1') return;
 
@@ -646,7 +609,6 @@ function saveState() {
   const placeholderText = (twRunning && twTarget) ? twTarget : (input?.placeholder || '');
   const searchExpanded = !!mid?.classList.contains('is-expanded');
 
-  // Собираем состояние и положение страницы
   const state = {
     pageKey: location.pathname,
     visibleCount: paging.visibleCount,
@@ -661,7 +623,6 @@ function saveState() {
   const historyState = { ...state, placeholderText };
   history.replaceState(historyState, '', location.href);
 
-  // Сохраняем в sessionStorage
   sessionStorage.setItem('galleryState', JSON.stringify(state));
 }
 
@@ -682,9 +643,7 @@ function waitGridImagesLoaded(container, timeout = 1500) {
   });
 }
 
-// Восстанавливаем состояние страницы
 function restoreState() {
-  // Достаем сохраненное состояние из localStorage
   const state = readSavedState();
   if (!state || state.pageKey !== location.pathname) return false;
 
@@ -696,7 +655,6 @@ function restoreState() {
     paging.visibleCount = Math.min(state.visibleCount, currentPhotos.length);
   }
 
-  // Применяем сохраненные фильтры
   applySearchState(
     {
       query: state.query || '',
@@ -743,26 +701,21 @@ function restoreState() {
   return true;
 }
 
-// Слушатель на весь документ
 document.addEventListener('click', (event) => {
   if (event.defaultPrevented) return;
 
-  // Ищем ближайший <a>, по которому кликнули
   const link = event.target.closest('a');
   if (!link) return;
 
-  // Будем сохранять состояние страницы только нужных переходов
   try {
     const url = new URL(link.href, location.href);
     if (url.origin !== location.origin) return;
     const isNavToPhotoOrFav = url.pathname.endsWith('/photo.html') || url.pathname.endsWith('/favorites.html');
 
-    // Сохраняем состояние для нужной навигации
     if (isNavToPhotoOrFav) saveState();
   } catch {}
 });
 
-// Страхуем состояние, когда пользователь переходит любым другим способом
 window.addEventListener('beforeunload', () => {
   saveState();
   saveScrollPositionInline();
@@ -772,14 +725,12 @@ document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'hidden') saveState();
 });
 
-// Гарантируем восстановление страницы, если она пришла из кеша
 window.addEventListener('pageshow', (event) => {
   if (event.persisted) {
     restoreState();
   }
 });
 
-/* =============== SORT DROPDOWN (rewrite) =============== */
 (() => {
   const native  = document.getElementById('sortSelect');
   const dd      = document.getElementById('sortDropdown');

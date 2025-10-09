@@ -1,6 +1,5 @@
 import { paging, setCurrentPhotos } from "../gallery.js";
 
-// ========== СОСТОЯНИЕ МОДУЛЯ ==========
 let indexedPhotos = [];
 let searchInput = null;
 let isShuffleMode = false;
@@ -13,10 +12,8 @@ let metaCount = null;
 
 const grid = document.querySelector('.grid');
 
-// Переключатель для отображения найденных
 function showCount(show, text = '') {
   if (!metaCount) return;
-  // Управляем отображением в зависимости от show (булево)
   if (show) {
     metaCount.textContent = text;
     metaCount.removeAttribute('hidden');
@@ -26,14 +23,12 @@ function showCount(show, text = '') {
   }
 }
 
-// Скрыаем счетчик немедленно
 function hideCounterNow() {
   if (!metaCount) return;
   metaCount.textContent = '';
   metaCount.setAttribute('hidden', '');
 }
 
-// Обновляем каунтер по результатам поиска
 function updateCounterFromCurrentQuery() {
   const q = (searchInput?.value || '').trim();
   if (!q) { showCount(false); return; }
@@ -41,7 +36,6 @@ function updateCounterFromCurrentQuery() {
   showCount(cnt > 0,  `Найдено ${cnt} фото`);
 }
 
-// ========== УТИЛИТЫ ПРОКРУТКИ И URL ==========
 export function scrollToTopSmooth() {
   if (window.__isRestoringScroll) return;
   try {
@@ -68,15 +62,12 @@ function updateUrlState({ q, sort, shuffle }, { push = false} = {}) {
 
 }
 
-// ========== ОБЩИЕ УТИЛИТЫ ==========
-// Компаратор
 const collator = new Intl.Collator(['ru', 'en'], {
   sensitivity: 'base',
   numeric: true,
   ignorePunctuation: true
 });
 
-// Вытаскиваем год из даты и проверяем, что он состоит из 4 цифр
 function extractYear(date) {
   if (!date) return '';
   const string = String(date);
@@ -89,7 +80,6 @@ function extractYear(date) {
   }
 }
 
-// Нормализация поиска
 function norm(search='') {
   return String(search)
     .toLowerCase()
@@ -101,12 +91,10 @@ function norm(search='') {
     .trim();
 }
 
-// Токенезируем запрос, чтобы получить одну большую строку
 function tokenizeQuery(query) {
   return norm(query).trim().split(/\s+/).filter(Boolean);
 }
 
-// Фильтруем результат поиска
 function filterByQuery(photos, query) {
   const tokens = tokenizeQuery(query);
   if (tokens.length === 0) return photos;
@@ -114,7 +102,6 @@ function filterByQuery(photos, query) {
   return photos.filter(photo => tokens.every(token => photo.search.includes(token)));
 }
 
-// Правила сортировки
 function initSort(list, sortKey) {
   const copy = [...list];
   switch (sortKey) {
@@ -139,7 +126,6 @@ function initSort(list, sortKey) {
   }
 }
 
-// Перемешивание
 function shuffle(array) {
   let shuffled = [...array];
   for (let i = shuffled.length - 1; i > 0; i--) {
@@ -149,7 +135,6 @@ function shuffle(array) {
   return shuffled;
 }
 
-// Элемент пустого состояния результата поиска
 function emptyStateElement() {
   let element = document.querySelector('.empty-state');
 
@@ -162,7 +147,6 @@ function emptyStateElement() {
   return element;
 }
 
-// Показываем элемент пустого состояния, если поиск не дал результатов
 function showEmptyState(list, query) {
   if (!grid) return;
 
@@ -180,69 +164,44 @@ function showEmptyState(list, query) {
   }
 }
 
-// ========== ГЛАВНЫЙ РЕНДЕР ==========
-// Собираем результат и рендерим
 function runSearch(preserveVisible = false) {
-  // Читаем текущую строку из инпута
   const query = searchInput ? searchInput.value : '';
 
-  // Фильтруем фото по запросу
   const filtered = filterByQuery(indexedPhotos, query);
 
   let result = filtered;
 
-  // Если включен режим перемешивания
   if (isShuffleMode) {
-    // Проверяем, есть ли уже сохраненный порядок ID
     if (!shuffleOrder.length || !arrayEqualIds(shuffleOrder, filtered)) {
-      // Генерируем новую перестановку для текущих ID и сохраняем
       shuffleOrder = shuffle(filtered.map(photo => photo.id));
     }
 
-    // Создаем словарь ID → объект фото
     const map = new Map(filtered.map(photo => [photo.id, photo]));
 
-    // Восстанавливаем результат в сохраненном порядке ID
     result = shuffleOrder.map(id => map.get(id)).filter(Boolean);
 
-    // Иначе сортируем отфильтрованные карточки по ключу
   } else if (currentSort) {
     result = initSort(filtered, currentSort);
 
-    // Сбрасываем порядок перемешивания
     shuffleOrder = [];
   }
 
-  // Отдаем список в галерею с сохраненным состоянием галереи
   setCurrentPhotos(result, { preserveVisible });
 
-  // Показываем блок пустого состояния, если результата нет
   showEmptyState(result, query);
 
-  // Возвращаем отфильтрованный результат поиска для использования извне
   return result;
 }
 
-// Хэлпер
-// order — массив ID из сохраненного shuffleOrder
-// list — новый список карточек
 function arrayEqualIds(order, list) {
-  // Берем все ID из текущего списка картчоек и сортируем их
   const ids = list.map(photo => photo.id).sort();
 
-  // Берем сохраненный orderShuffle, копируем и сортируем
   const saved = [...order].sort();
 
-  // Сравниваем отсортированные списки
-  // Если ID совпадают — вернет true
   return JSON.stringify(ids) === JSON.stringify(saved);
 }
 
-// ========== ПУБЛИЧНЫЕ ФУНКЦИИ ==========
-// Инициализирует функционал поиска по галерее и сортировки
-// Принимает массив карточек и объект с опциями
 export function initSearchAndSort(photosData, { autoRender = true } = {}) {
-  // Готовим индекс
   indexedPhotos = photosData.map(photo => {
     const country = photo.country || '';
     const region = photo.region || '';
@@ -252,24 +211,21 @@ export function initSearchAndSort(photosData, { autoRender = true } = {}) {
     const search = norm([
       country, region, year, tags, description
     ].join(' '));
-    return { ...photo, search }; // ...photo раскрывает все свойства объекта photo в новый объект, к которому добавляется search
+    return { ...photo, search };
   });
 
-  // DOM
   searchInput = document.querySelector('.input-section');
   sortSelect = document.querySelector('#sortSelect');
   const shuffleBtn = document.querySelector('.shuffle-button');
   metaWrap = document.querySelector('.search-meta');
   metaCount = metaWrap ? metaWrap.querySelector('.count.search-counter') : null;
 
-  // Обработчик выбранной сортировки
   if (sortSelect) {
     sortSelect.addEventListener('change', () => {
       currentSort = sortSelect.value;
-      isShuffleMode = false; // Выключаем shuffleMode
+      isShuffleMode = false;
       document.documentElement.dataset.shuffle = '0';
 
-      // Схлопываем и скроллим вверх
       runSearch(false);
       scrollToTopSmooth();
 
@@ -284,12 +240,11 @@ export function initSearchAndSort(photosData, { autoRender = true } = {}) {
     });
   }
 
-  // Обработчик перемешивания
   if (shuffleBtn) {
     shuffleBtn.addEventListener('click', () => {
       isShuffleMode = true;
-      currentSort = ''; // Сбрасываем сортировку
-      shuffleOrder = []; // Очищаем старый порядок
+      currentSort = '';
+      shuffleOrder = [];
 
   if (sortSelect) {
     sortSelect.value = '';
@@ -300,7 +255,6 @@ export function initSearchAndSort(photosData, { autoRender = true } = {}) {
   }
   document.documentElement.dataset.shuffle = '1';
 
-      // Схлопываем и скроллим вверх  
       runSearch(false);
       scrollToTopSmooth();
 
@@ -315,21 +269,6 @@ export function initSearchAndSort(photosData, { autoRender = true } = {}) {
     });
   }
 
-  /*
-  const btn = document.getElementById('shuffleBtn');
-
-  btn.addEventListener('pointerdown', () => {
-    btn.classList.add('pressed');
-  });
-  ['pointerup','pointercancel','mouseleave'].forEach(ev =>
-    btn.addEventListener(ev, () => {
-      btn.classList.remove('pressed');
-      btn.classList.add('no-hover');
-      setTimeout(() => btn.classList.remove('no-hover'), 200);
-    })
-  );
-  */
-
   const btn = document.getElementById('shuffleBtn');
   let angle = 0;
 
@@ -339,24 +278,18 @@ export function initSearchAndSort(photosData, { autoRender = true } = {}) {
   });
 
   let t;
-  // Обработчик инпута
   if (searchInput) {
-    // Срабатывает каждый раз, когда пользователь печатает
     searchInput.addEventListener('input', () => {
       clearTimeout(t);
-      // Скрываем счетчик, чтобы он не висел пока пользователь меняет запрос
       hideCounterNow();
 
-      // Плавно скрываем сетку, пока пользователь печатает
       if (grid) grid.classList.add('is-fading');
 
-      // Через 800 мс после того, как пользователь перестал печатать, вызываем обработчик поиска
       t = setTimeout(() => {
         submitSearch();
       }, 800);
     });
 
-    // Поиск по "Enter"
     searchInput.addEventListener('keydown', event => {
       if (event.key === 'Enter') {
         event.preventDefault();
@@ -367,7 +300,6 @@ export function initSearchAndSort(photosData, { autoRender = true } = {}) {
     });
   }
 
-  // Финальная отправка поиска
   function submitSearch() {
     const q = searchInput ? searchInput.value.trim() : '';
     const isClearing = !!lastQuery&& !q;
@@ -391,7 +323,6 @@ export function initSearchAndSort(photosData, { autoRender = true } = {}) {
 
     updateCounterFromCurrentQuery();
 
-    // Плавная анимация сетки
     if (grid) requestAnimationFrame(() => {
       grid.classList.remove('is-fading');
     });
@@ -407,89 +338,63 @@ export function initSearchAndSort(photosData, { autoRender = true } = {}) {
     lastQuery = q;
   }
 
-  // Если включен автозапуск, сразу показываем результат
   if (autoRender && !window.__isRestoringScroll) runSearch(false);
 }
 
-// Применяет сохраненное состояние поиска/сортировки/перемешивания. Параметры передаются объектом: 
-// query — текст поиска
-// sort — выбранная сортировка
-// isShuffle — флаг режима перемешивания (false по умолч.)
-// savedOrder — сохраненный порядок карточек при shuffle
 export function applySearchState(state = {}, opts = {}) {
   const {
     query,
-    // ВАЖНО: не вытаскиваем тут sort/isShuffle/shuffleOrder,
-    // чтобы можно было отличить «ключ не передан» от «передан пустой строкой/false».
   } = state;
 
   const preserveVisible = opts?.preserveVisible ?? true;
 
-  // Подтягиваем DOM-элементы при первом вызове
   if (!searchInput) searchInput = document.querySelector('.input-section');
   if (!sortSelect)  sortSelect  = document.querySelector('#sortSelect');
 
-  // Устанавливаем query, если пришёл (строкой)
   if (typeof query === 'string' && searchInput) {
     searchInput.value = query;
   }
 
-  // Флаги «ключ присутствует в объекте state»
   const hasSort       = Object.prototype.hasOwnProperty.call(state, 'sort');
   const hasShuffle    = Object.prototype.hasOwnProperty.call(state, 'isShuffle');
   const hasOrder      = Object.prototype.hasOwnProperty.call(state, 'shuffleOrder');
 
-  // -------- Shuffle toggle (бережно) --------
   if (hasShuffle) {
     isShuffleMode = !!state.isShuffle;
   }
-  // Порядок для shuffle — обновляем ТОЛЬКО если явно передан
   if (hasOrder) {
     shuffleOrder = Array.isArray(state.shuffleOrder) ? state.shuffleOrder.slice() : [];
   }
 
-  // -------- Sort (бережно) --------
-  // Если активен shuffle — сортировка пустая независимо от переданных значений
   if (isShuffleMode) {
     currentSort = '';
   } else {
-    // Если сорт явно передали — применяем её
     if (hasSort) {
       if (sortSelect) sortSelect.value = state.sort;
-      currentSort = state.sort; // может быть '' — это осознанно, т.к. ключ передан явно
+      currentSort = state.sort;
     }
-    // Если сорт НЕ передан — currentSort оставляем как есть (ничего не делаем)
   }
 
-  // data-* атрибут на <html> для CSS
   document.documentElement.dataset.shuffle = isShuffleMode ? '1' : '0';
 
-  // Рендер один раз
   const res = runSearch(preserveVisible);
   updateCounterFromCurrentQuery();
 
   return res;
 }
 
-// Собирает текущее состояние поиска/сортировки/перемешивания и возвращает в виде объекта
 export function getSearchState() {
   return {
-    // Если поле поиска есть на странице — берем введенный текст, если нет — ставим пустую строку
     query: searchInput ? searchInput.value : '',
 
-    // Если элемент сортировки есть на странице — берем выбранное значение, если нет — ставим пустую строку
     sort:  sortSelect ? sortSelect.value  : '',
 
-    // Флаг shuffleMode
     isShuffle: isShuffleMode,
 
-    // Копия массива текущего порядка перемешивания
     shuffleOrder: [...shuffleOrder]
   }
 }
 
-// Позволяет задать порядок перемешивания извне
 export function setShuffleOrder(order = []) {
-  // Если это массив — создает его копию, иначе — делает пустым
   shuffleOrder = Array.isArray(order) ? order.slice() : [];
 }

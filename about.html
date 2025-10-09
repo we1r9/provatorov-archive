@@ -4,9 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Об авторе - Provatorov</title>
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
     <link rel="manifest" href="/site.webmanifest">
     <link rel="stylesheet" href="styles/about.css"/>
     <link rel="stylesheet" href="styles/ambient.css"/>
@@ -157,7 +157,7 @@
       const homeURL = new URL('index.html', location.origin).toString();
 
       logo.addEventListener('click', (e) => {
-        if (isModifiedClick(e)) return; // даём открыть в новой вкладке
+        if (isModifiedClick(e)) return;
 
         e.preventDefault();
         try { sessionStorage.setItem('__HARD_RESET__', '1'); } catch {}
