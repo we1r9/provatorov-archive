@@ -33,7 +33,7 @@ export function setCurrentPhotos(list, options = {}) {
 }
 
 const header  = document.getElementById('siteHeader');
-const sortBar = document.getElementById('sortBar');
+const sortBar = document.getElementById('headerSort');
 
 const docEl = document.documentElement;
 const setCss = (k,v)=>docEl.style.setProperty(k, v+"px");
@@ -53,37 +53,15 @@ if (header) new ResizeObserver(measureAll).observe(header);
 
 if (sortBar) new ResizeObserver(measureAll).observe(sortBar);
 
-let lastY = scrollY;
-let rafId = null;
-let visible = null;
-let initialLock = true;
 let isRestoring = false;
-let savedInitialVisible = null;
 let skipNextSave = false;
-let restoredVisibility = null;
 let listVersion = 0;
 let lastRenderedVersion = -1;
+let canScroll = false;
 
 measureAll();
 
 function updateSortBarVisibility() {
-  if (!sortBar) return;
-  const hasResults = currentPhotos.length > 0;
-
-  sortBar.classList.toggle('is-hidden', !hasResults);
-
-  if (!hasResults) {
-    setSortVisible(false);
-  } else if (restoredVisibility !== null) {
-    setSortVisible(restoredVisibility);
-  } else {
-    const should = initialLock 
-      ? savedInitialVisible
-      : ((scrollY < 40) || (visible === true))
-    setSortVisible(!!should);
-    applyBlendState();
-  }
-
   measureAll();
 }
 
@@ -105,7 +83,7 @@ function renderGallery(photosData, { append = false, startIndex = 0 } = {}) {
       <a class="card-link" href="photo.html?id=${card.id}">
         <article class="card" data-id="${card.id}">
           <div class="card-media">
-            <img class="card-photo" src="${card.thumb}">
+            <img class="card-photo" src="${card.thumb}" alt="${card.location || ''}" loading="lazy" onerror="this.onerror=null;this.closest('.card-link').hidden=true;">
           </div>
 
           <button
@@ -450,12 +428,10 @@ clearBtn.addEventListener('keydown', (e) => {
   }
 });
 
-input.addEventListener('input', sync);
 sync();
 
 let collapsedThisBurst = false;
 let collapseTimer = 0;
-let canScroll = false;
 const KEEP_WHEN_HAS_QUERY = false;
 
 function refreshScrollability() {

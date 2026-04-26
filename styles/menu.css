@@ -289,7 +289,3 @@
 .sort-option{
   -webkit-tap-highlight-color: transparent;
 }
-
-@media (prefers-reduced-motion: reduce) {
-  * { animation: none !important; transition: none !important; }
-}

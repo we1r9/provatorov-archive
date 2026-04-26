@@ -433,10 +433,6 @@ main.container {
   opacity: 0;
 }
 
-.grid.is-fading {
-  opacity: 0;
-}
-
 :root{
   --border-radius: 32px;
 }
@@ -461,6 +457,7 @@ main.container {
   border-bottom: none;
   box-shadow: inset 0 1px 0 var(--lg-hi);
 }
+
 
 .card-photo{
   width: 100%;
@@ -693,8 +690,6 @@ main.container {
   .card:hover .card-like-button { opacity: 1; }
 }
 
-:root{ --ease: cubic-bezier(.22,.61,.36,1); }
-
 @media (hover: hover) and (pointer: fine){
   .card{
     transition: transform .28s var(--ease), box-shadow .28s var(--ease), filter .28s var(--ease);
@@ -787,10 +782,8 @@ main.container {
   z-index: 3;
 }
 
-.site-header::before{ z-index:0; }
-.site-header::after { z-index:2; pointer-events:none; }
-.header-sort, .sort-select{ position:relative; z-index:4; }
-.sort-menu{ position:absolute; z-index:5; }
+.header-sort, .sort-select{ position: relative; z-index: 4; }
+.sort-menu{ position: absolute; z-index: 5; }
 
 
 :root{
@@ -1035,8 +1028,4 @@ main.container{
 html.restoring {
   overflow: hidden;
   visibility: hidden;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  * { animation: none !important; transition: none !important; }
 }

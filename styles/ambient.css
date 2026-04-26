@@ -90,56 +90,6 @@
 @media (max-width: 768px) {
   .dot1{
     top: 5%; left: -15%;
-    width: 140px; height: 260px;
-    filter: blur(100px);
-  }
-
-  .dot2{
-    top: -10%; left: 5%;
-    width: 240px; height: 140px;
-    filter: blur(70px);
-  }
-
-  .dot4{
-    bottom: -15%; left: -10%;
-    width: 200px; height: 200px;
-    filter: blur(80px);
-  }
-
-  .dot5{
-    top: 0%; right: -10%;
-    width: 200px; height: 280px;
-    filter: blur(90px);
-  }
-
-  .dot6{
-    top: 25%; right: 50%;
-    width: 260px; height: 200px;
-    filter: blur(100px);
-  }
-
-  .dot7{
-    bottom: -10%; right: 15%;
-    width: 260px; height: 140px;
-    filter: blur(40px);
-  }
-
-  .dot8{
-    top: 12%; right: 20%;
-    width: 180px; height: 140px;
-    filter: blur(70px);
-  }
-
-  .dot9{
-    top: 50%; right: 5%;
-    width: 180px; height: 180px;
-    filter: blur(90px);
-  }
-}
-
-@media (max-width: 768px) {
-  .dot1{
-    top: 5%; left: -15%;
     width: 90px; height: 160px;
     filter: blur(60px);
   }

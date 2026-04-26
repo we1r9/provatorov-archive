@@ -135,18 +135,6 @@ function shuffle(array) {
   return shuffled;
 }
 
-function emptyStateElement() {
-  let element = document.querySelector('.empty-state');
-
-  if (!element) {
-    element = document.createElement('div');
-    element.className = 'empty-state';
-    element.style.display = 'none';
-    if (grid) grid.insertAdjacentElement('afterend', element);
-  }
-  return element;
-}
-
 function showEmptyState(list, query) {
   if (!grid) return;
 
@@ -269,14 +257,6 @@ export function initSearchAndSort(photosData, { autoRender = true } = {}) {
     });
   }
 
-  const btn = document.getElementById('shuffleBtn');
-  let angle = 0;
-
-  btn.addEventListener('click', () => {
-    angle -= 180;
-    btn.style.transform = `rotate(${angle}deg)`;
-  });
-
   let t;
   if (searchInput) {
     searchInput.addEventListener('input', () => {
@@ -287,7 +267,7 @@ export function initSearchAndSort(photosData, { autoRender = true } = {}) {
 
       t = setTimeout(() => {
         submitSearch();
-      }, 800);
+      }, 300);
     });
 
     searchInput.addEventListener('keydown', event => {

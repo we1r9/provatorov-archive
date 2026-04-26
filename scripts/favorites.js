@@ -74,7 +74,6 @@ grid?.addEventListener('click', (event) => {
   const id = btn.dataset.favId;
   toggleFavorite(id);
 
-  renderFavCount();
   window.dispatchEvent(new Event('favorites:changed'));
 
   const card = btn.closest('.card');
@@ -101,11 +100,14 @@ grid?.addEventListener('click', (event) => {
 });
 
 window.addEventListener('storage', (event) => {
-  if (event.key === STORAGE_KEY) render();
+  if (event.key === STORAGE_KEY) {
+    render();
+    renderFavCount();
+  }
 });
 
 const back = document.querySelector('.go-back-arrow');
-back.addEventListener('click', () => {
+back?.addEventListener('click', () => {
   if (history.length > 1) history.back();
   else location.href = 'index.html';
 });
@@ -143,10 +145,6 @@ function renderFavCount() {
 renderFavCount();
 
 window.addEventListener('favorites:changed', renderFavCount);
-
-window.addEventListener('storage', (e) => {
-  if (e.key === 'provatorov:favorites') renderFavCount();
-});
 
 window.addEventListener('pageshow', () => {
   renderFavCount();

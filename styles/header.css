@@ -244,7 +244,3 @@ a.logo {
     width: 115px;
   }
 }
-
-@media (prefers-reduced-motion: reduce) {
-  * { animation: none !important; transition: none !important; }
-}

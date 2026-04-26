@@ -7,6 +7,11 @@ const params = new URLSearchParams(window.location.search);
 const id = params.get('id');
 const photo = photosData.find(photo => photo.id === id);
 
+if (!photo) {
+  location.replace('index.html');
+  throw new Error(`Photo not found: ${id}`);
+}
+
 function getMonthName(dateStr) {
   if (!dateStr) return '—';
 
