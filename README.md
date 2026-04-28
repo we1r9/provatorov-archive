@@ -8,10 +8,10 @@
 
 ## Демо
 
-![Галерея](docs/gallery.gif)
+![Галерея](https://github.com/user-attachments/assets/62d15427-34d0-412c-adf5-cab88a744762)
 <p align="center"><strong>Галерея</strong>. Поиск, сортировка и добавление в избранное</p>
 
-![Галерея](docs/photo.gif)
+![Галерея](https://github.com/user-attachments/assets/8ebb76f0-f7bd-4cc3-9861-bf5e74627f2e)
 <p align="center"><strong>Фото</strong>. Просмотр похожих снимков и скачивание</p>
 
 ## Стек
