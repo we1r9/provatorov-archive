@@ -1,37 +1,61 @@
-# [provatorov.ru](https://provatorov.ru/)
+# provatorov.ru
 
-Web app showcasing the photography of my father, Alexander Provatorov — explorer and photographer. Built to browse and download high-resolution photos with search, sorting, favorites, and detailed metadata for each shot. Created as a personal experiment with HTML, CSS, and JavaScript.
+**[Веб-приложение](https://provatorov.ru/)** для просмотра и скачивания фотографий в высоком разрешении.
 
-![Gallery page](https://github.com/user-attachments/assets/fe1dd7e4-4187-4896-8c62-9366ce323b1e)  
-Gallery page — browse all photos with search, sorting, and favorites.
+## О проекте
 
-![Photo page](https://github.com/user-attachments/assets/751bf86a-c009-4326-9a99-a4e633dd9274)  
-Photo page — view a single photo, explore metadata, see similar shots, and download in HQ.
+Галерея фотографий моего отца, Александра Проватóрова – путешественника и фотографа. Сайт собирает его архив в одном месте, позволяет осуществлять поиск снимков и скачивать их в оригинальном разрешении.
 
-## Features
-- Browse a collection of photos from around the world
-- Search by year, country, region, camera, or tags
-- Sort photos by name or year
-- Shuffle the gallery for new inspiration
-- Add to favorites
-- Download photos in high resolution
-- View similar photos by region or country
-- Learn about the author — dedicated page with biography and visited countries
-- Persistent state — pages remember your search and scroll position
-- Modal error messages — display user-friendly notifications when something goes wrong
-- “Liquid glass” UI with soft blur and ambient gradients
+## Демо
 
-## Built With
-- HTML5 — semantic structure for all pages
-- CSS3 — responsive layout with minimal design
-- Vanilla JavaScript + ES Modules — modular architecture for gallery rendering, search, sorting, and state management
-- JSON data source — contains metadata and file paths for each photo
-- Yandex S3 Storage + CDN — hosts and delivers HQ photo files via cached endpoints for faster load times
-- Three-tier image system — thumb, web, and hq versions optimized for performance
-- LocalStorage & SessionStorage — preserve favorites and restore browsing state
-- GitHub Pages — static hosting with custom domain
+![Галерея](docs/gallery.gif)
+<p align="center"><strong>Галерея</strong>. Поиск, сортировка и добавление в избранное</p>
 
-## Roadmap
-- React + TypeScript rewrite — planned migration to a modern component-based architecture
-- Weekly photo updates — new photos will be added to the gallery every week
-- Improved performance — optimize loading and rendering
+![Галерея](docs/photo.gif)
+<p align="center"><strong>Фото</strong>. Просмотр похожих снимков и скачивание</p>
+
+## Стек
+
+![HTML](https://img.shields.io/badge/HTML-E34F26?style=for-the-badge&logo=html5&logoColor=white)
+![CSS](https://img.shields.io/badge/CSS-1572B6?style=for-the-badge&logo=css3&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+![Yandex S3](https://img.shields.io/badge/Yandex_S3_+_CDN-299fff?style=for-the-badge&logo=yandex&logoColor=white)
+
+## Установка и запуск
+
+1. Клонируйте репозиторий:
+
+```bash
+git clone https://github.com/we1r9/provatorov-archive.git
+cd provatorov-archive
+```
+
+2. Откройте `index.html` через [Live Server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer).
+
+## Технические подробности
+
+- Код организован по принципу модульной архитектуры (ES Modules): каждая страница имеет свой JS-файл, а общая логика вынесена в `/utils`.
+
+- Для каждого снимка существуют три версии: `thumb` (сетка галереи), `web` (страница снимка) и `hq` (скачивание). Первые две хранятся в репозитории, hq-файлы раздает Yandex S3 через CDN.
+
+- `localStorage` используется для хранения избранных снимков. `sessionStorage` сохраняет состояние галереи (поисковый запрос, режим сортировки, количество видимых карточек и позицию скролла), чтобы при возврате со страницы снимка галерея не меняла свое состояние.
+
+- Галерея загружает снимки порциями по 18 штук, остальные подгружаются по кнопке «Показать еще». Благодаря нативному lazy loading, браузер загружает только те изображения, которые попадают в зону видимости.
+
+- Реализована синхронизация избранного между вкладками, чтобы при добавлении или удалении снимка на одной вкладке, изменения отображались и на других.
+
+- Каждая фотография имеет свой URL, чтобы, например, ею можно было поделиться или сохранить в закладки.
+
+- Все данные о снимках хранятся в `photos.json` ввиду того, что на текущем этапе коллекция пополняется вручную.
+
+## Планы
+
+- Мигрировать на React и TypeScript
+- Заменить JSON на собственный сервер с базой данных
+- Реализовать загрузку фотографий и редактирование метаданных из интерфейса через админ-панель
+- Улучшить производительность приложения (оптимизировать загрузку изображений, ускорить рендер галереи)
+
+## Контакты
+
+- Telegram: [@we1r9](https://t.me/we1r9)
+- Email: provatorovandrew@gmail.com
