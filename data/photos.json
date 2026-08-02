@@ -4485,29 +4485,6 @@
     }
   },
   {
-    "id": "pakistan-19",
-    "date": "2005-09",
-    "location": {
-      "country": "Пакистан",
-      "region": "Каракорум"
-    },
-    "tags": ["Canon PowerShot Pro1", "осень", "день", "портрет", "человек", "улыбка"],
-    "files": {
-      "thumb": "/media/thumb/pakistan-19-thumb.webp",
-      "web": "/media/web/pakistan-19-web.webp",
-      "hq": "https://cdn.provatorov.ru/hq/pakistan-19-hq.jpg"
-    },
-    "description": null,
-    "camera": {
-      "model": "Canon PowerShot Pro1",
-      "lens": "7.2-50.8 mm",
-      "focal_length_mm": 29,
-      "aperture_f": 3.5,
-      "shutter": 125,
-      "iso": 100
-    }
-  },
-  {
     "id": "altai-4",
     "date": "1991",
     "location": {
@@ -5773,29 +5750,6 @@
     }
   },
   {
-    "id": "pakistan-33",
-    "date": "2005-09",
-    "location": {
-      "country": "Пакистан",
-      "region": null
-    },
-    "tags": ["Canon PowerShot Pro1", "осень", "день", "портрет", "мужчина", "борода"],
-    "files": {
-      "thumb": "/media/thumb/pakistan-33-thumb.webp",
-      "web": "/media/web/pakistan-33-web.webp",
-      "hq": "https://cdn.provatorov.ru/hq/pakistan-33-hq.jpg"
-    },
-    "description": null,
-    "camera": {
-      "model": "Canon PowerShot Pro1",
-      "lens": "7.2-50.8 mm",
-      "focal_length_mm": 34,
-      "aperture_f": 4,
-      "shutter": 125,
-      "iso": 100
-    }
-  },
-  {
     "id": "pakistan-34",
     "date": "2005-09",
     "location": {
@@ -7035,29 +6989,6 @@
       "aperture_f": 5.6,
       "shutter": 2000,
       "iso": 100
-    }
-  },
-  {
-    "id": "tibet-22",
-    "date": "2004-10",
-    "location": {
-      "country": "Китай",
-      "region": "Тибет"
-    },
-    "tags": ["Canon PowerShot Pro1", "осень", "вечер", "женщина", "портрет", "люди"],
-    "files": {
-      "thumb": "/media/thumb/tibet-22-thumb.webp",
-      "web": "/media/web/tibet-22-web.webp",
-      "hq": "https://cdn.provatorov.ru/hq/tibet-22-hq.jpg"
-    },
-    "description": null,
-    "camera": {
-      "model": "Canon PowerShot Pro1",
-      "lens": "7.2-50.8 mm",
-      "focal_length_mm": 8,
-      "aperture_f": 2.4,
-      "shutter": 8,
-      "iso": 400
     }
   },
   {
