@@ -1,0 +1,23 @@
+name: Uptime check
+
+on:
+    schedule:
+        - cron: '0 9 * * *' # 12:00 UTC+3
+    workflow_dispatch:
+
+jobs:
+    check:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Check that provatorov.ru is up
+              run: |
+                  status=$(curl -s -o /tmp/body.html -w "%{http_code}" https://provatorov.ru/)
+                  echo "HTTP status: $status"
+                  if [ "$status" != "200" ]; then
+                    echo "::error::Site returned HTTP $status"
+                    exit 1
+                  fi
+                  if ! grep -q "Provatorov" /tmp/body.html; then
+                    echo "::error::Expected marker not found in page body"
+                    exit 1
+                  fi
