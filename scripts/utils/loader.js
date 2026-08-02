@@ -1,6 +1,6 @@
 document.documentElement.style.overflow = "hidden";
 
-window.addEventListener('load', () => {
+document.addEventListener('DOMContentLoaded', () => {
   const loader = document.getElementById('loading');
 
   if (!loader) {
