@@ -15,7 +15,7 @@
         "eslint": "^9.20.0",
         "globals": "^15.14.0",
         "html-validate": "^8.24.0",
-        "stylelint": "^16.14.1",
+        "stylelint": "^17.14.1",
         "stylelint-config-recommended": "^14.0.1"
     }
 }
