@@ -53,7 +53,6 @@ if (header) new ResizeObserver(measureAll).observe(header);
 
 if (sortBar) new ResizeObserver(measureAll).observe(sortBar);
 
-let isRestoring = false;
 let skipNextSave = false;
 let listVersion = 0;
 let lastRenderedVersion = -1;
@@ -146,7 +145,7 @@ function waitOpacityTransition(el, timeout = 260){
       if (done) return;
       if (e.propertyName === 'opacity') { done = true; el.removeEventListener('transitionend', onEnd); resolve(); }
     };
-    const t = setTimeout(() => { if (!done) { done = true; el.removeEventListener('transitionend', onEnd); resolve(); } }, timeout);
+    setTimeout(() => { if (!done) { done = true; el.removeEventListener('transitionend', onEnd); resolve(); } }, timeout);
     el.addEventListener('transitionend', onEnd, { once: true });
   });
 }
@@ -432,20 +431,11 @@ sync();
 
 let collapsedThisBurst = false;
 let collapseTimer = 0;
-const KEEP_WHEN_HAS_QUERY = false;
 
 function refreshScrollability() {
   const doc = document.documentElement;
   canScroll = (doc.scrollHeight - doc.clientHeight) > SCROLL_EPS;
   doc.classList.toggle('can-scroll', canScroll);
-}
-
-function onScrollStartCollapse(e) {
-  if (collapsedThisBurst) return;
-  if (document.activeElement === input) return;
-  if (KEEP_WHEN_HAS_QUERY && input.value) return;
-
-  onUserScrollCollapse();
 }
 
 function collapseAndBlur(){
@@ -610,7 +600,7 @@ function waitGridImagesLoaded(container, timeout = 1500) {
     let left = imgs.length;
     const done = () => { if (--left <= 0) resolve(); };
 
-    const t = setTimeout(resolve, timeout);
+    setTimeout(resolve, timeout);
     imgs.forEach(img => {
       if (img.complete) return done();
       img.addEventListener('load', done, { once: true });
@@ -623,7 +613,6 @@ function restoreState() {
   const state = readSavedState();
   if (!state || state.pageKey !== location.pathname) return false;
 
-  isRestoring = true;
   window.__isRestoringScroll = true;
   suppressNextFade = true;
 
@@ -655,8 +644,7 @@ function restoreState() {
   const ySaved = state.scrollY || 0;
   suppressNextFade = true;
 
-  const finish = () => { 
-    isRestoring = false; 
+  const finish = () => {
     window.__isRestoringScroll = false;
   };
 

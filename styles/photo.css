@@ -17,7 +17,7 @@
 html, body {
   height: 100%;
   margin: 0;
-  font-family: "SF Pro Rounded", "Segoe UI", Helvetica, Arial;
+  font-family: "SF Pro Rounded", "Segoe UI", Helvetica, Arial, sans-serif;
 }
 
 body {
@@ -184,7 +184,7 @@ main.container {
   align-items: center;
 }
 .download-hq-btn{
-  font-family: SF Pro Rounded;
+  font-family: "SF Pro Rounded", "Segoe UI", Helvetica, Arial, sans-serif;
   border: none;
   padding: 0.65rem 1rem;
   font-size: 1.05rem;
@@ -195,7 +195,6 @@ main.container {
   align-items: center;
   justify-content: center;
   gap: 0.7rem;
-  transition: gap 0.25s ease, padding 0.25s ease;
 
   box-shadow:
     inset 0 0 0 1px rgba(0,0,0,.10),
@@ -205,6 +204,8 @@ main.container {
   transform: translateZ(0);
   transform-origin: center;
   transition:
+    gap 0.25s ease,
+    padding 0.25s ease,
     transform .18s cubic-bezier(.22,.61,.36,1),
     box-shadow .18s ease,
     background-color .18s ease;

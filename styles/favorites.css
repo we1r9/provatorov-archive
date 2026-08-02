@@ -17,7 +17,7 @@
 html, body {
   height: 100%;
   margin: 0;
-  font-family: "SF Pro Rounded", "Segoe UI", Helvetica, Arial;
+  font-family: "SF Pro Rounded", "Segoe UI", Helvetica, Arial, sans-serif;
 }
 
 body {
@@ -58,7 +58,7 @@ main.container {
 html, body {
   height: 100%;
   margin: 0;
-  font-family: "SF Pro Rounded", "Segoe UI", Helvetica, Arial;
+  font-family: "SF Pro Rounded", "Segoe UI", Helvetica, Arial, sans-serif;
 }
 
 body {

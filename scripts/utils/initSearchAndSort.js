@@ -290,7 +290,7 @@ export function initSearchAndSort(photosData, { autoRender = true } = {}) {
 
       paging.visibleCount = Math.min(savedAll, indexedPhotos.length);
 
-      const res = runSearch(true);
+      runSearch(true);
       showCount(false);
       updateUrlState({ q: '', sort: currentSort, shuffle: isShuffleMode }, { push: false });
 
@@ -299,7 +299,7 @@ export function initSearchAndSort(photosData, { autoRender = true } = {}) {
       return;
     }
 
-    const res = runSearch(false);
+    runSearch(false);
 
     updateCounterFromCurrentQuery();
 

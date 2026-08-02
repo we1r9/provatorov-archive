@@ -18,7 +18,7 @@
 }
 
 *{ box-sizing: border-box; }
-html, body{ height:100%; margin:0; font-family: "SF Pro Rounded","Segoe UI",Helvetica,Arial; }
+html, body{ height:100%; margin:0; font-family: "SF Pro Rounded","Segoe UI",Helvetica,Arial,sans-serif; }
 body{ min-height:100vh; display:flex; flex-direction:column; }
 main{ flex:1 0 auto; }
 
@@ -302,7 +302,6 @@ main{ flex:1 0 auto; }
   font-size: 14px;
   white-space: normal;
   text-align: center;
-  white-space: normal;
 }
 
 

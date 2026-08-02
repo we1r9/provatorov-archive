@@ -120,8 +120,7 @@
 .copy-year {
   white-space: nowrap;
   font-size: 14px;
-  flex-shrink: 0; 
-  flex: 0 0 auto;      
+  flex: 0 0 auto;
 }
 
 .author{
