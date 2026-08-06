@@ -4,7 +4,7 @@
 
 ## О проекте
 
-Галерея фотографий моего отца, Александра Проватóрова – путешественника и фотографа. Сайт собирает его архив в одном месте, позволяет осуществлять поиск снимков и скачивать их в оригинальном разрешении.
+Галерея фотографий моего отца – путешественника и фотографа. Сайт собирает его архив в одном месте, позволяет осуществлять поиск снимков и скачивать их в оригинальном разрешении.
 
 ## Демо
 
@@ -20,6 +20,8 @@
 ![CSS](https://img.shields.io/badge/CSS-1572B6?style=for-the-badge&logo=css3&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
 ![Yandex S3](https://img.shields.io/badge/Yandex_S3_+_CDN-299fff?style=for-the-badge&logo=yandex&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white)
 
 ## Установка и запуск
 
@@ -31,6 +33,13 @@ cd provatorov-archive
 ```
 
 2. Откройте `index.html` через [Live Server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer).
+
+Либо через Docker:
+
+```bash
+cp .env.example .env
+docker compose up -d --build
+```
 
 ## Технические подробности
 
@@ -47,6 +56,14 @@ cd provatorov-archive
 - Каждая фотография имеет свой URL, чтобы, например, ею можно было поделиться или сохранить в закладки.
 
 - Все данные о снимках хранятся в `photos.json` ввиду того, что на текущем этапе коллекция пополняется вручную.
+
+- CI на GitHub Actions прогоняет линтеры и `npm audit` на каждый push и pull request.
+
+- По git-тегу собирается Docker-образ и публикуется в GitHub Container Registry.
+
+- Dependabot следит за версиями npm-зависимостей и сам открывает PR на обновление.
+
+Подробнее о деплое и инфраструктуре – в [DEPLOY.md](./DEPLOY.md).
 
 ## Планы
 
