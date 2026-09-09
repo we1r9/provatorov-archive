@@ -10,7 +10,6 @@ export function mapPhotos(photos) {
     if (region && country) location = region + ' • ' + country;
     else if (region) location = region;
     else if (country) location = country;
-    else location = '';
 
     return {
       id: item.id,
