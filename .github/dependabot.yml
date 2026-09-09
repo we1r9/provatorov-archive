@@ -4,8 +4,20 @@ updates:
       directory: '/'
       schedule:
           interval: 'weekly'
+      groups:
+          lint-tooling:
+              patterns:
+                  - 'stylelint*'
+                  - 'eslint'
+                  - '@eslint/*'
+                  - 'globals'
+                  - 'html-validate'
 
     - package-ecosystem: 'github-actions'
       directory: '/'
       schedule:
           interval: 'weekly'
+      groups:
+          actions:
+              patterns:
+                  - '*'
