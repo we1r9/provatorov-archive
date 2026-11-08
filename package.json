@@ -12,10 +12,10 @@
     },
     "devDependencies": {
         "@eslint/js": "^10.0.1",
-        "eslint": "^10.10.0",
-        "globals": "^17.12.0",
-        "html-validate": "^11.15.0",
-        "stylelint": "^17.15.0",
-        "stylelint-config-recommended": "^18.0.0"
+        "eslint": "^10.14.0",
+        "globals": "^17.14.0",
+        "html-validate": "^11.18.0",
+        "stylelint": "^18.0.0",
+        "stylelint-config-recommended": "^19.0.0"
     }
 }
